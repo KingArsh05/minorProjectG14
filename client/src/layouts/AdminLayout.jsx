@@ -33,11 +33,11 @@ export default function AdminLayout() {
   const { title, subtitle } = meta ? meta[1] : { title: "Admin", subtitle: "" };
 
   return (
-    <div className="page-layout">
+    <div className="flex min-h-screen">
       <Sidebar />
       <Topbar title={title} subtitle={subtitle} />
-      <main className="main-content">
-        <div className="page-wrapper">
+      <main className="flex-1 ml-[260px] pt-[68px] min-h-screen bg-[#0a0b14]">
+        <div className="p-8 max-w-[1400px]">
           <Outlet />
         </div>
       </main>

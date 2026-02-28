@@ -4,7 +4,6 @@ import {
   Trash2,
   RotateCcw,
   CheckCircle,
-  AlertTriangle,
   Clock,
   Search,
   Eye,
@@ -15,19 +14,19 @@ import { tokens } from "../../data/tokens";
 const statusBadge = (s) => {
   if (s === "Active")
     return (
-      <span className="badge badge-success">
+      <span className="inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(16,185,129,0.15)] text-[#34d399] border border-[rgba(16,185,129,0.25)] uppercase">
         <CheckCircle size={9} /> Active
       </span>
     );
   if (s === "Used")
     return (
-      <span className="badge badge-info">
+      <span className="inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(6,182,212,0.15)] text-[#22d3ee] border border-[rgba(6,182,212,0.25)] uppercase">
         <Eye size={9} /> Used
       </span>
     );
   if (s === "Expired")
     return (
-      <span className="badge badge-danger">
+      <span className="inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(239,68,68,0.15)] text-[#f87171] border border-[rgba(239,68,68,0.25)] uppercase">
         <Clock size={9} /> Expired
       </span>
     );
@@ -36,48 +35,23 @@ const statusBadge = (s) => {
 
 const viaBadge = (v) => {
   if (v === "Email")
-    return <span className="badge badge-purple">📧 Email</span>;
-  if (v === "SMS") return <span className="badge badge-warning">📱 SMS</span>;
-  return <span className="badge badge-info">📧📱 Both</span>;
-};
-
-function CountCard({ icon: Icon, label, value, color }) {
+    return (
+      <span className="inline-flex px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(99,102,241,0.15)] text-[#818cf8] border border-[rgba(99,102,241,0.25)]">
+        📧 Email
+      </span>
+    );
+  if (v === "SMS")
+    return (
+      <span className="inline-flex px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(245,158,11,0.15)] text-[#fbbf24] border border-[rgba(245,158,11,0.25)]">
+        📱 SMS
+      </span>
+    );
   return (
-    <div
-      className="card"
-      style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-    >
-      <div
-        style={{
-          width: "40px",
-          height: "40px",
-          borderRadius: "10px",
-          background: color,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Icon size={18} color="white" />
-      </div>
-      <div>
-        <p
-          style={{
-            fontSize: "1.4rem",
-            fontWeight: 800,
-            color: "var(--text-primary)",
-            fontFamily: "Outfit, sans-serif",
-          }}
-        >
-          {value}
-        </p>
-        <p style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-          {label}
-        </p>
-      </div>
-    </div>
+    <span className="inline-flex px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(6,182,212,0.15)] text-[#22d3ee] border border-[rgba(6,182,212,0.25)]">
+      📧📱 Both
+    </span>
   );
-}
+};
 
 export default function TokenManagement() {
   const [search, setSearch] = useState("");
@@ -87,105 +61,108 @@ export default function TokenManagement() {
 
   const displayed = list.filter((t) => {
     const q = search.toLowerCase();
-    const matchQ =
-      !q ||
-      t.studentName.toLowerCase().includes(q) ||
-      String(t.urn).includes(q);
-    const matchF = filter === "All" || t.status === filter;
-    return matchQ && matchF;
+    return (
+      (!q ||
+        t.studentName.toLowerCase().includes(q) ||
+        String(t.urn).includes(q)) &&
+      (filter === "All" || t.status === filter)
+    );
   });
 
   const revoke = (id) =>
-    setList((prev) =>
-      prev.map((t) =>
+    setList((p) =>
+      p.map((t) =>
         t._id === id ? { ...t, status: "Expired", isExpired: true } : t,
       ),
     );
-
-  const copyLink = (token) => {
-    const link = `https://acadalert.edu/dashboard?token=${token}`;
-    navigator.clipboard.writeText(link).catch(() => {});
-    setCopied(token);
+  const copyLink = (tok) => {
+    navigator.clipboard
+      .writeText(`https://acadalert.edu/dashboard?token=${tok}`)
+      .catch(() => {});
+    setCopied(tok);
     setTimeout(() => setCopied(""), 2000);
   };
 
-  const activeCount = list.filter((t) => t.status === "Active").length;
-  const usedCount = list.filter((t) => t.status === "Used").length;
-  const expiredCount = list.filter((t) => t.status === "Expired").length;
+  const counts = {
+    Active: list.filter((t) => t.status === "Active").length,
+    Used: list.filter((t) => t.status === "Used").length,
+    Expired: list.filter((t) => t.status === "Expired").length,
+  };
+  const avatarGrad = (t) =>
+    `linear-gradient(135deg, hsl(${(t.urn * 47) % 360},60%,38%), hsl(${(t.urn * 47 + 40) % 360},65%,32%))`;
 
   return (
     <div className="fade-in">
       {/* Stats */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-          gap: "0.85rem",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <CountCard
-          icon={KeyRound}
-          label="Total Tokens"
-          value={list.length}
-          color="linear-gradient(135deg,var(--primary),var(--primary-dark))"
-        />
-        <CountCard
-          icon={CheckCircle}
-          label="Active"
-          value={activeCount}
-          color="linear-gradient(135deg,var(--success),#059669)"
-        />
-        <CountCard
-          icon={Eye}
-          label="Used"
-          value={usedCount}
-          color="linear-gradient(135deg,var(--accent),var(--accent-dark))"
-        />
-        <CountCard
-          icon={Clock}
-          label="Expired"
-          value={expiredCount}
-          color="linear-gradient(135deg,var(--danger),#b91c1c)"
-        />
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4 mb-6">
+        {[
+          {
+            icon: KeyRound,
+            label: "Total Tokens",
+            val: list.length,
+            grad: "from-[#6366f1] to-[#4f46e5]",
+          },
+          {
+            icon: CheckCircle,
+            label: "Active",
+            val: counts.Active,
+            grad: "from-[#10b981] to-[#059669]",
+          },
+          {
+            icon: Eye,
+            label: "Used",
+            val: counts.Used,
+            grad: "from-[#06b6d4] to-[#0891b2]",
+          },
+          {
+            icon: Clock,
+            label: "Expired",
+            val: counts.Expired,
+            grad: "from-[#ef4444] to-[#b91c1c]",
+          },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="bg-[#13162b] border border-[#252840] rounded-2xl p-5 flex items-center gap-4 hover:border-[#2e3354] transition-colors"
+          >
+            <div
+              className={`w-10 h-10 rounded-xl bg-linear-to-br ${s.grad} flex items-center justify-center shrink-0`}
+            >
+              <s.icon size={18} className="text-white" />
+            </div>
+            <div>
+              <p
+                className="text-[1.4rem] font-extrabold text-[#f0f1fa]"
+                style={{ fontFamily: "Outfit,sans-serif" }}
+              >
+                {s.val}
+              </p>
+              <p className="text-[0.72rem] text-[#5c6385]">{s.label}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Filter Row */}
-      <div
-        style={{
-          display: "flex",
-          gap: "0.75rem",
-          marginBottom: "1.25rem",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ position: "relative", flex: "1 1 200px" }}>
+      <div className="flex flex-wrap gap-3 mb-5 items-center">
+        <div className="relative flex-1 min-w-[200px]">
           <Search
             size={14}
-            style={{
-              position: "absolute",
-              left: "0.9rem",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--text-muted)",
-            }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5c6385]"
           />
           <input
-            className="input-field"
-            placeholder="Search by name or URN..."
+            className="w-full bg-[#161925] border border-[#252840] text-[#f0f1fa] pl-9 pr-4 py-[0.65rem] rounded-xl text-sm outline-none focus:border-[#6366f1] placeholder:text-[#5c6385]"
+            placeholder="Search by name or URN…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ paddingLeft: "2.2rem" }}
           />
         </div>
-        <div style={{ display: "flex", gap: "0.4rem" }}>
+        <div className="flex gap-1">
           {["All", "Active", "Used", "Expired"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={filter === f ? "btn-primary" : "btn-ghost"}
-              style={{ fontSize: "0.78rem" }}
+              className={`px-3 py-2 rounded-lg text-[0.8rem] font-medium cursor-pointer transition-all border ${f === filter ? "bg-linear-to-br from-[#6366f1] to-[#4f46e5] text-white border-[#6366f1]" : "text-[#9ba2c0] border-[#252840] bg-transparent hover:border-[#6366f1] hover:text-[#818cf8]"}`}
             >
               {f}
             </button>
@@ -194,122 +171,79 @@ export default function TokenManagement() {
       </div>
 
       {/* Table */}
-      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ overflowX: "auto" }}>
-          <table className="data-table">
+      <div className="bg-[#13162b] border border-[#252840] rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table
+            className="w-full"
+            style={{ borderCollapse: "separate", borderSpacing: 0 }}
+          >
             <thead>
               <tr>
-                <th>Student</th>
-                <th>URN</th>
-                <th>Token (partial)</th>
-                <th>Sent Via</th>
-                <th>Created</th>
-                <th>Expires</th>
-                <th>Status</th>
-                <th>Actions</th>
+                {[
+                  "Student",
+                  "URN",
+                  "Token",
+                  "Sent Via",
+                  "Created",
+                  "Expires",
+                  "Status",
+                  "Actions",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className="bg-[#161925] text-[#5c6385] text-[0.72rem] font-semibold tracking-widest uppercase px-4 py-[0.85rem] text-left border-b border-[#252840]"
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {displayed.map((tok) => (
-                <tr key={tok._id}>
-                  <td>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.55rem",
-                      }}
-                    >
+                <tr
+                  key={tok._id}
+                  className="border-b border-[#252840] hover:bg-[#1e2132] transition-colors"
+                >
+                  <td className="px-4 py-[0.85rem]">
+                    <div className="flex items-center gap-2">
                       <div
-                        style={{
-                          width: "30px",
-                          height: "30px",
-                          borderRadius: "7px",
-                          background: `linear-gradient(135deg, hsl(${(tok.urn * 47) % 360},60%,40%), hsl(${(tok.urn * 47 + 40) % 360},70%,35%))`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          color: "white",
-                          flexShrink: 0,
-                        }}
+                        className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center text-[0.78rem] font-bold text-white"
+                        style={{ background: avatarGrad(tok) }}
                       >
                         {tok.studentName[0]}
                       </div>
                       <div>
-                        <p
-                          style={{
-                            fontSize: "0.83rem",
-                            fontWeight: 600,
-                            color: "var(--text-primary)",
-                          }}
-                        >
+                        <p className="text-[0.83rem] font-semibold text-[#f0f1fa]">
                           {tok.studentName}
                         </p>
-                        <p
-                          style={{
-                            fontSize: "0.68rem",
-                            color: "var(--text-muted)",
-                          }}
-                        >
+                        <p className="text-[0.68rem] text-[#5c6385]">
                           {tok.parentEmail}
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td
-                    style={{
-                      fontFamily: "monospace",
-                      color: "var(--primary-light)",
-                      fontSize: "0.8rem",
-                    }}
-                  >
+                  <td className="px-4 py-[0.85rem] font-mono text-[#818cf8] text-[0.8rem]">
                     {tok.urn}
                   </td>
-                  <td>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.5rem",
-                      }}
-                    >
-                      <code
-                        style={{
-                          fontSize: "0.72rem",
-                          color: "var(--text-secondary)",
-                          background: "var(--bg-elevated)",
-                          padding: "0.2rem 0.5rem",
-                          borderRadius: "5px",
-                        }}
-                      >
+                  <td className="px-4 py-[0.85rem]">
+                    <div className="flex items-center gap-2">
+                      <code className="text-[0.72rem] text-[#9ba2c0] bg-[#161925] px-2 py-[0.2rem] rounded-md">
                         {tok.token.slice(0, 12)}…
                       </code>
                       <button
-                        className="btn-icon"
-                        style={{ width: "26px", height: "26px" }}
                         onClick={() => copyLink(tok.token)}
-                        title="Copy link"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-[#1e2132] border border-[#252840] cursor-pointer hover:border-[#6366f1] transition-all"
                       >
                         {copied === tok.token ? (
-                          <CheckCircle
-                            size={11}
-                            style={{ color: "var(--success)" }}
-                          />
+                          <CheckCircle size={11} color="#10b981" />
                         ) : (
-                          <Copy size={11} />
+                          <Copy size={11} className="text-[#9ba2c0]" />
                         )}
                       </button>
                     </div>
                   </td>
-                  <td>{viaBadge(tok.sentVia)}</td>
-                  <td
-                    style={{
-                      fontSize: "0.78rem",
-                      color: "var(--text-secondary)",
-                    }}
-                  >
+                  <td className="px-4 py-[0.85rem]">{viaBadge(tok.sentVia)}</td>
+                  <td className="px-4 py-[0.85rem] text-[0.78rem] text-[#9ba2c0]">
                     {new Date(tok.createdAt).toLocaleDateString("en-IN", {
                       day: "numeric",
                       month: "short",
@@ -318,12 +252,8 @@ export default function TokenManagement() {
                     })}
                   </td>
                   <td
-                    style={{
-                      fontSize: "0.78rem",
-                      color: tok.isExpired
-                        ? "var(--danger-light)"
-                        : "var(--success)",
-                    }}
+                    className="px-4 py-[0.85rem] text-[0.78rem]"
+                    style={{ color: tok.isExpired ? "#f87171" : "#34d399" }}
                   >
                     {new Date(tok.expiresAt).toLocaleDateString("en-IN", {
                       day: "numeric",
@@ -332,36 +262,29 @@ export default function TokenManagement() {
                       minute: "2-digit",
                     })}
                   </td>
-                  <td>{statusBadge(tok.status)}</td>
-                  <td>
-                    <div style={{ display: "flex", gap: "0.4rem" }}>
-                      {tok.status === "Active" && (
-                        <button
-                          className="btn-danger"
-                          onClick={() => revoke(tok._id)}
-                        >
-                          <Trash2 size={11} /> Revoke
-                        </button>
-                      )}
-                      {tok.status === "Expired" && (
-                        <button className="btn-success">
-                          <RotateCcw size={11} /> Resend
-                        </button>
-                      )}
-                    </div>
+                  <td className="px-4 py-[0.85rem]">
+                    {statusBadge(tok.status)}
+                  </td>
+                  <td className="px-4 py-[0.85rem]">
+                    {tok.status === "Active" && (
+                      <button
+                        onClick={() => revoke(tok._id)}
+                        className="inline-flex items-center gap-1 px-3 py-[0.4rem] rounded-lg text-white text-[0.78rem] font-semibold bg-linear-to-br from-[#ef4444] to-[#b91c1c] hover:opacity-90 hover:-translate-y-px transition-all cursor-pointer"
+                      >
+                        <Trash2 size={11} /> Revoke
+                      </button>
+                    )}
+                    {tok.status === "Expired" && (
+                      <button className="inline-flex items-center gap-1 px-3 py-[0.4rem] rounded-lg text-white text-[0.78rem] font-semibold bg-linear-to-br from-[#10b981] to-[#059669] hover:opacity-90 hover:-translate-y-px transition-all cursor-pointer">
+                        <RotateCcw size={11} /> Resend
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
               {displayed.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={8}
-                    style={{
-                      textAlign: "center",
-                      padding: "2.5rem",
-                      color: "var(--text-muted)",
-                    }}
-                  >
+                  <td colSpan={8} className="text-center py-10 text-[#5c6385]">
                     No tokens match your filter.
                   </td>
                 </tr>
@@ -372,37 +295,12 @@ export default function TokenManagement() {
       </div>
 
       {/* Note */}
-      <div
-        style={{
-          marginTop: "1.25rem",
-          background: "rgba(99,102,241,0.06)",
-          border: "1px solid rgba(99,102,241,0.15)",
-          borderRadius: "12px",
-          padding: "0.9rem 1.1rem",
-          display: "flex",
-          alignItems: "flex-start",
-          gap: "0.6rem",
-        }}
-      >
-        <AlertTriangle
-          size={15}
-          style={{
-            color: "var(--primary-light)",
-            flexShrink: 0,
-            marginTop: "1px",
-          }}
-        />
-        <p
-          style={{
-            fontSize: "0.78rem",
-            color: "var(--text-secondary)",
-            lineHeight: 1.6,
-          }}
-        >
-          Tokens are generated using cryptographically secure random bytes. Once
-          a token is marked as <strong>Used</strong>, it cannot be reused.
-          Expired tokens are automatically invalidated on the server side.
-          Revoking an Active token immediately invalidates the link.
+      <div className="mt-4 bg-[rgba(99,102,241,0.06)] border border-[rgba(99,102,241,0.15)] rounded-xl p-4 flex items-start gap-3">
+        <KeyRound size={15} className="text-[#818cf8] shrink-0 mt-px" />
+        <p className="text-[0.78rem] text-[#9ba2c0] leading-relaxed">
+          Tokens use cryptographically secure random bytes. Once{" "}
+          <strong>Used</strong>, they cannot be reused. Revoking an Active token
+          immediately invalidates the link.
         </p>
       </div>
     </div>

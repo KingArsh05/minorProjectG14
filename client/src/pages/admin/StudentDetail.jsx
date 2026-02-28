@@ -8,7 +8,6 @@ import {
   CheckCircle,
   ChevronDown,
   ChevronUp,
-  TrendingUp,
   BookOpen,
 } from "lucide-react";
 import { students } from "../../data/students";
@@ -20,36 +19,29 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  RadialBarChart,
-  RadialBar,
-  PolarAngleAxis,
 } from "recharts";
 
-const sgpaClass = (s) => {
-  if (s >= 9) return "sgpa-excellent";
-  if (s >= 8) return "sgpa-good";
-  if (s >= 7) return "sgpa-average";
-  return "sgpa-poor";
+const sgpaColor = (s) =>
+  s >= 9 ? "#34d399" : s >= 8 ? "#818cf8" : s >= 7 ? "#fbbf24" : "#f87171";
+
+const sgpaPill = (s) => {
+  if (s >= 9)
+    return "bg-[rgba(16,185,129,0.15)] text-[#34d399] border border-[rgba(16,185,129,0.3)]";
+  if (s >= 8)
+    return "bg-[rgba(99,102,241,0.15)] text-[#818cf8] border border-[rgba(99,102,241,0.3)]";
+  if (s >= 7)
+    return "bg-[rgba(245,158,11,0.15)] text-[#fbbf24] border border-[rgba(245,158,11,0.3)]";
+  return "bg-[rgba(239,68,68,0.15)] text-[#f87171] border border-[rgba(239,68,68,0.3)]";
 };
 
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload?.length)
-    return (
-      <div
-        className="glass"
-        style={{
-          padding: "0.6rem 0.9rem",
-          borderRadius: "10px",
-          fontSize: "0.8rem",
-        }}
-      >
-        <p style={{ color: "var(--text-muted)" }}>{label}</p>
-        <p style={{ color: "#818cf8", fontWeight: 700 }}>
-          SGPA: {payload[0]?.value}
-        </p>
-      </div>
-    );
-  return null;
+const TT = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-[#161925] border border-[#2e3354] rounded-lg px-3 py-2 text-xs">
+      <p className="text-[#5c6385]">{label}</p>
+      <p className="text-[#818cf8] font-bold">SGPA: {payload[0]?.value}</p>
+    </div>
+  );
 };
 
 export default function StudentDetail() {
@@ -58,274 +50,189 @@ export default function StudentDetail() {
   const student = students.find((s) => s._id === id);
   const [openSem, setOpenSem] = useState(null);
 
-  if (!student) {
+  if (!student)
     return (
-      <div style={{ textAlign: "center", padding: "4rem 2rem" }}>
-        <p style={{ fontSize: "1.2rem", color: "var(--text-muted)" }}>
-          Student not found.
-        </p>
+      <div className="text-center py-16">
+        <p className="text-[#5c6385] text-lg mb-4">Student not found.</p>
         <button
-          className="btn-secondary"
-          style={{ marginTop: "1rem" }}
           onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-[#9ba2c0] text-sm bg-[#1e2132] border border-[#2e3354] hover:border-[#6366f1] transition-all cursor-pointer"
         >
           Go Back
         </button>
       </div>
     );
-  }
 
+  const avatarGrad = `linear-gradient(135deg, hsl(${(student.urn * 47) % 360},60%,38%), hsl(${(student.urn * 47 + 40) % 360},65%,32%))`;
   const chartData = student.semesters.map((s) => ({
     name: `Sem ${s.semesterNumber}`,
     SGPA: s.sgpa,
   }));
   const totalDetained = student.semesters
     .flatMap((s) => s.subjects)
-    .filter((sub) => sub.status === "Detained").length;
+    .filter((s) => s.status === "Detained").length;
   const avgSGPA = student.semesters.length
     ? (
         student.semesters.reduce((a, s) => a + s.sgpa, 0) /
         student.semesters.length
       ).toFixed(2)
     : "—";
-  const avgAtt = student.semesters.filter((s) => s.attendance).length
-    ? (
-        student.semesters
-          .filter((s) => s.attendance)
-          .reduce((a, s) => a + s.attendance, 0) /
-        student.semesters.filter((s) => s.attendance).length
-      ).toFixed(1)
+  const attSems = student.semesters.filter((s) => s.attendance);
+  const avgAtt = attSems.length
+    ? (attSems.reduce((a, s) => a + s.attendance, 0) / attSems.length).toFixed(
+        1,
+      )
     : null;
 
   return (
     <div className="fade-in">
-      {/* Back */}
       <button
-        className="btn-ghost"
-        style={{ marginBottom: "1.25rem" }}
         onClick={() => navigate(-1)}
+        className="inline-flex items-center gap-2 mb-5 px-4 py-2 rounded-lg text-[0.8rem] text-[#9ba2c0] border border-[#252840] bg-transparent hover:border-[#6366f1] hover:text-[#818cf8] transition-all cursor-pointer"
       >
         <ArrowLeft size={14} /> Back to Students
       </button>
 
       {/* Header */}
-      <div
-        className="card"
-        style={{
-          marginBottom: "1.25rem",
-          display: "flex",
-          gap: "1.5rem",
-          flexWrap: "wrap",
-          alignItems: "flex-start",
-        }}
-      >
+      <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-6 mb-5 flex flex-wrap gap-6 items-start hover:border-[#2e3354] transition-colors">
         <div
-          style={{
-            width: "64px",
-            height: "64px",
-            borderRadius: "16px",
-            flexShrink: 0,
-            background: `linear-gradient(135deg, hsl(${(student.urn * 47) % 360},60%,40%), hsl(${(student.urn * 47 + 40) % 360},70%,35%))`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "1.6rem",
-            fontWeight: 800,
-            color: "white",
-          }}
+          className="w-16 h-16 rounded-[16px] shrink-0 flex items-center justify-center text-[1.6rem] font-extrabold text-white shadow-[0_6px_20px_rgba(0,0,0,0.4)]"
+          style={{ background: avatarGrad }}
         >
           {student.fullName[0]}
         </div>
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-              alignItems: "center",
-              marginBottom: "0.5rem",
-            }}
-          >
+        <div className="flex-1">
+          <div className="flex flex-wrap gap-2 items-center mb-2">
             <h2
-              style={{
-                fontSize: "1.3rem",
-                fontWeight: 800,
-                fontFamily: "Outfit, sans-serif",
-                color: "var(--text-primary)",
-              }}
+              className="text-[1.3rem] font-extrabold text-[#f0f1fa]"
+              style={{ fontFamily: "Outfit,sans-serif" }}
             >
               {student.fullName}
             </h2>
             {totalDetained > 0 ? (
-              <span className="badge badge-danger">
+              <span className="inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(239,68,68,0.15)] text-[#f87171] border border-[rgba(239,68,68,0.25)]">
                 <AlertTriangle size={10} /> {totalDetained} Detained
               </span>
             ) : (
-              <span className="badge badge-success">
+              <span className="inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(16,185,129,0.15)] text-[#34d399] border border-[rgba(16,185,129,0.25)]">
                 <CheckCircle size={10} /> All Clear
               </span>
             )}
           </div>
-          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            <span className="chip">URN: {student.urn}</span>
-            <span className="chip">CRN: {student.crn}</span>
-            <span className="badge badge-purple">{student.course}</span>
-            {student.branch && <span className="chip">{student.branch}</span>}
-            <span className="chip">
-              {student.admissionYear} – {student.graduationYear}
+          <div className="flex flex-wrap gap-2">
+            <span className="inline-flex items-center px-[0.6rem] py-[0.2rem] bg-[#161925] border border-[#252840] rounded-md text-[0.75rem] text-[#9ba2c0]">
+              URN: {student.urn}
+            </span>
+            <span className="inline-flex items-center px-[0.6rem] py-[0.2rem] bg-[#161925] border border-[#252840] rounded-md text-[0.75rem] text-[#9ba2c0]">
+              CRN: {student.crn}
+            </span>
+            <span className="inline-flex items-center px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(99,102,241,0.15)] text-[#818cf8] border border-[rgba(99,102,241,0.25)]">
+              {student.course}
+            </span>
+            {student.branch && (
+              <span className="inline-flex items-center px-[0.6rem] py-[0.2rem] bg-[#161925] border border-[#252840] rounded-md text-[0.75rem] text-[#9ba2c0]">
+                {student.branch}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            <span className="inline-flex items-center px-[0.6rem] py-[0.2rem] bg-[#161925] border border-[#252840] rounded-md text-[0.72rem] text-[#9ba2c0]">
+              📧 {student.parentEmail}
+            </span>
+            <span className="inline-flex items-center px-[0.6rem] py-[0.2rem] bg-[#161925] border border-[#252840] rounded-md text-[0.72rem] text-[#9ba2c0]">
+              📱 {student.parentPhone}
             </span>
           </div>
-          <div
-            style={{
-              marginTop: "0.75rem",
-              display: "flex",
-              gap: "0.5rem",
-              flexWrap: "wrap",
-            }}
-          >
-            <span className="chip">📧 {student.parentEmail}</span>
-            <span className="chip">📱 {student.parentPhone}</span>
-          </div>
         </div>
-        <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-          <button className="btn-secondary">
+        <div className="flex gap-2 flex-wrap">
+          <button className="inline-flex items-center gap-2 px-4 py-[0.55rem] rounded-xl text-[#9ba2c0] text-sm bg-[#1e2132] border border-[#2e3354] hover:border-[#6366f1] hover:text-[#f0f1fa] transition-all cursor-pointer">
             <Download size={14} /> Download PDF
           </button>
-          <button className="btn-primary">
+          <button className="inline-flex items-center gap-2 px-4 py-[0.55rem] rounded-xl text-white text-sm font-semibold bg-linear-to-br from-[#6366f1] to-[#4f46e5] shadow-[0_4px_14px_rgba(99,102,241,0.25)] hover:-translate-y-px transition-all cursor-pointer">
             <Send size={14} /> Send Link
           </button>
         </div>
       </div>
 
       {/* Stats Row */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-          gap: "0.85rem",
-          marginBottom: "1.25rem",
-        }}
-      >
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-3 mb-5">
         {[
           {
             label: "Semesters",
             val: student.semesters.length,
-            color: "var(--primary-light)",
+            color: "#818cf8",
           },
-          { label: "Avg SGPA", val: avgSGPA, color: "var(--accent-light)" },
+          { label: "Avg SGPA", val: avgSGPA, color: "#22d3ee" },
           {
             label: "Avg Attendance",
             val: avgAtt ? `${avgAtt}%` : "—",
-            color: avgAtt >= 75 ? "var(--success)" : "var(--danger)",
+            color: avgAtt >= 75 ? "#34d399" : "#f87171",
           },
           {
             label: "CGPA",
             val: student.cgpa ?? "In Progress",
-            color: "var(--warning)",
+            color: "#fbbf24",
           },
           {
             label: "Detained Subjects",
             val: totalDetained,
-            color: totalDetained > 0 ? "var(--danger)" : "var(--success)",
+            color: totalDetained > 0 ? "#f87171" : "#34d399",
           },
         ].map((s) => (
           <div
             key={s.label}
-            className="card-sm"
-            style={{ textAlign: "center" }}
+            className="bg-[#161925] border border-[#252840] rounded-xl p-4 text-center"
           >
             <p
-              style={{
-                fontSize: "1.4rem",
-                fontWeight: 800,
-                fontFamily: "Outfit, sans-serif",
-                color: s.color,
-              }}
+              className="text-[1.4rem] font-extrabold"
+              style={{ color: s.color, fontFamily: "Outfit,sans-serif" }}
             >
               {s.val}
             </p>
-            <p
-              style={{
-                fontSize: "0.68rem",
-                color: "var(--text-muted)",
-                marginTop: "2px",
-              }}
-            >
-              {s.label}
-            </p>
+            <p className="text-[0.68rem] text-[#5c6385] mt-[2px]">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Chart + Semesters */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "340px 1fr",
-          gap: "1.25rem",
-          marginBottom: "1.25rem",
-        }}
-      >
-        {/* SGPA Chart */}
-        <div className="card">
-          <p
-            style={{
-              fontSize: "0.75rem",
-              color: "var(--text-muted)",
-              fontWeight: 600,
-              letterSpacing: "0.05em",
-              textTransform: "uppercase",
-              marginBottom: "0.25rem",
-            }}
-          >
+      <div className="grid grid-cols-[320px_1fr] gap-5">
+        {/* Chart */}
+        <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-6 h-fit">
+          <p className="text-[0.72rem] text-[#5c6385] font-semibold tracking-widest uppercase mb-1">
             Performance
           </p>
-          <h3
-            style={{
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              marginBottom: "1rem",
-            }}
-          >
+          <h3 className="text-[0.9rem] font-bold text-[#f0f1fa] mb-4">
             SGPA Progression
           </h3>
           {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={170}>
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#252840" />
                 <XAxis
                   dataKey="name"
-                  tick={{ fill: "var(--text-muted)", fontSize: 10 }}
+                  tick={{ fill: "#5c6385", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
                   domain={[0, 10]}
-                  tick={{ fill: "var(--text-muted)", fontSize: 10 }}
+                  tick={{ fill: "#5c6385", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<TT />} />
                 <Line
                   type="monotone"
                   dataKey="SGPA"
                   stroke="#818cf8"
                   strokeWidth={2.5}
-                  dot={{ fill: "#818cf8", r: 5, strokeWidth: 0 }}
-                  activeDot={{ r: 7 }}
+                  dot={{ fill: "#818cf8", r: 4, strokeWidth: 0 }}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <p
-              style={{
-                color: "var(--text-muted)",
-                fontSize: "0.8rem",
-                textAlign: "center",
-                padding: "2rem 0",
-              }}
-            >
+            <p className="text-[#5c6385] text-[0.8rem] text-center py-8">
               No data yet
             </p>
           )}
@@ -333,16 +240,7 @@ export default function StudentDetail() {
 
         {/* Semester Accordion */}
         <div>
-          <p
-            style={{
-              fontSize: "0.75rem",
-              color: "var(--text-muted)",
-              fontWeight: 600,
-              letterSpacing: "0.05em",
-              textTransform: "uppercase",
-              marginBottom: "0.75rem",
-            }}
-          >
+          <p className="text-[0.72rem] text-[#5c6385] font-semibold tracking-widest uppercase mb-3">
             Semester Records
           </p>
           {student.semesters.map((sem) => {
@@ -353,155 +251,117 @@ export default function StudentDetail() {
             return (
               <div
                 key={sem._id}
-                className="sem-card"
-                style={{ marginBottom: "0.75rem" }}
+                className="bg-[#13162b] border border-[#252840] rounded-2xl overflow-hidden transition-all hover:border-[#6366f1] hover:-translate-y-0.5 mb-3"
               >
                 <div
-                  className="sem-header"
+                  className="px-6 py-4 flex items-center justify-between border-b border-[#252840] cursor-pointer"
                   onClick={() => setOpenSem(isOpen ? null : sem._id)}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "32px",
-                        height: "32px",
-                        borderRadius: "8px",
-                        background:
-                          "linear-gradient(135deg, var(--primary), var(--accent))",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "0.7rem",
-                        fontWeight: 700,
-                        color: "white",
-                      }}
-                    >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#6366f1] to-[#06b6d4] flex items-center justify-center text-[0.7rem] font-bold text-white">
                       S{sem.semesterNumber}
                     </div>
                     <div>
-                      <p
-                        style={{
-                          fontSize: "0.88rem",
-                          fontWeight: 700,
-                          color: "var(--text-primary)",
-                        }}
-                      >
+                      <p className="text-[0.88rem] font-bold text-[#f0f1fa]">
                         Semester {sem.semesterNumber}
                       </p>
-                      <p
-                        style={{
-                          fontSize: "0.7rem",
-                          color: "var(--text-muted)",
-                        }}
-                      >
-                        {sem.subjects.length} subjects · Att:{" "}
-                        {sem.attendance ?? "N/A"}%
+                      <p className="text-[0.7rem] text-[#5c6385]">
+                        {sem.subjects.length} subjects
+                        {sem.attendance ? ` · Att: ${sem.attendance}%` : ""}
                       </p>
                     </div>
                   </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.6rem",
-                    }}
-                  >
+                  <div className="flex items-center gap-2">
                     {detained > 0 && (
-                      <span className="badge badge-danger">
+                      <span className="inline-flex items-center gap-1 px-2 py-[0.15rem] rounded-full text-[0.68rem] font-semibold bg-[rgba(239,68,68,0.15)] text-[#f87171] border border-[rgba(239,68,68,0.25)]">
                         <AlertTriangle size={9} /> {detained}
                       </span>
                     )}
-                    <span className={`sgpa-pill ${sgpaClass(sem.sgpa)}`}>
+                    <span
+                      className={`inline-flex items-center px-3 py-[0.3rem] rounded-lg font-bold text-[0.85rem] ${sgpaPill(sem.sgpa)}`}
+                    >
                       SGPA {sem.sgpa}
                     </span>
                     {isOpen ? (
-                      <ChevronUp
-                        size={16}
-                        style={{ color: "var(--text-muted)" }}
-                      />
+                      <ChevronUp size={16} className="text-[#5c6385]" />
                     ) : (
-                      <ChevronDown
-                        size={16}
-                        style={{ color: "var(--text-muted)" }}
-                      />
+                      <ChevronDown size={16} className="text-[#5c6385]" />
                     )}
                   </div>
                 </div>
                 {isOpen && (
-                  <div style={{ padding: "1rem 1.5rem" }}>
-                    <table className="data-table">
+                  <div className="p-4 overflow-x-auto">
+                    <table
+                      className="w-full"
+                      style={{ borderCollapse: "separate", borderSpacing: 0 }}
+                    >
                       <thead>
                         <tr>
-                          <th>Subject</th>
-                          <th>Code</th>
-                          <th>Type</th>
-                          <th>Internal</th>
-                          <th>External</th>
-                          <th>Total</th>
-                          <th>Status</th>
+                          {[
+                            "Subject",
+                            "Code",
+                            "Type",
+                            "Internal",
+                            "External",
+                            "Total",
+                            "Status",
+                          ].map((h) => (
+                            <th
+                              key={h}
+                              className="bg-[#161925] text-[#5c6385] text-[0.7rem] font-semibold tracking-widest uppercase px-3 py-3 text-left border-b border-[#252840]"
+                            >
+                              {h}
+                            </th>
+                          ))}
                         </tr>
                       </thead>
                       <tbody>
                         {sem.subjects.map((sub) => (
-                          <tr key={sub._id}>
-                            <td style={{ fontSize: "0.82rem" }}>
+                          <tr
+                            key={sub._id}
+                            className="border-b border-[#252840] hover:bg-[#1e2132] transition-colors"
+                          >
+                            <td className="px-3 py-3 text-[#f0f1fa] text-[0.82rem]">
                               {sub.subjectTitle}
                             </td>
-                            <td
-                              style={{
-                                fontFamily: "monospace",
-                                fontSize: "0.78rem",
-                                color: "var(--accent-light)",
-                              }}
-                            >
+                            <td className="px-3 py-3 font-mono text-[#22d3ee] text-[0.78rem]">
                               {sub.subjectCode}
                             </td>
-                            <td>
+                            <td className="px-3 py-3">
                               <span
-                                className={`badge ${sub.type === "T" ? "badge-info" : "badge-warning"}`}
+                                className={`inline-flex px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold ${sub.type === "T" ? "bg-[rgba(6,182,212,0.15)] text-[#22d3ee] border border-[rgba(6,182,212,0.25)]" : "bg-[rgba(245,158,11,0.15)] text-[#fbbf24] border border-[rgba(245,158,11,0.25)]"}`}
                               >
                                 {sub.type === "T" ? "Theory" : "Practical"}
                               </span>
                             </td>
                             <td
+                              className="px-3 py-3 font-semibold text-[0.85rem]"
                               style={{
-                                fontWeight: 600,
                                 color: sub.internalDetained
-                                  ? "var(--danger)"
-                                  : "var(--text-secondary)",
+                                  ? "#f87171"
+                                  : "#9ba2c0",
                               }}
                             >
                               {sub.internalMarks}
-                              {sub.internalDetained && " ⚠"}
+                              {sub.internalDetained ? " ⚠" : ""}
                             </td>
                             <td
+                              className="px-3 py-3 font-semibold text-[0.85rem]"
                               style={{
-                                fontWeight: 600,
                                 color: sub.externalDetained
-                                  ? "var(--danger)"
-                                  : "var(--text-secondary)",
+                                  ? "#f87171"
+                                  : "#9ba2c0",
                               }}
                             >
                               {sub.externalMarks}
-                              {sub.externalDetained && " ⚠"}
+                              {sub.externalDetained ? " ⚠" : ""}
                             </td>
-                            <td
-                              style={{
-                                fontWeight: 700,
-                                color: "var(--text-primary)",
-                              }}
-                            >
+                            <td className="px-3 py-3 font-bold text-[#f0f1fa]">
                               {sub.totalMarks}
                             </td>
-                            <td>
+                            <td className="px-3 py-3">
                               <span
-                                className={`badge ${sub.status === "Pass" ? "badge-success" : "badge-danger"}`}
+                                className={`inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold ${sub.status === "Pass" ? "bg-[rgba(16,185,129,0.15)] text-[#34d399] border border-[rgba(16,185,129,0.25)]" : "bg-[rgba(239,68,68,0.15)] text-[#f87171] border border-[rgba(239,68,68,0.25)]"}`}
                               >
                                 {sub.status}
                               </span>
@@ -516,15 +376,9 @@ export default function StudentDetail() {
             );
           })}
           {student.semesters.length === 0 && (
-            <div
-              className="card"
-              style={{ textAlign: "center", padding: "2rem" }}
-            >
-              <BookOpen
-                size={24}
-                style={{ color: "var(--text-muted)", margin: "0 auto 0.5rem" }}
-              />
-              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
+            <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-8 text-center">
+              <BookOpen size={24} className="text-[#5c6385] mx-auto mb-2" />
+              <p className="text-[#5c6385] text-[0.85rem]">
                 No semester data available yet.
               </p>
             </div>

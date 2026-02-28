@@ -1,12 +1,12 @@
 import { useState, useRef } from "react";
 import {
   Upload,
-  Send,
   CheckCircle,
   X,
   CloudUpload,
   FileSpreadsheet,
   AlertCircle,
+  Send,
 } from "lucide-react";
 
 const courseBranchMap = {
@@ -73,13 +73,21 @@ const previewData = [
   },
 ];
 
+// Shared class strings
+const INPUT =
+  "w-full bg-[#161925] border border-[#252840] text-[#f0f1fa] px-4 py-[0.65rem] rounded-xl text-sm outline-none transition-all focus:border-[#6366f1] appearance-none cursor-pointer";
+const CARD =
+  "bg-[#13162b] border border-[#252840] rounded-2xl p-6 transition-colors hover:border-[#2e3354]";
+const LABEL =
+  "block text-[0.78rem] font-semibold text-[#5c6385] tracking-wide uppercase mb-[0.4rem]";
+
 export default function UploadData() {
   const [dragOver, setDragOver] = useState(false);
   const [file, setFile] = useState(null);
   const [course, setCourse] = useState("");
   const [branch, setBranch] = useState("");
   const [semester, setSemester] = useState("");
-  const [step, setStep] = useState(1); // 1=upload, 2=preview, 3=success
+  const [step, setStep] = useState(1);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef();
 
@@ -89,13 +97,11 @@ export default function UploadData() {
       setStep(2);
     }
   };
-
   const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
     handleFile(e.dataTransfer.files[0]);
   };
-
   const handleProcess = () => {
     setUploading(true);
     setTimeout(() => {
@@ -103,92 +109,45 @@ export default function UploadData() {
       setStep(3);
     }, 2000);
   };
-
   const branches = courseBranchMap[course] || [];
 
   if (step === 3) {
     return (
-      <div
-        className="fade-in"
-        style={{ maxWidth: "560px", margin: "3rem auto", textAlign: "center" }}
-      >
-        <div
-          style={{
-            width: "80px",
-            height: "80px",
-            borderRadius: "50%",
-            background: "rgba(16,185,129,0.15)",
-            border: "2px solid var(--success)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "0 auto 1.5rem",
-          }}
-        >
-          <CheckCircle size={36} color="var(--success)" />
+      <div className="fade-in max-w-[560px] mx-auto mt-12 text-center">
+        <div className="w-20 h-20 rounded-full bg-[rgba(16,185,129,0.15)] border-2 border-[#10b981] flex items-center justify-center mx-auto mb-6">
+          <CheckCircle size={36} color="#10b981" />
         </div>
         <h2
-          style={{
-            fontSize: "1.5rem",
-            fontWeight: 800,
-            fontFamily: "Outfit, sans-serif",
-            color: "var(--text-primary)",
-            marginBottom: "0.5rem",
-          }}
+          className="text-[1.5rem] font-extrabold text-[#f0f1fa] mb-2"
+          style={{ fontFamily: "Outfit,sans-serif" }}
         >
           Upload Successful!
         </h2>
-        <p
-          style={{
-            color: "var(--text-muted)",
-            fontSize: "0.9rem",
-            marginBottom: "2rem",
-          }}
-        >
+        <p className="text-[#5c6385] text-[0.9rem] mb-6">
           {previewData.length} student records from{" "}
-          <strong style={{ color: "var(--text-secondary)" }}>
-            {file?.name}
-          </strong>{" "}
-          have been processed and stored.
+          <strong className="text-[#9ba2c0]">{file?.name}</strong> have been
+          processed and stored.
         </p>
-        <div
-          className="card"
-          style={{
-            padding: "1rem 1.25rem",
-            marginBottom: "1.5rem",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "1rem",
-            textAlign: "center",
-          }}
-        >
+        <div className={`${CARD} grid grid-cols-3 gap-4 text-center mb-6`}>
           {[
-            { label: "Records", val: previewData.length },
-            { label: "Course", val: course || "B.Tech" },
-            { label: "Semester", val: semester || "4" },
+            { l: "Records", v: previewData.length },
+            { l: "Course", v: course || "B.Tech" },
+            { l: "Semester", v: semester || "4" },
           ].map((s) => (
-            <div key={s.label}>
+            <div key={s.l}>
               <p
-                style={{
-                  fontSize: "1.3rem",
-                  fontWeight: 800,
-                  color: "var(--primary-light)",
-                  fontFamily: "Outfit, sans-serif",
-                }}
+                className="text-[1.3rem] font-extrabold text-[#818cf8]"
+                style={{ fontFamily: "Outfit,sans-serif" }}
               >
-                {s.val}
+                {s.v}
               </p>
-              <p style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
-                {s.label}
-              </p>
+              <p className="text-[0.7rem] text-[#5c6385]">{s.l}</p>
             </div>
           ))}
         </div>
-        <div
-          style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}
-        >
+        <div className="flex gap-3 justify-center">
           <button
-            className="btn-secondary"
+            className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-[#9ba2c0] text-sm font-medium bg-[#1e2132] border border-[#2e3354] hover:text-[#f0f1fa] hover:border-[#6366f1] transition-all cursor-pointer"
             onClick={() => {
               setStep(1);
               setFile(null);
@@ -196,9 +155,8 @@ export default function UploadData() {
           >
             Upload More
           </button>
-          <button className="btn-primary">
-            <Send size={14} />
-            Send Notifications
+          <button className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-white text-sm font-semibold bg-linear-to-br from-[#6366f1] to-[#4f46e5] shadow-[0_4px_15px_rgba(99,102,241,0.25)] hover:-translate-y-px transition-all cursor-pointer">
+            <Send size={14} /> Send Notifications
           </button>
         </div>
       </div>
@@ -206,32 +164,17 @@ export default function UploadData() {
   }
 
   return (
-    <div
-      className="fade-in"
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 340px",
-        gap: "1.5rem",
-      }}
-    >
+    <div className="fade-in grid grid-cols-[1fr_320px] gap-6">
       {/* Left */}
       <div>
-        {/* Step 1: drop zone */}
-        <div className="card" style={{ marginBottom: "1.25rem" }}>
-          <h3
-            style={{
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              marginBottom: "1.25rem",
-            }}
-          >
+        {/* Drop zone */}
+        <div className={CARD + " mb-5"}>
+          <h3 className="text-[0.95rem] font-bold text-[#f0f1fa] mb-4">
             {step === 1 ? "📁 Upload CSV / Excel File" : "✅ File Selected"}
           </h3>
-
           {!file ? (
             <div
-              className={`drop-zone ${dragOver ? "drag-over" : ""}`}
+              className={`border-2 border-dashed rounded-2xl py-12 px-8 text-center transition-all cursor-pointer ${dragOver ? "border-[#6366f1] bg-[rgba(99,102,241,0.05)]" : "border-[#2e3354] hover:border-[#6366f1] hover:bg-[rgba(99,102,241,0.03)]"}`}
               onDragOver={(e) => {
                 e.preventDefault();
                 setDragOver(true);
@@ -244,65 +187,35 @@ export default function UploadData() {
                 ref={inputRef}
                 type="file"
                 accept=".csv,.xlsx,.xls"
-                style={{ display: "none" }}
+                className="hidden"
                 onChange={(e) => handleFile(e.target.files[0])}
               />
               <CloudUpload
                 size={40}
-                style={{
-                  color: "var(--primary-light)",
-                  margin: "0 auto 1rem",
-                  display: "block",
-                  opacity: 0.8,
-                }}
+                className="text-[#818cf8] mx-auto mb-4 opacity-80"
               />
-              <p
-                style={{
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                  color: "var(--text-primary)",
-                  marginBottom: "0.4rem",
-                }}
-              >
+              <p className="text-[1rem] font-semibold text-[#f0f1fa] mb-1">
                 Drop your file here or click to browse
               </p>
-              <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                Supports{" "}
-                <strong style={{ color: "var(--primary-light)" }}>.csv</strong>,{" "}
-                <strong style={{ color: "var(--accent-light)" }}>.xlsx</strong>,{" "}
-                <strong style={{ color: "var(--accent-light)" }}>.xls</strong> —
-                max 10 MB
+              <p className="text-[0.8rem] text-[#5c6385]">
+                Supports <strong className="text-[#818cf8]">.csv</strong>,{" "}
+                <strong className="text-[#22d3ee]">.xlsx</strong>,{" "}
+                <strong className="text-[#22d3ee]">.xls</strong> — max 10 MB
               </p>
             </div>
           ) : (
-            <div
-              style={{
-                background: "rgba(16,185,129,0.05)",
-                border: "1px solid rgba(16,185,129,0.2)",
-                borderRadius: "12px",
-                padding: "1rem 1.25rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-              }}
-            >
-              <FileSpreadsheet size={28} style={{ color: "var(--success)" }} />
-              <div style={{ flex: 1 }}>
-                <p
-                  style={{
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                  }}
-                >
+            <div className="bg-[rgba(16,185,129,0.05)] border border-[rgba(16,185,129,0.2)] rounded-xl p-4 flex items-center gap-3">
+              <FileSpreadsheet size={28} className="text-[#10b981]" />
+              <div className="flex-1">
+                <p className="text-[0.9rem] font-semibold text-[#f0f1fa]">
                   {file.name}
                 </p>
-                <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                <p className="text-[0.75rem] text-[#5c6385]">
                   {(file.size / 1024).toFixed(1)} KB — ready to process
                 </p>
               </div>
               <button
-                className="btn-icon"
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#1e2132] border border-[#252840] text-[#9ba2c0] hover:border-[#6366f1] hover:text-[#818cf8] transition-all cursor-pointer"
                 onClick={() => {
                   setFile(null);
                   setStep(1);
@@ -315,28 +228,15 @@ export default function UploadData() {
         </div>
 
         {/* Config */}
-        <div className="card" style={{ marginBottom: "1.25rem" }}>
-          <h3
-            style={{
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              marginBottom: "1.25rem",
-            }}
-          >
+        <div className={CARD + " mb-5"}>
+          <h3 className="text-[0.95rem] font-bold text-[#f0f1fa] mb-4">
             ⚙️ Upload Configuration
           </h3>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "1rem",
-            }}
-          >
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Course</label>
+              <label className={LABEL}>Course</label>
               <select
-                className="select-field"
+                className={INPUT}
                 value={course}
                 onChange={(e) => {
                   setCourse(e.target.value);
@@ -352,9 +252,9 @@ export default function UploadData() {
               </select>
             </div>
             <div>
-              <label className="form-label">Branch</label>
+              <label className={LABEL}>Branch</label>
               <select
-                className="select-field"
+                className={INPUT}
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
                 disabled={!course || branches.length === 0}
@@ -372,9 +272,9 @@ export default function UploadData() {
               </select>
             </div>
             <div>
-              <label className="form-label">Semester</label>
+              <label className={LABEL}>Semester</label>
               <select
-                className="select-field"
+                className={INPUT}
                 value={semester}
                 onChange={(e) => setSemester(e.target.value)}
               >
@@ -387,8 +287,8 @@ export default function UploadData() {
               </select>
             </div>
             <div>
-              <label className="form-label">Academic Year</label>
-              <select className="select-field">
+              <label className={LABEL}>Academic Year</label>
+              <select className={INPUT}>
                 <option>2024-25</option>
                 <option>2023-24</option>
               </select>
@@ -396,54 +296,60 @@ export default function UploadData() {
           </div>
         </div>
 
-        {/* Preview Table */}
+        {/* Preview */}
         {file && (
-          <div className="card">
-            <h3
-              style={{
-                fontSize: "0.95rem",
-                fontWeight: 700,
-                color: "var(--text-primary)",
-                marginBottom: "1rem",
-              }}
-            >
+          <div className={CARD}>
+            <h3 className="text-[0.95rem] font-bold text-[#f0f1fa] mb-4">
               📊 Data Preview (first 4 rows)
             </h3>
-            <div style={{ overflowX: "auto" }}>
-              <table className="data-table">
+            <div className="overflow-x-auto mb-4">
+              <table
+                className="w-full"
+                style={{ borderCollapse: "separate", borderSpacing: 0 }}
+              >
                 <thead>
                   <tr>
-                    <th>URN</th>
-                    <th>CRN</th>
-                    <th>Full Name</th>
-                    <th>Branch</th>
-                    <th>Semester</th>
-                    <th>SGPA</th>
+                    {[
+                      "URN",
+                      "CRN",
+                      "Full Name",
+                      "Branch",
+                      "Semester",
+                      "SGPA",
+                    ].map((h) => (
+                      <th
+                        key={h}
+                        className="bg-[#161925] text-[#5c6385] text-[0.72rem] font-semibold tracking-widest uppercase px-4 py-[0.85rem] text-left border-b border-[#252840]"
+                      >
+                        {h}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {previewData.map((r) => (
-                    <tr key={r.urn}>
-                      <td
-                        style={{
-                          fontFamily: "monospace",
-                          color: "var(--primary-light)",
-                        }}
-                      >
+                    <tr
+                      key={r.urn}
+                      className="border-b border-[#252840] hover:bg-[#1e2132] transition-colors"
+                    >
+                      <td className="px-4 py-3 font-mono text-[#818cf8] text-[0.8rem]">
                         {r.urn}
                       </td>
-                      <td style={{ fontFamily: "monospace" }}>{r.crn}</td>
-                      <td>{r.name}</td>
-                      <td>
-                        <span className="badge badge-purple">{r.branch}</span>
+                      <td className="px-4 py-3 font-mono text-[#9ba2c0] text-[0.8rem]">
+                        {r.crn}
                       </td>
-                      <td>Sem {r.sem}</td>
-                      <td
-                        style={{
-                          fontWeight: 700,
-                          color: "var(--accent-light)",
-                        }}
-                      >
+                      <td className="px-4 py-3 text-[#f0f1fa] text-[0.82rem]">
+                        {r.name}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center px-[0.65rem] py-[0.2rem] rounded-full text-[0.72rem] font-semibold bg-[rgba(99,102,241,0.15)] text-[#818cf8] border border-[rgba(99,102,241,0.25)]">
+                          {r.branch}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-[#9ba2c0] text-[0.82rem]">
+                        Sem {r.sem}
+                      </td>
+                      <td className="px-4 py-3 font-bold text-[#22d3ee]">
                         {r.sgpa}
                       </td>
                     </tr>
@@ -451,12 +357,9 @@ export default function UploadData() {
                 </tbody>
               </table>
             </div>
-
-            <div
-              style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}
-            >
+            <div className="flex gap-3">
               <button
-                className="btn-secondary"
+                className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-[#9ba2c0] text-sm bg-[#1e2132] border border-[#2e3354] hover:border-[#6366f1] hover:text-[#f0f1fa] transition-all cursor-pointer"
                 onClick={() => {
                   setFile(null);
                   setStep(1);
@@ -465,31 +368,15 @@ export default function UploadData() {
                 <X size={14} /> Cancel
               </button>
               <button
-                className="btn-primary"
+                className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-white text-sm font-semibold bg-linear-to-br from-[#6366f1] to-[#4f46e5] shadow-[0_4px_15px_rgba(99,102,241,0.25)] hover:-translate-y-px transition-all cursor-pointer disabled:opacity-60"
                 onClick={handleProcess}
                 disabled={uploading}
               >
                 {uploading ? (
-                  <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.4rem",
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: "12px",
-                        height: "12px",
-                        border: "2px solid rgba(255,255,255,0.3)",
-                        borderTop: "2px solid white",
-                        borderRadius: "50%",
-                        display: "inline-block",
-                        animation: "spin 0.7s linear infinite",
-                      }}
-                    />
-                    Processing...
-                  </span>
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    &nbsp;Processing…
+                  </>
                 ) : (
                   <>
                     <Upload size={14} /> Process & Save
@@ -501,34 +388,14 @@ export default function UploadData() {
         )}
       </div>
 
-      {/* Right sidebar - Instructions */}
+      {/* Right sidebar */}
       <div>
-        <div className="card" style={{ marginBottom: "1rem" }}>
-          <h3
-            style={{
-              fontSize: "0.85rem",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              marginBottom: "1rem",
-            }}
-          >
+        <div className={CARD + " mb-4"}>
+          <h3 className="text-[0.85rem] font-bold text-[#f0f1fa] mb-3">
             📋 CSV Format Guide
           </h3>
-          <div
-            style={{
-              background: "var(--bg-elevated)",
-              borderRadius: "8px",
-              padding: "0.75rem",
-              fontFamily: "monospace",
-              fontSize: "0.72rem",
-              color: "var(--accent-light)",
-              lineHeight: 1.8,
-              overflowX: "auto",
-            }}
-          >
-            <span style={{ color: "var(--text-muted)" }}>
-              // Headers required:
-            </span>
+          <div className="bg-[#161925] rounded-lg px-3 py-3 font-mono text-[0.72rem] text-[#22d3ee] leading-[1.8] overflow-x-auto">
+            <span className="text-[#5c6385]">// Required headers:</span>
             <br />
             urn, crn, fullName,
             <br />
@@ -548,15 +415,8 @@ export default function UploadData() {
           </div>
         </div>
 
-        <div className="card" style={{ marginBottom: "1rem" }}>
-          <h3
-            style={{
-              fontSize: "0.85rem",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              marginBottom: "0.75rem",
-            }}
-          >
+        <div className={CARD + " mb-4"}>
+          <h3 className="text-[0.85rem] font-bold text-[#f0f1fa] mb-3">
             ✅ Validation Rules
           </h3>
           {[
@@ -565,66 +425,22 @@ export default function UploadData() {
             "Marks must be ≥ 0",
             "Course must match allowed list",
             "Branch must match course",
-          ].map((rule, i) => (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                marginBottom: "0.4rem",
-              }}
-            >
-              <CheckCircle
-                size={13}
-                style={{ color: "var(--success)", flexShrink: 0 }}
-              />
-              <p
-                style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}
-              >
-                {rule}
-              </p>
+          ].map((r, i) => (
+            <div key={i} className="flex items-center gap-2 mb-2">
+              <CheckCircle size={13} className="text-[#10b981] shrink-0" />
+              <p className="text-[0.78rem] text-[#9ba2c0]">{r}</p>
             </div>
           ))}
         </div>
 
-        <div
-          style={{
-            background: "rgba(245,158,11,0.08)",
-            border: "1px solid rgba(245,158,11,0.2)",
-            borderRadius: "12px",
-            padding: "1rem",
-          }}
-        >
-          <div
-            style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}
-          >
-            <AlertCircle
-              size={15}
-              style={{
-                color: "var(--warning)",
-                flexShrink: 0,
-                marginTop: "1px",
-              }}
-            />
+        <div className="bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.2)] rounded-xl p-4">
+          <div className="flex gap-2 items-start">
+            <AlertCircle size={15} className="text-[#f59e0b] shrink-0 mt-px" />
             <div>
-              <p
-                style={{
-                  fontSize: "0.78rem",
-                  fontWeight: 600,
-                  color: "var(--warning)",
-                  marginBottom: "0.3rem",
-                }}
-              >
+              <p className="text-[0.78rem] font-semibold text-[#f59e0b] mb-1">
                 Important Note
               </p>
-              <p
-                style={{
-                  fontSize: "0.75rem",
-                  color: "var(--text-secondary)",
-                  lineHeight: 1.6,
-                }}
-              >
+              <p className="text-[0.75rem] text-[#9ba2c0] leading-relaxed">
                 Uploading data for an existing semester will overwrite the
                 previous records. Ensure the CSV is verified before processing.
               </p>
@@ -632,8 +448,6 @@ export default function UploadData() {
           </div>
         </div>
       </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

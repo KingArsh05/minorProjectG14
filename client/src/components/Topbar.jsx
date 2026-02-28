@@ -1,154 +1,68 @@
 import { useState } from "react";
 import { Search, Bell, ChevronDown } from "lucide-react";
 
+const notes = [
+  { msg: "14 notifications sent today", time: "2 min ago" },
+  { msg: "CSV upload completed – CSE Sem 4", time: "1 hr ago" },
+  { msg: "3 tokens expired – action needed", time: "3 hrs ago" },
+];
+
 export default function Topbar({ title, subtitle }) {
   const [showNotif, setShowNotif] = useState(false);
 
   return (
-    <header className="topbar">
+    <header className="fixed top-0 right-0 left-[260px] h-[68px] bg-[rgba(17,19,31,0.95)] backdrop-blur-md border-b border-[#252840] z-90 flex items-center justify-between px-8">
+      {/* Left */}
       <div>
         <h1
-          style={{
-            fontSize: "1.15rem",
-            fontWeight: 700,
-            color: "var(--text-primary)",
-            fontFamily: "Outfit, sans-serif",
-            lineHeight: 1.2,
-          }}
+          className="text-[1.15rem] font-bold text-[#f0f1fa] leading-tight"
+          style={{ fontFamily: "Outfit, sans-serif" }}
         >
           {title}
         </h1>
         {subtitle && (
-          <p
-            style={{
-              fontSize: "0.75rem",
-              color: "var(--text-muted)",
-              marginTop: "1px",
-            }}
-          >
-            {subtitle}
-          </p>
+          <p className="text-[0.75rem] text-[#5c6385] mt-px">{subtitle}</p>
         )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+      {/* Right */}
+      <div className="flex items-center gap-3">
         {/* Search */}
-        <div style={{ position: "relative" }}>
+        <div className="relative">
           <Search
             size={15}
-            style={{
-              position: "absolute",
-              left: "0.75rem",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--text-muted)",
-            }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5c6385]"
           />
           <input
-            className="input-field"
             type="text"
             placeholder="Search..."
-            style={{
-              paddingLeft: "2.2rem",
-              width: "220px",
-              height: "36px",
-              fontSize: "0.8rem",
-            }}
+            className="w-[220px] h-9 bg-[#161925] border border-[#252840] text-[#f0f1fa] pl-9 pr-3 rounded-xl text-[0.8rem] outline-none transition-all focus:border-[#6366f1] placeholder:text-[#5c6385]"
           />
         </div>
 
         {/* Notifications */}
-        <div style={{ position: "relative" }}>
+        <div className="relative">
           <button
-            className="btn-icon"
             onClick={() => setShowNotif(!showNotif)}
-            style={{ position: "relative" }}
+            className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-[#1e2132] border border-[#252840] text-[#9ba2c0] cursor-pointer transition-all hover:border-[#6366f1] hover:text-[#818cf8]"
           >
             <Bell size={16} />
-            <span
-              style={{
-                position: "absolute",
-                top: "6px",
-                right: "6px",
-                width: "7px",
-                height: "7px",
-                background: "var(--danger)",
-                borderRadius: "50%",
-                border: "1.5px solid var(--bg-surface)",
-              }}
-            />
+            <span className="absolute top-[6px] right-[6px] w-[7px] h-[7px] bg-[#ef4444] rounded-full border-[1.5px] border-[#11131f]" />
           </button>
           {showNotif && (
-            <div
-              style={{
-                position: "absolute",
-                right: 0,
-                top: "calc(100% + 8px)",
-                width: "280px",
-                background: "var(--bg-elevated)",
-                border: "1px solid var(--border-light)",
-                borderRadius: "12px",
-                padding: "0.75rem",
-                zIndex: 200,
-                boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  color: "var(--text-muted)",
-                  marginBottom: "0.5rem",
-                  letterSpacing: "0.05em",
-                  textTransform: "uppercase",
-                }}
-              >
+            <div className="absolute right-0 top-[calc(100%+8px)] w-[280px] bg-[#161925] border border-[#2e3354] rounded-xl p-3 z-200 shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+              <p className="text-[0.72rem] font-semibold text-[#5c6385] mb-2 uppercase tracking-widest">
                 Notifications
               </p>
-              {[
-                {
-                  msg: "14 notifications sent today",
-                  time: "2 min ago",
-                  type: "info",
-                },
-                {
-                  msg: "CSV upload completed – CSE Sem 4",
-                  time: "1 hour ago",
-                  type: "success",
-                },
-                {
-                  msg: "3 tokens expired – action needed",
-                  time: "3 hours ago",
-                  type: "warning",
-                },
-              ].map((n, i) => (
+              {notes.map((n, i) => (
                 <div
                   key={i}
-                  style={{
-                    padding: "0.6rem 0.75rem",
-                    borderRadius: "8px",
-                    background: "var(--bg-hover)",
-                    marginBottom: "0.35rem",
-                    cursor: "pointer",
-                    transition: "background 0.15s",
-                  }}
+                  className="px-3 py-[0.6rem] rounded-lg bg-[#1e2132] mb-1 cursor-pointer hover:bg-[#252840] transition-colors"
                 >
-                  <p
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "var(--text-primary)",
-                      lineHeight: 1.4,
-                    }}
-                  >
+                  <p className="text-[0.8rem] text-[#f0f1fa] leading-snug">
                     {n.msg}
                   </p>
-                  <p
-                    style={{
-                      fontSize: "0.7rem",
-                      color: "var(--text-muted)",
-                      marginTop: "2px",
-                    }}
-                  >
+                  <p className="text-[0.7rem] text-[#5c6385] mt-[2px]">
                     {n.time}
                   </p>
                 </div>
@@ -158,45 +72,14 @@ export default function Topbar({ title, subtitle }) {
         </div>
 
         {/* Profile */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            background: "var(--bg-hover)",
-            border: "1px solid var(--border)",
-            borderRadius: "10px",
-            padding: "0.35rem 0.75rem 0.35rem 0.4rem",
-            cursor: "pointer",
-          }}
-        >
-          <div
-            style={{
-              width: "28px",
-              height: "28px",
-              borderRadius: "7px",
-              background:
-                "linear-gradient(135deg, var(--primary), var(--accent))",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "0.78rem",
-              fontWeight: 700,
-              color: "white",
-            }}
-          >
+        <div className="flex items-center gap-2 bg-[#1e2132] border border-[#252840] rounded-[10px] px-3 py-[0.35rem] cursor-pointer">
+          <div className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[0.78rem] font-bold text-white bg-linear-to-br from-[#6366f1] to-[#06b6d4]">
             A
           </div>
-          <span
-            style={{
-              fontSize: "0.82rem",
-              fontWeight: 600,
-              color: "var(--text-primary)",
-            }}
-          >
+          <span className="text-[0.82rem] font-semibold text-[#f0f1fa]">
             Admin
           </span>
-          <ChevronDown size={13} style={{ color: "var(--text-muted)" }} />
+          <ChevronDown size={13} className="text-[#5c6385]" />
         </div>
       </div>
     </header>

@@ -5,11 +5,8 @@ import {
   Users,
   Send,
   KeyRound,
-  BookOpen,
-  ChevronRight,
   GraduationCap,
-  Bell,
-  Settings,
+  ChevronRight,
   LogOut,
 } from "lucide-react";
 
@@ -23,52 +20,22 @@ const navItems = [
 
 export default function Sidebar() {
   const location = useLocation();
-
   return (
-    <aside className="sidebar">
+    <aside className="fixed left-0 top-0 h-screen w-[260px] bg-[#11131f] border-r border-[#252840] z-100 flex flex-col overflow-y-auto overflow-x-hidden">
       {/* Logo */}
-      <div
-        style={{
-          padding: "1.5rem 1.2rem 1rem",
-          borderBottom: "1px solid var(--border)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div
-            style={{
-              width: "38px",
-              height: "38px",
-              borderRadius: "10px",
-              background:
-                "linear-gradient(135deg, var(--primary), var(--accent))",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              boxShadow: "0 4px 15px var(--primary-glow)",
-            }}
-          >
-            <GraduationCap size={20} color="white" />
+      <div className="px-5 py-[1.4rem] border-b border-[#252840]">
+        <div className="flex items-center gap-3">
+          <div className="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center shrink-0 shadow-[0_4px_15px_rgba(99,102,241,0.25)] bg-linear-to-br from-[#6366f1] to-[#06b6d4]">
+            <GraduationCap size={20} className="text-white" />
           </div>
           <div>
             <p
-              style={{
-                fontSize: "0.9rem",
-                fontWeight: 700,
-                color: "var(--text-primary)",
-                lineHeight: 1.2,
-                fontFamily: "Outfit, sans-serif",
-              }}
+              className="text-[0.9rem] font-bold text-[#f0f1fa]"
+              style={{ fontFamily: "Outfit, sans-serif" }}
             >
               AcadAlert
             </p>
-            <p
-              style={{
-                fontSize: "0.65rem",
-                color: "var(--text-muted)",
-                letterSpacing: "0.05em",
-              }}
-            >
+            <p className="text-[0.65rem] text-[#5c6385] tracking-[0.05em]">
               Admin Panel
             </p>
           </div>
@@ -76,18 +43,8 @@ export default function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav style={{ flex: 1, paddingTop: "0.75rem" }}>
-        <p
-          style={{
-            fontSize: "0.65rem",
-            fontWeight: 600,
-            color: "var(--text-muted)",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            padding: "0.5rem 1.5rem",
-            marginBottom: "0.25rem",
-          }}
-        >
+      <nav className="flex-1 pt-3">
+        <p className="text-[0.65rem] font-semibold text-[#5c6385] tracking-widest uppercase px-6 mb-1">
           Main Menu
         </p>
         {navItems.map((item) => {
@@ -96,80 +53,43 @@ export default function Sidebar() {
             <NavLink
               key={item.to}
               to={item.to}
-              className={`nav-item ${active ? "active" : ""}`}
+              className={`flex items-center gap-3 px-5 py-[0.7rem] mx-3 my-[0.15rem] rounded-[10px] text-[0.875rem] font-medium transition-all duration-200 no-underline
+                ${
+                  active
+                    ? "bg-linear-to-r from-[rgba(99,102,241,0.2)] to-[rgba(6,182,212,0.1)] text-[#818cf8] border border-[rgba(99,102,241,0.2)]"
+                    : "text-[#9ba2c0] hover:bg-[#1e2132] hover:text-[#f0f1fa]"
+                }`}
             >
               <item.icon size={18} strokeWidth={1.8} />
-              <span style={{ flex: 1 }}>{item.label}</span>
-              {active && <ChevronRight size={14} style={{ opacity: 0.6 }} />}
+              <span className="flex-1">{item.label}</span>
+              {active && <ChevronRight size={14} className="opacity-60" />}
             </NavLink>
           );
         })}
       </nav>
 
       {/* Bottom */}
-      <div style={{ padding: "1rem", borderTop: "1px solid var(--border)" }}>
-        <div
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(99,102,241,0.1), rgba(6,182,212,0.05))",
-            border: "1px solid rgba(99,102,241,0.2)",
-            borderRadius: "12px",
-            padding: "0.85rem 1rem",
-            marginBottom: "0.75rem",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-            <div
-              style={{
-                width: "30px",
-                height: "30px",
-                borderRadius: "8px",
-                background:
-                  "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "0.8rem",
-                fontWeight: 700,
-                color: "white",
-                flexShrink: 0,
-              }}
-            >
+      <div className="p-4 border-t border-[#252840]">
+        <div className="bg-[rgba(99,102,241,0.08)] border border-[rgba(99,102,241,0.2)] rounded-xl p-[0.85rem] mb-3">
+          <div className="flex items-center gap-[0.6rem]">
+            <div className="w-[30px] h-[30px] rounded-lg bg-linear-to-br from-[#6366f1] to-[#4f46e5] flex items-center justify-center text-[0.8rem] font-bold text-white shrink-0">
               A
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p
-                style={{
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                  color: "var(--text-primary)",
-                  lineHeight: 1.2,
-                }}
-              >
+            <div className="flex-1 min-w-0">
+              <p className="text-[0.8rem] font-semibold text-[#f0f1fa] leading-tight">
                 Admin
               </p>
-              <p
-                style={{
-                  fontSize: "0.68rem",
-                  color: "var(--text-muted)",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
+              <p className="text-[0.68rem] text-[#5c6385] overflow-hidden text-ellipsis whitespace-nowrap">
                 admin@acadm.edu
               </p>
             </div>
           </div>
         </div>
-
         <button
-          className="btn-ghost"
-          style={{ width: "100%", justifyContent: "center" }}
           onClick={() => (window.location.href = "/")}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[0.8rem] text-[#9ba2c0] border border-[#252840] bg-transparent cursor-pointer transition-all hover:border-[#6366f1] hover:text-[#818cf8]"
         >
-          <LogOut size={14} />
-          Sign Out
+          <LogOut size={14} /> Sign Out
         </button>
       </div>
     </aside>

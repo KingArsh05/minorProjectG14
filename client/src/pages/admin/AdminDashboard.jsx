@@ -1,439 +1,383 @@
-import {
-  BarChart2,
-  Users,
-  KeyRound,
-  Send,
-  TrendingUp,
-  AlertTriangle,
-  BookOpen,
-  Activity,
-} from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  CartesianGrid,
-} from "recharts";
+import { Upload, CheckCircle, Database, Users, TrendingUp } from "lucide-react";
 import {
   dashboardStats,
-  monthlyNotifications,
+  notificationActivity,
   branchDistribution,
-  uploadHistory,
+  recentUploads,
 } from "../../data/stats";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+} from "recharts";
 
-const StatCard = ({ icon: Icon, label, value, sub, accent, border }) => (
-  <div
-    className={`card ${border}`}
-    style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}
-  >
-    <div
-      style={{
-        width: "44px",
-        height: "44px",
-        borderRadius: "12px",
-        background: accent,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-      }}
-    >
-      <Icon size={20} color="white" />
-    </div>
-    <div>
-      <p
-        style={{
-          fontSize: "0.75rem",
-          color: "var(--text-muted)",
-          marginBottom: "0.2rem",
-          fontWeight: 500,
-        }}
-      >
-        {label}
-      </p>
-      <p
-        style={{
-          fontSize: "1.6rem",
-          fontWeight: 800,
-          color: "var(--text-primary)",
-          lineHeight: 1,
-          fontFamily: "Outfit, sans-serif",
-        }}
-      >
-        {value}
-      </p>
-      {sub && (
-        <p
-          style={{
-            fontSize: "0.72rem",
-            color: "var(--text-muted)",
-            marginTop: "0.25rem",
-          }}
-        >
-          {sub}
-        </p>
-      )}
-    </div>
-  </div>
-);
+const statCards = [
+  {
+    label: "Total Students",
+    value: dashboardStats.totalStudents,
+    sub: "Across all branches",
+    icon: Users,
+    iconBg: "from-[#6366f1] to-[#4f46e5]",
+    bl: "border-l-[3px] border-l-[#6366f1]",
+  },
+  {
+    label: "Notifications Sent",
+    value: dashboardStats.notificationsSent,
+    sub: "This semester",
+    icon: Upload,
+    iconBg: "from-[#06b6d4] to-[#0891b2]",
+    bl: "border-l-[3px] border-l-[#06b6d4]",
+  },
+  {
+    label: "Detained Students",
+    value: dashboardStats.detainedStudents,
+    sub: "Needs attention",
+    icon: TrendingUp,
+    iconBg: "from-[#ef4444] to-[#b91c1c]",
+    bl: "border-l-[3px] border-l-[#ef4444]",
+  },
+  {
+    label: "Active Tokens",
+    value: dashboardStats.activeTokens,
+    sub: "Valid & not expired",
+    icon: CheckCircle,
+    iconBg: "from-[#10b981] to-[#059669]",
+    bl: "border-l-[3px] border-l-[#10b981]",
+  },
+  {
+    label: "Courses Offered",
+    value: dashboardStats.coursesOffered,
+    sub: "B.Tech, MCA, MBA…",
+    icon: Database,
+    iconBg: "from-[#f59e0b] to-[#d97706]",
+    bl: "border-l-[3px] border-l-[#f59e0b]",
+  },
+  {
+    label: "Average CGPA",
+    value: dashboardStats.avgCGPA,
+    sub: "Institution-wide",
+    icon: TrendingUp,
+    iconBg: "from-[#8b5cf6] to-[#7c3aed]",
+    bl: "border-l-[3px] border-l-[#8b5cf6]",
+  },
+];
 
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload?.length) {
-    return (
-      <div
-        className="glass"
-        style={{
-          padding: "0.6rem 0.9rem",
-          borderRadius: "10px",
-          fontSize: "0.8rem",
-        }}
-      >
-        <p style={{ color: "var(--text-muted)", marginBottom: "4px" }}>
-          {label}
+const TT = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-[#1e2132] border border-[#2e3354] rounded-lg px-3 py-2 text-xs shadow-lg">
+      <p className="text-[#5c6385] mb-1 font-medium">{label}</p>
+      {payload.map((p, i) => (
+        <p key={i} style={{ color: p.color }} className="font-bold">
+          {p.name}: {p.value}
         </p>
-        {payload.map((p) => (
-          <p key={p.name} style={{ color: p.color, fontWeight: 600 }}>
-            {p.name}: {p.value}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
+      ))}
+    </div>
+  );
 };
 
 export default function AdminDashboard() {
   return (
     <div className="fade-in">
-      {/* Welcome Banner */}
+      {/* ── Welcome Banner ─────────────────────────────────── */}
       <div
+        className="relative rounded-2xl overflow-hidden mb-8 p-7 border border-[rgba(99,102,241,0.3)]"
         style={{
           background:
-            "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(6,182,212,0.1))",
-          border: "1px solid rgba(99,102,241,0.2)",
-          borderRadius: "16px",
-          padding: "1.5rem 2rem",
-          marginBottom: "1.75rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "1rem",
+            "linear-gradient(135deg, #1a1040 0%, #0f1f3d 50%, #091820 100%)",
         }}
       >
-        <div>
-          <p
-            style={{
-              fontSize: "0.8rem",
-              color: "var(--primary-light)",
-              fontWeight: 600,
-              marginBottom: "0.2rem",
-            }}
-          >
-            Welcome back 👋
-          </p>
-          <h2
-            style={{
-              fontSize: "1.4rem",
-              fontWeight: 800,
-              fontFamily: "Outfit, sans-serif",
-              color: "var(--text-primary)",
-            }}
-          >
-            Academic Summary — Spring 2025
-          </h2>
-          <p
-            style={{
-              fontSize: "0.82rem",
-              color: "var(--text-secondary)",
-              marginTop: "0.25rem",
-            }}
-          >
-            {dashboardStats.notificationsSentToday} notifications dispatched
-            today · {dashboardStats.activeTokens} active tokens
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: "0.75rem" }}>
-          <button className="btn-secondary">View Reports</button>
-          <button className="btn-primary">
-            <Send size={14} />
-            Notify Parents
-          </button>
+        {/* Dot grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, #818cf8 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+        {/* Glow blobs */}
+        <div
+          className="absolute -top-10 -left-10 w-48 h-48 rounded-full blur-[60px] opacity-30"
+          style={{
+            background: "radial-gradient(circle, #6366f1, transparent)",
+          }}
+        />
+        <div
+          className="absolute -bottom-10 right-10 w-48 h-48 rounded-full blur-[60px] opacity-20"
+          style={{
+            background: "radial-gradient(circle, #06b6d4, transparent)",
+          }}
+        />
+
+        <div className="relative flex flex-wrap items-center justify-between gap-5">
+          <div>
+            <p className="text-[#818cf8] text-sm font-semibold mb-1">
+              Welcome back 👋
+            </p>
+            <h2
+              className="text-[1.7rem] font-extrabold text-white mb-1"
+              style={{ fontFamily: "Outfit, sans-serif" }}
+            >
+              Academic Summary — Spring 2025
+            </h2>
+            <p className="text-[#9ba2c0] text-[0.85rem]">
+              <span className="text-[#34d399] font-semibold">
+                {dashboardStats.notificationsSent}
+              </span>{" "}
+              notifications dispatched today &nbsp;·&nbsp;
+              <span className="text-[#22d3ee] font-semibold">
+                {dashboardStats.activeTokens}
+              </span>{" "}
+              active tokens
+            </p>
+          </div>
+          <div className="flex gap-3 relative">
+            <button className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-[#9ba2c0] text-sm font-medium border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] hover:text-white transition-all cursor-pointer">
+              View Reports
+            </button>
+            <button className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-white text-sm font-semibold bg-linear-to-br from-[#6366f1] to-[#4f46e5] shadow-[0_4px_20px_rgba(99,102,241,0.4)] hover:-translate-y-px transition-all cursor-pointer">
+              <Upload size={14} /> Notify Parents
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Stat Grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
-          gap: "1rem",
-          marginBottom: "1.75rem",
-        }}
-      >
-        <StatCard
-          icon={Users}
-          label="Total Students"
-          value={dashboardStats.totalStudents}
-          sub="Across all branches"
-          accent="linear-gradient(135deg,#6366f1,#4f46e5)"
-          border="stat-border-primary"
-        />
-        <StatCard
-          icon={Send}
-          label="Notifications Sent"
-          value={dashboardStats.totalNotificationsSent}
-          sub="This semester"
-          accent="linear-gradient(135deg,#06b6d4,#0891b2)"
-          border="stat-border-accent"
-        />
-        <StatCard
-          icon={AlertTriangle}
-          label="Detained Students"
-          value={dashboardStats.detainedStudents}
-          sub="Needs attention"
-          accent="linear-gradient(135deg,#ef4444,#b91c1c)"
-          border="stat-border-danger"
-        />
-        <StatCard
-          icon={KeyRound}
-          label="Active Tokens"
-          value={dashboardStats.activeTokens}
-          sub="Valid & not expired"
-          accent="linear-gradient(135deg,#10b981,#059669)"
-          border="stat-border-success"
-        />
-        <StatCard
-          icon={BookOpen}
-          label="Courses Offered"
-          value={dashboardStats.coursesOffered}
-          sub="B.Tech, MCA, MBA…"
-          accent="linear-gradient(135deg,#f59e0b,#d97706)"
-          border="stat-border-warning"
-        />
-        <StatCard
-          icon={TrendingUp}
-          label="Avg. CGPA"
-          value={dashboardStats.averageCGPA}
-          sub="Institution-wide"
-          accent="linear-gradient(135deg,#8b5cf6,#6d28d9)"
-          border="stat-border-primary"
-        />
-      </div>
-
-      {/* Charts Row */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 340px",
-          gap: "1.25rem",
-          marginBottom: "1.75rem",
-        }}
-      >
-        {/* Monthly notifications */}
-        <div className="card" style={{ padding: "1.5rem" }}>
+      {/* ── Stat Cards (3×2 grid) ───────────────────────────── */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        {statCards.map((s) => (
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "1.25rem",
-            }}
+            key={s.label}
+            className={`bg-[#13162b] border border-[#252840] rounded-2xl p-5 ${s.bl} transition-all hover:border-[#2e3354] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]`}
           >
-            <div>
-              <p
-                style={{
-                  fontSize: "0.72rem",
-                  color: "var(--text-muted)",
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  fontWeight: 600,
-                }}
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[0.7rem] text-[#5c6385] font-semibold uppercase tracking-widest mb-2">
+                  {s.label}
+                </p>
+                <p
+                  className="text-[2rem] font-extrabold text-[#f0f1fa] leading-none mb-1"
+                  style={{ fontFamily: "Outfit, sans-serif" }}
+                >
+                  {s.value}
+                </p>
+                <p className="text-[0.72rem] text-[#5c6385]">{s.sub}</p>
+              </div>
+              <div
+                className={`w-11 h-11 rounded-xl bg-linear-to-br ${s.iconBg} flex items-center justify-center shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.3)]`}
               >
+                <s.icon size={20} className="text-white" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Charts Row ──────────────────────────────────────── */}
+      <div className="grid grid-cols-[1fr_320px] gap-5 mb-8">
+        {/* Area Chart */}
+        <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-6 hover:border-[#2e3354] transition-colors">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <p className="text-[0.7rem] text-[#5c6385] font-semibold uppercase tracking-widest mb-1">
                 Notification Activity
               </p>
               <h3
-                style={{
-                  fontSize: "1rem",
-                  fontWeight: 700,
-                  color: "var(--text-primary)",
-                }}
+                className="text-[1.05rem] font-bold text-[#f0f1fa]"
+                style={{ fontFamily: "Outfit, sans-serif" }}
               >
                 Monthly Overview
               </h3>
             </div>
-            <span className="badge badge-info">
-              <Activity size={10} /> Live
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.7rem] font-semibold bg-[rgba(16,185,129,0.12)] text-[#34d399] border border-[rgba(16,185,129,0.25)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#34d399] animate-pulse" />{" "}
+              LIVE
             </span>
           </div>
-          <ResponsiveContainer width="100%" height={210}>
-            <AreaChart data={monthlyNotifications}>
+          <ResponsiveContainer width="100%" height={230}>
+            <AreaChart
+              data={notificationActivity}
+              margin={{ top: 4, right: 4, left: -16, bottom: 0 }}
+            >
               <defs>
-                <linearGradient id="colorSent" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                <linearGradient id="gSent" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.25} />
                   <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                 </linearGradient>
-                <linearGradient id="colorOpened" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
+                <linearGradient id="gOpened" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.2} />
                   <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#1e2132"
+                vertical={false}
+              />
               <XAxis
                 dataKey="month"
-                tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                tick={{ fill: "#5c6385", fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                tick={{ fill: "#5c6385", fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<TT />} />
               <Area
                 type="monotone"
                 dataKey="sent"
                 name="Sent"
                 stroke="#6366f1"
-                fill="url(#colorSent)"
-                strokeWidth={2}
-                dot={{ fill: "#6366f1", r: 3 }}
+                fill="url(#gSent)"
+                strokeWidth={2.5}
+                dot={false}
+                activeDot={{ r: 5, strokeWidth: 0 }}
               />
               <Area
                 type="monotone"
                 dataKey="opened"
                 name="Opened"
                 stroke="#06b6d4"
-                fill="url(#colorOpened)"
-                strokeWidth={2}
-                dot={{ fill: "#06b6d4", r: 3 }}
+                fill="url(#gOpened)"
+                strokeWidth={2.5}
+                dot={false}
+                activeDot={{ r: 5, strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Branch Distribution */}
-        <div className="card" style={{ padding: "1.5rem" }}>
-          <p
-            style={{
-              fontSize: "0.72rem",
-              color: "var(--text-muted)",
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              fontWeight: 600,
-              marginBottom: "0.3rem",
-            }}
-          >
+        {/* Bar Chart */}
+        <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-6 hover:border-[#2e3354] transition-colors">
+          <p className="text-[0.7rem] text-[#5c6385] font-semibold uppercase tracking-widest mb-1">
             Branch Distribution
           </p>
           <h3
-            style={{
-              fontSize: "1rem",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              marginBottom: "1.25rem",
-            }}
+            className="text-[1.05rem] font-bold text-[#f0f1fa] mb-5"
+            style={{ fontFamily: "Outfit, sans-serif" }}
           >
             Students per Branch
           </h3>
-          <ResponsiveContainer width="100%" height={210}>
-            <BarChart data={branchDistribution} layout="vertical" barSize={10}>
+          <ResponsiveContainer width="100%" height={230}>
+            <BarChart
+              data={branchDistribution}
+              layout="vertical"
+              barSize={8}
+              margin={{ left: -8, right: 8 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#1e2132"
+                horizontal={false}
+              />
               <XAxis
                 type="number"
-                tick={{ fill: "var(--text-muted)", fontSize: 10 }}
+                tick={{ fill: "#5c6385", fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
                 type="category"
-                dataKey="name"
-                tick={{ fill: "var(--text-secondary)", fontSize: 11 }}
+                dataKey="branch"
+                width={36}
+                tick={{ fill: "#9ba2c0", fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
-                width={38}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<TT />} />
               <Bar
                 dataKey="students"
                 name="Students"
-                fill="#6366f1"
-                radius={[0, 6, 6, 0]}
-                background={{
-                  fill: "var(--bg-elevated)",
-                  radius: [0, 6, 6, 0],
-                }}
-              />
+                fill="url(#barGrad)"
+                radius={[0, 4, 4, 0]}
+              >
+                <defs>
+                  <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#6366f1" />
+                    <stop offset="100%" stopColor="#06b6d4" />
+                  </linearGradient>
+                </defs>
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Recent Uploads */}
-      <div className="card">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "1.25rem",
-          }}
-        >
-          <div>
-            <p
-              style={{
-                fontSize: "0.72rem",
-                color: "var(--text-muted)",
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                fontWeight: 600,
-              }}
-            >
-              Data Ingestion
-            </p>
-            <h3
-              style={{
-                fontSize: "1rem",
-                fontWeight: 700,
-                color: "var(--text-primary)",
-              }}
-            >
-              Recent Uploads
-            </h3>
-          </div>
-          <button className="btn-ghost">View All</button>
+      {/* ── Recent Uploads Table ─────────────────────────────── */}
+      <div className="bg-[#13162b] border border-[#252840] rounded-2xl overflow-hidden hover:border-[#2e3354] transition-colors">
+        <div className="px-6 py-4 border-b border-[#252840] flex items-center justify-between">
+          <h3
+            className="text-[0.95rem] font-bold text-[#f0f1fa]"
+            style={{ fontFamily: "Outfit, sans-serif" }}
+          >
+            Recent Uploads
+          </h3>
+          <span className="text-[0.72rem] text-[#5c6385]">Last 5 imports</span>
         </div>
-        <div style={{ overflowX: "auto" }}>
-          <table className="data-table">
+        <div className="overflow-x-auto">
+          <table
+            className="w-full"
+            style={{ borderCollapse: "separate", borderSpacing: 0 }}
+          >
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Semester</th>
-                <th>Branch</th>
-                <th>Records</th>
-                <th>Uploaded By</th>
-                <th>Status</th>
+                {[
+                  "File",
+                  "Course",
+                  "Branch",
+                  "Semester",
+                  "Records",
+                  "Uploaded",
+                  "Status",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className="bg-[#161925] text-[#5c6385] text-[0.7rem] font-semibold tracking-widest uppercase px-5 py-3 text-left border-b border-[#252840] whitespace-nowrap"
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {uploadHistory.map((row, i) => (
-                <tr key={i}>
-                  <td>{row.date}</td>
-                  <td>{row.semester}</td>
-                  <td>{row.branch}</td>
-                  <td>
-                    <span className="badge badge-info">
-                      {row.records} students
+              {recentUploads.map((u, i) => (
+                <tr
+                  key={i}
+                  className="border-b border-[#252840] last:border-b-0 hover:bg-[#1e2132] transition-colors"
+                >
+                  <td className="px-5 py-3 font-mono text-[#818cf8] text-[0.78rem]">
+                    {u.fileName}
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className="inline-flex px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold bg-[rgba(99,102,241,0.15)] text-[#818cf8] border border-[rgba(99,102,241,0.25)]">
+                      {u.course}
                     </span>
                   </td>
-                  <td>{row.uploadedBy}</td>
-                  <td>
-                    <span className="badge badge-success">Processed</span>
+                  <td className="px-5 py-3 text-[0.82rem] text-[#9ba2c0]">
+                    {u.branch}
+                  </td>
+                  <td className="px-5 py-3 text-[0.82rem] text-[#9ba2c0]">
+                    Sem {u.semester}
+                  </td>
+                  <td className="px-5 py-3 font-bold text-[#22d3ee] text-[0.9rem]">
+                    {u.records}
+                  </td>
+                  <td className="px-5 py-3 text-[0.78rem] text-[#5c6385] whitespace-nowrap">
+                    {u.uploadedAt}
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className="inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold bg-[rgba(16,185,129,0.15)] text-[#34d399] border border-[rgba(16,185,129,0.25)]">
+                      ✓ Success
+                    </span>
                   </td>
                 </tr>
               ))}
