@@ -27,4 +27,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser(process.env.MY_SECRET_KEY));
 app.use(express.static("public"));
 
+import reportRouter from "./routes/reportRoute.js";
+app.use("/api", reportRouter);
+
 export { app };

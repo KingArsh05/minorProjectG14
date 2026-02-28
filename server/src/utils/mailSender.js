@@ -29,136 +29,51 @@ transporter.verify((err) => {
   }
 });
 
-export const mailSender = async (email, otp) => {
+export const mailSender = async (guardianEmail, studentName, dynamicUrl) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Athletix 2026" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Athletix 2026 - Verify Your Email",
+      from: `"University Admin" <${process.env.EMAIL_USER}>`,
+      to: guardianEmail,
+      subject: `Academic Update for ${studentName}`,
+      text: `Dear Guardian,\n\nA new semester report is available for ${studentName}.\nView it here: ${dynamicUrl}`,
       html: `
         <!doctype html>
         <html>
           <head>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Email Verification - Athletix 2026</title>
+            <title>Academic Update</title>
           </head>
-
-          <body style="margin: 0; padding: 0; background-color: #0f172a; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0f172a; padding: 40px 20px;">
+          <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 40px 20px;">
               <tr>
                 <td align="center">
-                  <!-- Main Card -->
-                  <table width="100%" style="max-width: 480px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
-                    
-                    <!-- Gradient Header -->
+                  <table width="100%" style="max-width: 480px; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                     <tr>
-                      <td style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%); padding: 32px 24px; text-align: center;">
-                        <div style="font-size: 48px; margin-bottom: 8px;">🏆</div>
-                        <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">Athletix 2026</h1>
-                        <p style="margin: 8px 0 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500;">65th Athletic Championship</p>
+                      <td style="background: #0ea5e9; padding: 24px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">Academic Update</h1>
                       </td>
                     </tr>
-
-                    <!-- Content -->
                     <tr>
                       <td style="padding: 32px 28px;">
-                        <!-- Greeting -->
-                        <p style="margin: 0 0 20px; color: #f1f5f9; font-size: 18px; font-weight: 600;">
-                          Hello, Champion! 👋
+                        <p style="margin: 0 0 16px; color: #334155; font-size: 16px;">Dear Guardian,</p>
+                        <p style="margin: 0 0 24px; color: #475569; font-size: 15px; line-height: 1.6;">
+                          A new semester report is available for <strong>${studentName}</strong>.
                         </p>
-                        
-                        <p style="margin: 0 0 24px; color: #94a3b8; font-size: 15px; line-height: 1.6;">
-                          You're one step away from joining <strong style="color: #38bdf8;">Athletix 2026</strong>. 
-                          Use the verification code below to complete your registration:
-                        </p>
-
-                        <!-- OTP Box -->
                         <table width="100%" cellpadding="0" cellspacing="0">
                           <tr>
-                            <td align="center" style="padding: 24px 0;">
-                              <table cellpadding="0" cellspacing="0">
-                                <tr>
-                                  ${otp
-                                    .split("")
-                                    .map(
-                                      (digit) => `
-                                    <td style="padding: 0 4px;">
-                                      <div style="
-                                        width: 48px;
-                                        height: 56px;
-                                        background: linear-gradient(135deg, #1e3a5f 0%, #0c4a6e 100%);
-                                        border: 2px solid #0ea5e9;
-                                        border-radius: 12px;
-                                        font-size: 28px;
-                                        font-weight: 700;
-                                        color: #38bdf8;
-                                        line-height: 52px;
-                                        text-align: center;
-                                        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
-                                      ">${digit}</div>
-                                    </td>
-                                  `
-                                    )
-                                    .join("")}
-                                </tr>
-                              </table>
+                            <td align="center" style="padding: 12px 0 24px;">
+                              <a href="${dynamicUrl}" style="display: inline-block; padding: 12px 24px; background-color: #0ea5e9; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">View Report</a>
                             </td>
                           </tr>
                         </table>
-
-                        <!-- Timer Badge -->
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                          <tr>
-                            <td align="center" style="padding-bottom: 24px;">
-                              <div style="
-                                display: inline-block;
-                                background: rgba(234, 179, 8, 0.15);
-                                border: 1px solid rgba(234, 179, 8, 0.3);
-                                border-radius: 20px;
-                                padding: 8px 16px;
-                                font-size: 13px;
-                                color: #fbbf24;
-                              ">
-                                ⏱️ Valid for <strong>5 minutes</strong>
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-
-                        <!-- Divider -->
-                        <hr style="border: none; border-top: 1px solid #334155; margin: 0 0 20px;" />
-
-                        <!-- Security Note -->
+                        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0 0 20px;" />
                         <p style="margin: 0; color: #64748b; font-size: 13px; line-height: 1.6; text-align: center">
-                          🔒 If you didn't request this code, please ignore this email. Your account is safe.
+                          If you have any questions, please contact the administration.
                         </p>
                       </td>
                     </tr>
-
-                    <!-- Footer -->
-                    <tr>
-                      <td style="background: #0c1222; padding: 20px 28px; border-top: 1px solid #1e293b;">
-                        <table width="100%">
-                          <tr>
-                            <td style="color: #64748b; font-size: 12px;">
-                              <strong style="color: #94a3b8;">Team Athletix</strong><br />
-                              GNDEC Athletic Committee
-                            </td>
-                            <td align="right" style="color: #475569; font-size: 11px;">
-                              © 2026 Athletix
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-
                   </table>
-
-                  <!-- Bottom Text -->
-                  <p style="margin: 24px 0 0; font-size: 11px; color: #475569; text-align: center;">
-                    This is an automated message. Please do not reply.
-                  </p>
                 </td>
               </tr>
             </table>
@@ -167,10 +82,10 @@ export const mailSender = async (email, otp) => {
       `,
     });
 
-    console.log("✅ OTP Mail Sent:", email, info.messageId);
-    return info;
+    console.log("✅ Report Link Mail Sent:", guardianEmail, info.messageId);
+    return true;
   } catch (err) {
-    console.error("❌ OTP Mail Failed:", email, err.message);
-    throw new Error("EMAIL_SEND_FAILED");
+    console.error("❌ Report Link Mail Failed:", guardianEmail, err.message);
+    return false;
   }
 };
