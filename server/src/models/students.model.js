@@ -46,7 +46,7 @@ const subjectPerformanceSchema = new mongoose.Schema({
   },
 });
 
-subjectPerformanceSchema.pre("validate", function (next) {
+subjectPerformanceSchema.pre("validate", function () {
   this.totalMarks = this.internalMarks + this.externalMarks;
 
   if (this.internalDetained || this.externalDetained) {
@@ -54,8 +54,6 @@ subjectPerformanceSchema.pre("validate", function (next) {
   } else {
     this.status = "Pass";
   }
-
-  next();
 });
 
 const semesterSchema = new mongoose.Schema({
@@ -161,18 +159,14 @@ const studentSchema = new mongoose.Schema(
 );
 
 /* 🔥 CGPA calculation ONLY after completion of the student degree */
-studentSchema.pre("save", function (next) {
-  const totalSemestersExpected = (this.graduationYear - this.admissionYear) * 2;
-
-  if (this.semesters.length === totalSemestersExpected) {
-    const totalSGPA = this.semesters.reduce((acc, sem) => acc + sem.sgpa, 0);
-
-    this.cgpa = totalSGPA / totalSemestersExpected;
-  } else {
-    this.cgpa = null;
+studentSchema.pre("save", function () {
+  if (!this.semesters || this.semesters.length === 0) {
+    this.cgpa = 0;
+    return;
   }
 
-  next();
+  const total = this.semesters.reduce((sum, s) => sum + s.sgpa, 0);
+  this.cgpa = +(total / this.semesters.length).toFixed(2);
 });
 
 export const Student = mongoose.model("Student", studentSchema);

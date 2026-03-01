@@ -70,7 +70,6 @@ const subjectSchema = new mongoose.Schema(
       min: [0, "Minimum total passing marks cannot be negative"],
     },
   },
-  { timestamps: true },
 );
 
 /*
@@ -80,24 +79,18 @@ const subjectSchema = new mongoose.Schema(
   - minTotalPassMarks <= maxTotalMarks
 */
 
-subjectSchema.pre("validate", function (next) {
+subjectSchema.pre("validate", function () {
   if (this.maxTotalMarks < this.maxInternalMarks + this.maxExternalMarks) {
-    return next(
-      new ApiError(400, "Invalid maximum marks configuration", [
-        "maxTotalMarks must be greater than or equal to (maxInternalMarks + maxExternalMarks)",
-      ]),
-    );
+    throw new ApiError(400, "Invalid maximum marks configuration", [
+      "maxTotalMarks must be greater than or equal to (maxInternalMarks + maxExternalMarks)",
+    ]);
   }
 
   if (this.minTotalPassMarks > this.maxTotalMarks) {
-    return next(
-      new ApiError(400, "Invalid passing criteria configuration", [
-        "minTotalPassMarks cannot exceed maxTotalMarks",
-      ]),
-    );
+    throw new ApiError(400, "Invalid passing criteria configuration", [
+      "minTotalPassMarks cannot exceed maxTotalMarks",
+    ]);
   }
-
-  next();
 });
 
 export const Subject = mongoose.model("Subject", subjectSchema);
