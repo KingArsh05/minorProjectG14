@@ -853,76 +853,45 @@ TC15 & Email Template Rendering & Guardian receives dispatched notification emai
 \end{longtable}
 
 %% ===========================
-%% CHAPTER 6: PERFORMANCE
+%% CHAPTER 6: CURRENT PROJECT STATUS
 %% ===========================
 \chapter{Performance of the Project Developed}
 
-\section{Development Progress}
+\section{Development Progress and Milestones}
 
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  ybar,
-  width=13cm, height=7cm,
-  bar width=0.6cm,
-  ylabel={Completion (\%)},
-  symbolic x coords={Auth, Upload, Students, Notify, Tokens, Guardian, DB, Deploy},
-  xtick=data,
-  x tick label style={rotate=25, anchor=east, font=\small},
-  ymin=0, ymax=110,
-  nodes near coords,
-  nodes near coords style={font=\tiny},
-  axis lines=left,
-  grid=major,
-  grid style={dashed, gray!30},
-  fill=primaryblue!60,
-  draw=primaryblue,
-]
-\addplot coordinates {
-  (Auth, 100) (Upload, 90) (Students, 95) (Notify, 85) (Tokens, 80) (Guardian, 90) (DB, 100) (Deploy, 75)
-};
-\end{axis}
-\end{tikzpicture}
-\caption{Module-wise Development Progress}
-\end{figure}
+As of the midterm evaluation, the core foundational architecture of the Academic Status Transparency Notification System (ASTNS) has been established. Our primary focus thus far has been to secure the backend infrastructure and prepare the frontend layout necessary for data ingestion and user interaction.
 
-\section{Key Metrics}
+The following modules have been substantially developed and are currently undergoing internal testing:
 
-\begin{longtable}{|p{5.5cm}|p{7.5cm}|}
-\hline
-\textbf{Metric} & \textbf{Value}\\
-\hline
-Total Students in Test DB & 248\\
-\hline
-Notifications Dispatched & 192\\
-\hline
-Detained Students Tracked & 18\\
-\hline
-Active Access Tokens & 34\\
-\hline
-Courses Supported & 9 (B.Tech, M.Tech, MBA, MCA, BCA, B.Arch, B.Voc., B.Com, BBA)\\
-\hline
-Average CGPA (Institution) & 7.84\\
-\hline
-Frontend Components & 12+\\
-\hline
-Backend API Endpoints & RESTful (POST /api/notify-guardian)\\
-\hline
-Email Delivery Success Rate & $>$95\%\\
-\hline
-Development Period & Sept 2025 -- March 2026\\
-\hline
-\end{longtable}
+\begin{itemize}
+  \item \textbf{Authentication Module}: Admin login interface with basic route protection is functional.
+  \item \textbf{Database Schema}: Mongoose models for Students, Semesters, Subjects, and Performance records have been designed and deployed to MongoDB Atlas.
+  \item \textbf{Frontend Layouts}: The overarching React application architecture, including the Admin Dashboard wireframes and Guardian Portal layout structure, is integrated using Tailwind CSS.
+  \item \textbf{Data Ingestion Foundation}: The backend API to parse and handle form data is set up, though bulk CSV/Excel parsing logic is still being refined.
+\end{itemize}
 
-\section{Challenges Faced}
+\section{Remaining Requirements for Finalization}
+
+To transition the project from its current midterm state to a fully finalized application, several critical features and integrations must be completed:
 
 \begin{enumerate}
-  \item \textbf{Safari Timer Bug}: JavaScript timers pause when Safari opens a new tab (e.g., WhatsApp link). Resolved by using \texttt{visibilitychange} event listener instead of \texttt{setTimeout}.
-  \item \textbf{CORS in Production}: Vercel serverless functions required explicit CORS origin configuration with credentials enabled.
-  \item \textbf{MongoDB Atlas Free Tier}: Limited to 10 concurrent connections; resolved by implementing connection pooling with \texttt{maxPoolSize: 10}.
-  \item \textbf{Email Deliverability}: Initial emails landing in spam; resolved by using Gmail App Passwords and proper ``From'' headers.
+  \item \textbf{Robust Bulk Data Processing}: Finalizing the logic to accurately parse complex, multi-semester Excel/CSV sheets, map subject codes to student profiles, and calculate SGPA/CGPA dynamically without data loss.
+  \item \textbf{Automated Email Notification Pipeline}: Integrating Nodemailer with an SMTP service (such as Gmail or SendGrid) to dispatch batch emails securely to guardians without triggering spam filters.
+  \item \textbf{Secure Token Generation System}: Developing the cryptographic token generation algorithm to create unique, time-sensitive access links for guardians, ensuring that these tokens expire after a set duration and can be manually revoked by the admin.
+  \item \textbf{Data Visualization Integration}: Connecting backend student performance data to Recharts to dynamically render interactive line graphs representing SGPA trends on both the admin and guardian portals.
+  \item \textbf{Comprehensive Role-Based Access Control}: Enforcing strict server-side validation to ensure that guardians utilizing access links cannot manipulate URL parameters to view other students' sensitive academic data.
+  \item \textbf{Production Deployment}: Configuring deployment pipelines for hosting the frontend Single Page Application and the backend serverless functions on Vercel, encompassing environment variable management and CORS policy enforcement.
 \end{enumerate}
+
+\section{Anticipated Ongoing Challenges}
+
+During the subsequent development phases, We anticipate the following technical challenges that will require mitigation:
+
+\begin{itemize}
+  \item \textbf{Performance at Scale}: Ensuring the database querying and frontend rendering remain performant when simultaneously loading hundreds of detailed student profiles.
+  \item \textbf{Email Delivery Reliability}: Guaranteeing that automated midterm and end-semester notifications bypass strict parental spam filters and bounce-backs are handled gracefully.
+  \item \textbf{Asynchronous Error Handling}: Providing clear, actionable error messages to the administrator if a batch upload fails partially (e.g., if 5 out of 100 rows in a CSV are corrupted) rather than failing the entire process silently.
+\end{itemize}
 
 %% ===========================
 %% CHAPTER 7: OUTPUT SCREENS
