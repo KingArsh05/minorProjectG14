@@ -142,13 +142,9 @@ In many educational institutions, academic performance data remains confined wit
 \section{Objectives}
 
 \begin{enumerate}
-  \item To design and develop a web-based Academic Status Transparency Notification System.
-  \item To enable administrators to upload student academic data in bulk via CSV/Excel formats.
-  \item To automatically notify guardians via email with secure, time-limited access links.
-  \item To provide a Guardian Dashboard for viewing detailed semester reports with visual analytics (charts, tables).
+  \item To design and develop a web-based Academic Status Transparency Notification System that enables administrators to upload student academic data in bulk via CSV/Excel formats.
+  \item To automatically notify guardians via email with secure, time-limited access links, providing a Guardian Dashboard for viewing detailed semester reports with visual analytics.
   \item To implement a Token Management system ensuring secure, traceable access to student records.
-  \item To develop a responsive, dark-themed UI that works seamlessly across devices.
-  \item To deploy the system on a cloud platform (Vercel) for production accessibility.
 \end{enumerate}
 
 \section{Scope of the Project}
@@ -797,61 +793,69 @@ The Communication Diagram (Figure 4.11) models the dynamic behavior and message 
 %% ===========================
 \chapter{Testing Module}
 
-\section{Testing Approach}
+\section{Proposed Testing Approach}
 
-The system is tested using a combination of manual functional testing, integration testing, and cross-browser validation. The testing strategy covers:
+As the system is currently under development, this section outlines the proposed testing techniques that will be employed to ensure the robustness, reliability, and functionality of the Academic Status Transparency Notification System (ASTNS). The system will undergo testing using a combination of manual functional testing, automated unit testing, API integration testing, and cross-browser validation.
+
+The proposed testing strategy will cover:
 
 \begin{enumerate}
-  \item \textbf{Unit-Level Validation}: Mongoose schema validators (marks ranges, course-branch mapping, CGPA calculation).
-  \item \textbf{API Testing}: REST endpoint testing using Postman/Thunder Client.
-  \item \textbf{UI/UX Testing}: Manual browser testing on Chrome, Safari, and Arc.
-  \item \textbf{Cross-Device Testing}: Responsive layout verification on desktop and mobile viewports.
-  \item \textbf{Email Delivery Testing}: Verifying Gmail SMTP delivery and HTML template rendering.
+  \item \textbf{Unit-Level Validation}: Validating individual components such as Mongoose schema validators (e.g., marks ranges, course-branch mapping, CGPA calculation constraints).
+  \item \textbf{API Integration Testing}: Testing the REST API endpoints using tools like Postman or Thunder Client to ensure correct request handling and response payloads.
+  \item \textbf{UI/UX Functional Testing}: Performing manual browser testing on Google Chrome, Apple Safari, and Arc for cross-browser parity and user experience.
+  \item \textbf{Cross-Device Verification}: Verifying the responsive layout on desktop, tablet, and mobile viewports.
+  \item \textbf{Email Delivery Testing}: Simulating notification dispatch to verify Gmail SMTP delivery capabilities, HTML template rendering, and dynamic link mapping.
 \end{enumerate}
 
-\section{Test Cases}
+\section{Proposed Test Cases}
 
-\begin{longtable}{|p{1.2cm}|p{4.5cm}|p{4.0cm}|p{2.5cm}|p{1.5cm}|}
+The following is a curated list of relevant test cases on which the system will be systematically tested during the verification phase.
+
+\begin{longtable}{|p{1.5cm}|p{4.5cm}|p{4.5cm}|p{3.5cm}|}
 \hline
-\textbf{ID} & \textbf{Test Case} & \textbf{Steps} & \textbf{Expected} & \textbf{Result}\\
+\textbf{ID} & \textbf{Test Case} & \textbf{Steps} & \textbf{Expected Outcome}\\
 \hline
 \endfirsthead
-TC1 & Admin Login -- Valid & Enter admin@acadm.edu / admin123, click Submit & Redirect to Dashboard & \textcolor{successgreen}{Pass}\\
 \hline
-TC2 & Admin Login -- Invalid & Enter wrong credentials, click Submit & Error message displayed & \textcolor{successgreen}{Pass}\\
+\textbf{ID} & \textbf{Test Case} & \textbf{Steps} & \textbf{Expected Outcome}\\
 \hline
-TC3 & Login Form Validation & Submit empty form & Required field errors shown & \textcolor{successgreen}{Pass}\\
+\endhead
+TC1 & Admin Login -- Valid & Enter assigned admin credentials, click Submit & Successful redirection to Admin Dashboard\\
 \hline
-TC4 & Email Regex Validation & Enter non-Gmail address & Pattern error shown & \textcolor{successgreen}{Pass}\\
+TC2 & Admin Login -- Invalid & Enter wrong credentials, click Submit & Appropriate error message displayed\\
 \hline
-TC5 & CSV Upload & Upload valid CSV file & Records parsed and previewed & \textcolor{successgreen}{Pass}\\
+TC3 & Login Form Validation & Attempt to submit an empty or incomplete login form & Required field validation errors shown\\
 \hline
-TC6 & Invalid File Upload & Upload .txt file & Rejection with error & \textcolor{successgreen}{Pass}\\
+TC4 & Email Regex Validation & Enter malformed or non-Gmail email address & Appropriate pattern constraint error shown\\
 \hline
-TC7 & Student Search & Type name in search bar & Filtered list displayed & \textcolor{successgreen}{Pass}\\
+TC5 & Bulk CSV Upload & Upload a correctly formatted CSV/Excel data file & Academic records parsed and previewed correctly\\
 \hline
-TC8 & View Student Detail & Click student card & Detail page with charts loads & \textcolor{successgreen}{Pass}\\
+TC6 & Invalid File Upload & Attempt to upload unsupported file type (e.g., .txt) & File rejection with corresponding error alert\\
 \hline
-TC9 & Send Notification & Select students, click Send & API call, success message & \textcolor{successgreen}{Pass}\\
+TC7 & Student Search Filtering & Input part of a student name in the search bar & List filtered down to match search string dynamically\\
 \hline
-TC10 & Guardian Token Access & Open link with valid token & Student report displayed & \textcolor{successgreen}{Pass}\\
+TC8 & View Student Profile & Click on a specific student record card & Detailed profile page with accurate academic charts loads\\
 \hline
-TC11 & Invalid Token Access & Open link with invalid token & Access Denied page shown & \textcolor{successgreen}{Pass}\\
+TC9 & Batch Notification Dispatch & Select multiple students and trigger Send Notification & Successful API execution with UI confirmation message\\
 \hline
-TC12 & Token Revocation & Click Revoke on active token & Token status changes to Revoked & \textcolor{successgreen}{Pass}\\
+TC10 & Guardian Token Validation & Access Guardian Portal via uniquely generated token link & Student semester report accurately displayed for authorized token\\
 \hline
-TC13 & SGPA Chart Rendering & View student detail page & Line chart with all semesters renders & \textcolor{successgreen}{Pass}\\
+TC11 & Invalid Token Handling & Attempt accessing portal with expired or altered token & Access Denied interface shown instead of reports\\
 \hline
-TC14 & Responsive Layout & Resize browser to mobile width & Layout adapts, sidebar collapses & \textcolor{successgreen}{Pass}\\
+TC12 & Token Revocation Process & Admin clicks Revoke for an active token in dashboard & Token status instantly updates to Revoked across system\\
 \hline
-TC15 & Email HTML Rendering & Receive notification email & Branded template with button renders & \textcolor{successgreen}{Pass}\\
+TC13 & SGPA Chart Rendering & Open student detail page containing multiple semesters & Multi-node line chart dynamically renders correct SGPA trend\\
+\hline
+TC14 & Responsive Layout Check & Resize browser window to mobile width ($< 768$px) & Layout reflows correctly, sidebar collapses into hamburger menu\\
+\hline
+TC15 & Email Template Rendering & Guardian receives dispatched notification email & Branded HTML email loads properly with clickable CTA button\\
 \hline
 \end{longtable}
 
 %% ===========================
 %% CHAPTER 6: PERFORMANCE
 %% ===========================
-\chapter{Performance of the Project Developed (So Far)}
+\chapter{Performance of the Project Developed}
 
 \section{Development Progress}
 
