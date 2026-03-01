@@ -3,30 +3,49 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { ShieldCheck, Mail, Lock } from "lucide-react";
 import InputField from "./InputField";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
+  const { login } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
+    clearErrors,
   } = useForm({
     defaultValues: {
-      email: "admin@gmail.com",
-      password: "admin123",
+      email: "",
+      password: "",
     },
   });
 
-  const onSubmit = (data) => {
-    setServerError("");
-    if (data.email === "admin@gmail.com" && data.password === "admin123") {
+  const onSubmit = async (data) => {
+    try {
       setLoading(true);
-      setTimeout(() => navigate("/admin/dashboard"), 1200);
-    } else {
-      setServerError("Invalid credentials. Try admin@acadm.edu / admin123");
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      });
+      if (response.success) {
+        navigate("/admin/dashboard");
+      }
+    } catch (error) {
+      console.error("Login Error:", error);
+      const message = error.response?.data?.message || "Invalid credentials";
+      setError("email", {
+        type: "manual",
+        message,
+      });
+      setError("password", {
+        type: "manual",
+        message,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,17 +54,8 @@ export default function LoginForm() {
       {/* Section heading */}
       <div className="flex items-center gap-2 mb-5 justify-center align-center">
         <ShieldCheck size={15} className="text-[#818cf8]" />
-        <p className="text-center font-bold text-[#f0f1fa]">
-          Admin Login
-        </p>
+        <p className="text-center font-bold text-[#f0f1fa]">Admin Login</p>
       </div>
-
-      {/* Server-level error */}
-      {serverError && (
-        <div className="bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] text-[#f87171] text-[0.82rem] rounded-xl px-4 py-3 mb-4 leading-snug">
-          {serverError}
-        </div>
-      )}
 
       {/* Email field */}
       <InputField
@@ -61,6 +71,7 @@ export default function LoginForm() {
             value: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
             message: "Enter a valid email address",
           },
+          onChange: () => clearErrors("password"),
         }}
         errors={errors}
       />
@@ -73,7 +84,10 @@ export default function LoginForm() {
         placeholder="Enter password"
         icon={<Lock size={15} />}
         register={register}
-        rules={{ required: "Password is required" }}
+        rules={{
+          required: "Password is required",
+          onChange: () => clearErrors("password"),
+        }}
         errors={errors}
       />
 

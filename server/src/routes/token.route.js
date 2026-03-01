@@ -4,7 +4,7 @@ import {
   getAllTokens,
   revokeToken,
   validateToken,
-} from "../controllers/tokenController.js";
+} from "../controllers/token.controller.js";
 
 const router = express.Router();
 

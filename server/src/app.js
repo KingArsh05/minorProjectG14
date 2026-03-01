@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { ApiError } from "./utils/ApiError.js";
 
 const app = express();
 
@@ -29,29 +28,18 @@ app.use(cookieParser(process.env.MY_SECRET_KEY));
 app.use(express.static("public"));
 
 // ─── Routes ─────────────────────────────────────────────────────
-import reportRouter from "./routes/reportRoute.js";
-import studentRouter from "./routes/studentRoute.js";
-import tokenRouter from "./routes/tokenRoute.js";
+import authRouter from "./routes/auth.route.js";
+import reportRouter from "./routes/report.route.js";
+import studentRouter from "./routes/student.route.js";
+import tokenRouter from "./routes/token.route.js";
+import { errorHandler } from "./middlewares/error.middleware.js";
+import { checkAuth } from "./middlewares/auth.middleware.js";
 
-app.use("/api", reportRouter);
-app.use("/api/students", studentRouter);
-app.use("/api/tokens", tokenRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/students", checkAuth, studentRouter);
+app.use("/api", checkAuth, reportRouter);
+app.use("/api/tokens", checkAuth, tokenRouter);
 
-// ─── Global Error Handler ───────────────────────────────────────
-app.use((err, _req, res, _next) => {
-  if (err instanceof ApiError) {
-    return res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-      errors: err.errors,
-    });
-  }
-
-  console.error("Unhandled error:", err);
-  return res.status(500).json({
-    success: false,
-    message: "Internal Server Error",
-  });
-});
+app.use(errorHandler);
 
 export { app };

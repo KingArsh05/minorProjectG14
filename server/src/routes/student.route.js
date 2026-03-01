@@ -3,7 +3,7 @@ import {
   getAllStudents,
   getStudentById,
   getDashboardStats,
-} from "../controllers/studentController.js";
+} from "../controllers/student.controller.js";
 
 const router = express.Router();
 

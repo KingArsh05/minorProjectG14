@@ -1,5 +1,5 @@
 import express from 'express';
-import { notifyGuardian } from '../controllers/reportController.js';
+import { notifyGuardian } from '../controllers/report.controller.js';
 
 const router = express.Router();
 
