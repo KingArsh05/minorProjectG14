@@ -681,8 +681,8 @@ minTotalPassMarks & Number & $\leq$ maxTotalMarks\\
   arrow/.style={-{Stealth[length=2.5mm]}, draw=primaryblue!50}
 ]
   % Packages
-  \node[pkg, minimum width=6cm, minimum height=4.5cm, label={[font=\small\bfseries, text=primaryblue]above:Admin Pages}] (adminpkg) at (-3.5, 0) {};
-  \node[pkg, minimum width=4cm, minimum height=2.5cm, label={[font=\small\bfseries, text=accentcyan]above:Guardian Pages}] (guardpkg) at (4, 0) {};
+  \node[pkg, minimum width=6cm, minimum height=5cm, label={[font=\small\bfseries, text=primaryblue]above:Admin Pages}] (adminpkg) at (-3.5, -0.3) {};
+  \node[pkg, minimum width=4cm, minimum height=3.5cm, label={[font=\small\bfseries, text=accentcyan]above:Guardian Pages}] (guardpkg) at (4, -0.3) {};
 
   % Admin components
   \node[comp] (adash) at (-3.5, 1.2) {AdminDashboard};
@@ -694,19 +694,19 @@ minTotalPassMarks & Number & $\leq$ maxTotalMarks\\
   \node[comp, fill=accentcyan!10, draw=accentcyan] (gdash) at (4, 0.2) {GuardianDashboard};
   \node[comp, fill=accentcyan!10, draw=accentcyan] (gaccess) at (4, -0.8) {AccessDenied};
 
-  % Shared
-  \node[comp, below=2.5cm of adminpkg, fill=successgreen!10, draw=successgreen] (sidebar) {Sidebar (components/Sidebar.jsx)};
-  \node[comp, right=0.5cm of sidebar, fill=successgreen!10, draw=successgreen] (topbar) {Topbar (components/Topbar.jsx)};
-  \node[comp, right=0.5cm of topbar, fill=successgreen!10, draw=successgreen] (input) {InputField};
-  \node[comp, right=0.5cm of input, fill=successgreen!10, draw=successgreen] (loginform) {LoginForm};
-
   % Layout
-  \node[comp, below=3.5cm of adminpkg, fill=warningamber!10, draw=warningamber] (layout) {AdminLayout (layouts/AdminLayout.jsx)};
-  \node[comp, right=2cm of layout, fill=warningamber!10, draw=warningamber] (router) {App (Router)};
+  \node[comp, fill=warningamber!10, draw=warningamber] (router) at (0.25, -4.5) {App (Router)};
+  \node[comp, below=0.6cm of router, fill=warningamber!10, draw=warningamber] (layout) {AdminLayout (layouts/AdminLayout.jsx)};
 
+  % Shared
+  \node[comp, below=0.8cm of layout, xshift=-2.8cm, fill=successgreen!10, draw=successgreen] (sidebar) {Sidebar (components/Sidebar.jsx)};
+  \node[comp, below=0.8cm of layout, xshift=2.8cm, fill=successgreen!10, draw=successgreen] (topbar) {Topbar (components/Topbar.jsx)};
+  \node[comp, below=0.6cm of sidebar, fill=successgreen!10, draw=successgreen] (input) {InputField};
+  \node[comp, below=0.6cm of topbar, fill=successgreen!10, draw=successgreen] (loginform) {LoginForm};
+
+  \draw[arrow] (router) -- (layout);
   \draw[arrow] (layout) -- (sidebar);
   \draw[arrow] (layout) -- (topbar);
-  \draw[arrow] (router) -- (layout);
 \end{tikzpicture}
 \caption{Frontend Component Architecture}
 \end{figure}
@@ -777,10 +777,10 @@ The State Diagram (Figure 4.10) illustrates the lifecycle and various states of 
   \node[actor] (db) at (8, -3) {4: Database};
 
   \draw[arrow] (admin) -- node[above, font=\tiny] {1.1 Select File} (ui);
-  \draw[arrow] (ui) -- node[above, font=\tiny] {1.2 Send CSV} (backend);
-  \draw[arrow] (backend) -- node[right, font=\tiny] {1.3 Insert Records} (db);
-  \draw[arrow] (db.west) -| node[above left, font=\tiny, near start] {1.4 Acknowledge} (backend.south west);
-  \draw[arrow] (backend.170) -- node[below, font=\tiny] {1.5 Success Res} (ui.10);
+  \draw[arrow] (ui.15) -- node[above, font=\tiny] {1.2 Send CSV} (backend.165);
+  \draw[arrow] (backend.270) -- node[right, font=\tiny] {1.3 Insert Records} (db.90);
+  \draw[arrow] (db.105) -| node[above left, font=\tiny] {1.4 Acknowledge} (backend.215);
+  \draw[arrow] (backend.195) -- node[below, font=\tiny] {1.5 Success Res} (ui.345);
   \draw[arrow] (ui.190) -- node[below, font=\tiny] {1.6 Display Status} (admin.350);
 \end{tikzpicture}
 \caption{Communication Diagram -- Bulk Data Upload}
