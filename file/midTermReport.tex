@@ -50,7 +50,7 @@
 % Header/Footer
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\textcolor{textmuted}{AcadAlert -- Midterm Report}}
+\fancyhead[L]{\small\textcolor{textmuted}{Academic Status Transparency Notification System -- Midterm Report}}
 \fancyhead[R]{\small\textcolor{textmuted}{Group G14}}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -66,7 +66,7 @@
 
 {\Large \textbf{A Midterm Progress Report}}\\[0.5cm]
 {\Large \textbf{on}}\\[0.5cm]
-{\fontsize{24}{28}\selectfont \textbf{AcadAlert -- Academic Status}}\\[0.15cm]
+{\fontsize{24}{28}\selectfont \textbf{Academic Status}}\\[0.15cm]
 {\fontsize{24}{28}\selectfont \textbf{Transparency Notification System}}\\[0.8cm]
 
 {\fontsize{12}{14}\selectfont \textbf{Submitted in partial fulfillment of the requirements for the award of the degree of}}\\[1cm]
@@ -77,18 +77,37 @@
 SUBMITTED BY\\[0.8cm]
 
 \begin{center}
-{\fontsize{14}{16}\selectfont KARAN SINGH}\\[0.1cm]
-{\fontsize{14}{16}\selectfont 2203482}\\[0.4cm]
-{\fontsize{14}{16}\selectfont ARSHDEEP SINGH}\\[0.1cm]
-{\fontsize{14}{16}\selectfont 2203440}\\[0.4cm]
+\begin{minipage}[t]{0.3\textwidth}
+\centering
+{\fontsize{13}{15}\selectfont ARSHDEEP ANAND}\\[0.1cm]
+{\fontsize{11}{13}\selectfont URN: 2302481}\\[0.1cm]
+{\fontsize{11}{13}\selectfont CRN: 2315025}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\textwidth}
+\centering
+{\fontsize{13}{15}\selectfont NISHTHA JAIN}\\[0.1cm]
+{\fontsize{11}{13}\selectfont URN: 2302627}\\[0.1cm]
+{\fontsize{11}{13}\selectfont CRN: 2315172}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\textwidth}
+\centering
+{\fontsize{13}{15}\selectfont BALKRISHAN SINGH}\\[0.1cm]
+{\fontsize{11}{13}\selectfont URN: 2302492}\\[0.1cm]
+{\fontsize{11}{13}\selectfont CRN: 2315036}
+\end{minipage}
+\vspace{0.8cm}
+
 {\fontsize{14}{16}\selectfont UNDER THE GUIDANCE OF}\\[0.15cm]
-{\fontsize{14}{16}\selectfont Guide Name}\\[0.15cm]
-{\fontsize{14}{16}\selectfont (March -- 2026)}\\[0.8cm]
+{\fontsize{14}{16}\selectfont Dr. Kapil Sharma}\\[0.15cm]
 \end{center}
 
-% \includegraphics[width=0.30\textwidth]{assets/gndec_logo.png}  % <-- Add gndec_logo.png to assets/ folder
-\vspace{1.5cm}
-\vspace{0.6cm}
+\vspace{0.8cm}
+\begin{center}
+\includegraphics[height=3.5cm]{assets/image.png}
+\end{center}
+\vspace{0.8cm}
 
 {\bfseries \Large Department of Computer Science and Engineering}\\[0.3cm]
 {\fontsize{16}{18}\selectfont \textbf{GURU NANAK DEV ENGINEERING COLLEGE,}}\\[0.3cm]
@@ -110,9 +129,9 @@ SUBMITTED BY\\[0.8cm]
 
 \section{Project Overview}
 
-\textbf{AcadAlert} is a full-stack web application designed to bridge the communication gap between academic institutions and parents/guardians of students. The system provides a transparent mechanism for notifying guardians about a student's academic performance, including semester-wise marks, SGPA/CGPA tracking, and detention status, thereby fostering timely parental intervention.
+The \textbf{Academic Status Transparency Notification System} (hereafter referred to as \textbf{ASTNS}) is a full-stack web application designed to bridge the communication gap between academic institutions and parents/guardians of students. The system provides a transparent mechanism for notifying guardians about a student's academic performance, including semester-wise marks, SGPA/CGPA tracking, and detention status, thereby fostering timely parental intervention.
 
-In many educational institutions, academic performance data remains confined within the campus boundaries. Guardians often learn about their ward's academic difficulties only at the end of the academic year. AcadAlert addresses this by providing:
+In many educational institutions, academic performance data remains confined within the campus boundaries. Guardians often learn about their ward's academic difficulties only at the end of the academic year. ASTNS addresses this by providing:
 
 \begin{itemize}
   \item \textbf{Real-time academic transparency} -- Guardians receive automated email notifications with secure, tokenised links to view their ward's detailed semester report.
@@ -124,7 +143,7 @@ In many educational institutions, academic performance data remains confined wit
 
 \begin{enumerate}
   \item To design and develop a web-based Academic Status Transparency Notification System.
-  \item To enable administrators to upload student academic data in bulk via CSV/Excel files.
+  \item To enable administrators to upload student academic data in bulk via CSV/Excel formats.
   \item To automatically notify guardians via email with secure, time-limited access links.
   \item To provide a Guardian Dashboard for viewing detailed semester reports with visual analytics (charts, tables).
   \item To implement a Token Management system ensuring secure, traceable access to student records.
@@ -230,19 +249,20 @@ In the current academic ecosystem, parents and guardians of college students oft
   \item Subject-wise performance breakdowns.
 \end{itemize}
 
-This communication gap delays corrective intervention, potentially resulting in academic backlogs. AcadAlert solves this by automating the notification pipeline.
+This communication gap delays corrective intervention, potentially resulting in academic backlogs. ASTNS solves this by automating the notification pipeline.
 
 \section{Module Definitions}
 
 The system is divided into the following functional modules:
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   module/.style={rectangle, draw=primaryblue, fill=primaryblue!10, rounded corners=8pt, text width=3.8cm, minimum height=1.2cm, align=center, font=\small\bfseries},
   arrow/.style={-{Stealth[length=3mm]}, thick, draw=primaryblue!70}
 ]
   % Central node
-  \node[module, fill=primaryblue!25, text width=4.2cm, minimum height=1.5cm] (core) {AcadAlert\\Core System};
+  \node[module, fill=primaryblue!25, text width=4.2cm, minimum height=1.5cm] (core) {ASTNS\\Core System};
 
   % Modules
   \node[module, above left=1.8cm and 1.5cm of core] (auth) {Authentication\\Module};
@@ -260,8 +280,8 @@ The system is divided into the following functional modules:
   \draw[arrow] (core) -- (token);
   \draw[arrow] (core) -- (guardian);
 \end{tikzpicture}
-\captionof{figure}{System Module Architecture}
-\end{center}
+\caption{System Module Architecture}
+\end{figure}
 
 \subsection{Module 1: Authentication Module}
 \begin{itemize}
@@ -320,7 +340,8 @@ The system is divided into the following functional modules:
 
 \section{System Architecture -- Block Diagram}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   block/.style={rectangle, draw=primaryblue, fill=primaryblue!8, rounded corners=6pt, minimum width=3.5cm, minimum height=1cm, align=center, font=\small},
   bigblock/.style={rectangle, draw=accentcyan, fill=accentcyan!8, rounded corners=8pt, minimum width=4cm, minimum height=1.2cm, align=center, font=\small\bfseries},
@@ -356,37 +377,43 @@ The system is divided into the following functional modules:
   \draw[arrow] (backend) -- node[above, font=\scriptsize]  {SMTP} (email);
   \draw[arrow] (vercel) -- node[above, font=\scriptsize]  {Hosts} (backend);
 \end{tikzpicture}
-\captionof{figure}{System Architecture Block Diagram}
-\end{center}
+\caption{System Architecture Block Diagram}
+\end{figure}
+
+The System Architecture Block Diagram (Figure 4.1) outlines the high-level components of the system. It illustrates how the React-based frontend interfaces with the Express.js backend via HTTP/REST APIs. The backend then communicates seamlessly with the MongoDB Atlas database for data persistence and the Gmail SMTP server for dispatching notifications. Vercel acts as the overarching cloud hosting environment for both the frontend SPA and backend serverless functions.
 
 \section{Data Flow Diagram (DFD)}
 
 \subsection{Level 0 -- Context Diagram}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   entity/.style={rectangle, draw=primaryblue, fill=primaryblue!10, rounded corners=4pt, minimum width=2.8cm, minimum height=0.9cm, align=center, font=\small},
   process/.style={circle, draw=accentcyan, fill=accentcyan!10, minimum size=2.8cm, align=center, font=\small\bfseries},
   arrow/.style={-{Stealth[length=3mm]}, thick, draw=primaryblue!60}
 ]
-  \node[process] (sys) {AcadAlert\\System};
+  \node[process] (sys) {ASTNS\\System};
   \node[entity, left=3.5cm of sys] (admin) {Admin};
   \node[entity, right=3.5cm of sys] (guardian) {Guardian};
   \node[entity, below=2.5cm of sys] (db) {Database};
   \node[entity, above=2.5cm of sys] (email) {Email Service};
 
   \draw[arrow] (admin) -- node[above, font=\scriptsize] {Upload Data,} node[below, font=\scriptsize] {Login, Notify} (sys);
-  \draw[arrow] (sys) -- node[above, font=\scriptsize] {Report Link,} node[below, font=\scriptsize] {Email} (guardian);
-  \draw[arrow] (guardian) -- node[above, font=\scriptsize, sloped] {Token} (sys);
+  \draw[arrow] (sys) -- node[above, font=\scriptsize] {Report Link, Email} (guardian);
+  \draw[arrow] (guardian) -- node[below, font=\scriptsize, sloped] {Token} (sys);
   \draw[arrow] (sys) -- node[right, font=\scriptsize] {Store/Retrieve} (db);
   \draw[arrow] (sys) -- node[right, font=\scriptsize] {Send Email} (email);
 \end{tikzpicture}
-\captionof{figure}{Level 0 DFD -- Context Diagram}
-\end{center}
+\caption{Level 0 DFD -- Context Diagram}
+\end{figure}
+
+The Level 0 Context Diagram (Figure 4.2) presents the entire application as a single high-level process, highlighting its interactions with external entities. The Admin provides academic data and triggers notifications, while the Guardian receives the notification email and subsequently uses a secure token to access the generated report. The core system interfaces heavily with the external Database and Email Service to fulfill these requests.
 
 \subsection{Level 1 -- DFD}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   entity/.style={rectangle, draw=primaryblue, fill=primaryblue!10, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm, align=center, font=\scriptsize},
   process/.style={circle, draw=accentcyan, fill=accentcyan!10, minimum size=1.6cm, align=center, font=\scriptsize\bfseries},
@@ -420,12 +447,15 @@ The system is divided into the following functional modules:
   \draw[arrow] (admin) |- (p5);
   \draw[arrow] (p1) -- (p3);
 \end{tikzpicture}
-\captionof{figure}{Level 1 DFD}
-\end{center}
+\caption{Level 1 DFD}
+\end{figure}
+
+The Level 1 Data Flow Diagram (Figure 4.3) breaks down the main system into granular sub-processes. It traces the flow of data starting from the Admin authenticating (1.0) and uploading academic records (2.0) into the Students DB. It further delineates the notification process (3.0), where secure tokens are generated and stored, followed by the Guardian providing the token to view the academic report (4.0).
 
 \section{Use Case Diagram}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   actor/.style={font=\small},
   usecase/.style={ellipse, draw=primaryblue, fill=primaryblue!8, minimum width=3cm, minimum height=0.9cm, align=center, font=\scriptsize},
@@ -433,7 +463,7 @@ The system is divided into the following functional modules:
   sysbox/.style={rectangle, draw=bordercolor, rounded corners=8pt, minimum width=7cm, minimum height=10cm}
 ]
   % System boundary
-  \node[sysbox, label={[font=\small\bfseries]above:AcadAlert System}] (sys) at (0,0) {};
+  \node[sysbox, label={[font=\small\bfseries]above:ASTNS System}] (sys) at (0,0) {};
 
   % Use cases
   \node[usecase] (uc1) at (0, 3.5)  {Login};
@@ -459,12 +489,15 @@ The system is divided into the following functional modules:
   % Guardian connections
   \draw[arrow] (grd) -- (uc7);
 \end{tikzpicture}
-\captionof{figure}{Use Case Diagram}
-\end{center}
+\caption{Use Case Diagram}
+\end{figure}
+
+The Use Case Diagram (Figure 4.4) illustrates the primary interactions between the actors and the system. The Admin is responsible for managing the system through authentication, uploading academic data, viewing student lists and details, dispatching notifications, and managing access tokens. Conversely, the Guardian has a focused interaction limited to viewing the generated academic report via a secure token without needing a traditional login account.
 
 \section{Sequence Diagram -- Notification Flow}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   box/.style={rectangle, draw=primaryblue, fill=primaryblue!10, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm, align=center, font=\scriptsize\bfseries},
   arrow/.style={-{Stealth[length=2.5mm]}, draw=primaryblue!60},
@@ -493,12 +526,15 @@ The system is divided into the following functional modules:
   \draw[arrow] (10.5, -6) -- node[above, font=\tiny] {Email with link} (14, -6);
   \draw[arrow] (14, -7) -- node[above, font=\tiny] {Click link (token)} (3.5, -7);
 \end{tikzpicture}
-\captionof{figure}{Sequence Diagram -- Notification Flow}
-\end{center}
+\caption{Sequence Diagram -- Notification Flow}
+\end{figure}
+
+The Sequence Diagram (Figure 4.5) details the chronological flow of messages during the notification dispatch process. It shows the Admin initiating the process from the React Frontend by selecting students, which then sends a POST request to the Express Backend. The backend invokes the Gmail SMTP service to deliver an email with a secure link to the Guardian. Finally, the Guardian clicks the link, passing the token back to the frontend to access the report.
 
 \section{Activity Diagram -- Admin Workflow}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   start/.style={circle, fill=primaryblue, minimum size=0.5cm},
   stop/.style={circle, draw=primaryblue, fill=primaryblue, minimum size=0.35cm, double, double distance=1.5pt},
@@ -527,18 +563,21 @@ The system is divided into the following functional modules:
   \draw[arrow] (upload) -- (review);
   \draw[arrow] (review) -- (d2);
   \draw[arrow] (d2) -- node[right, font=\scriptsize] {Yes} (notify);
-  \draw[arrow] (d2.east) -| ++(2, 0) |- node[above, font=\scriptsize, near start] {No} (token);
+  \draw[arrow] (d2.east) -| ++(2, 0) |- node[left, font=\scriptsize, near start] {No} (token);
   \draw[arrow] (notify) -- (token);
   \draw[arrow] (token) -- (e);
 \end{tikzpicture}
-\captionof{figure}{Activity Diagram -- Admin Workflow}
-\end{center}
+\caption{Activity Diagram -- Admin Workflow}
+\end{figure}
+
+The Activity Diagram (Figure 4.6) maps the step-by-step workflow of the Admin. The process begins with authentication and handling invalid credentials. Upon successful login, the Admin navigates the dashboard, uploads academic data (CSV/Excel files), reviews the parsed student list, and decides whether to dispatch notifications. Finally, the Admin monitors the generated access tokens before concluding the session.
 
 \section{Database Design}
 
 \subsection{Entity-Relationship (ER) Diagram}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   entity/.style={rectangle, draw=primaryblue, fill=primaryblue!10, rounded corners=6pt, minimum width=4cm, minimum height=0.7cm, align=center, font=\small\bfseries},
   attr/.style={font=\scriptsize, text=textmuted},
@@ -547,43 +586,40 @@ The system is divided into the following functional modules:
 ]
   % Entities
   \node[entity] (student) at (0, 0) {Student};
-  \node[entity] (semester) at (6, 0) {Semester};
-  \node[entity] (subject) at (12, 0) {Subject};
-  \node[entity] (performance) at (9, -3) {SubjectPerformance};
+  \node[entity] (semester) at (0, -3.5) {Semester};
+  \node[entity] (subject) at (0, -7.5) {Subject};
+  \node[entity] (performance) at (5.5, -3.5) {SubjectPerformance};
 
   % Relationships
-  \node[rel] (r1) at (3, 0) {has};
-  \node[rel] (r2) at (9, 0) {contains};
-  \node[rel] (r3) at (12, -3) {refs};
+  \node[rel] (r1) at (0, -1.75) {has};
+  \node[rel] (r2) at (0, -5.5) {contains};
+  \node[rel] (r3) at (5.5, -7.5) {refs};
 
-  % Attributes for Student
-  \node[attr, above left=0.5cm and 0.3cm of student] {urn (PK)};
-  \node[attr, below left=0.5cm and 0.3cm of student] {fullName, crn};
-  \node[attr, below=0.8cm of student] {course, branch};
-  \node[attr, above=0.6cm of student] {admissionYear, graduationYear, cgpa};
-
-  % Attributes for Semester
-  \node[attr, above=0.6cm of semester] {semesterNumber, sgpa};
-
-  % Attributes for Subject
-  \node[attr, above=0.6cm of subject] {subjectCode (PK), subjectTitle};
-  \node[attr, above right=0.5cm and -1cm of subject] {type, credits};
-
-  % Attributes for Performance
-  \node[attr, below=0.5cm of performance] {internalMarks, externalMarks};
-  \node[attr, below left=0.5cm and -0.5cm of performance] {totalMarks, status};
+  % Attributes
+  \node[attr, left=0.5cm of student, align=right] {urn (PK)\\fullName, crn\\course, branch\\admissionYear, graduationYear\\cgpa};
+  
+  \node[attr, left=0.5cm of semester, align=right] {semesterNumber, sgpa};
+  
+  \node[attr, left=0.5cm of subject, align=right] {subjectCode (PK)\\subjectTitle\\type, credits};
+  
+  \node[attr, above=0.5cm of performance, align=center] {internalMarks, externalMarks\\internalDetained, externalDetained\\status};
 
   % Arrows
   \draw[arrow] (student) -- (r1);
-  \draw[arrow] (r1) -- node[above, font=\tiny] {1:N} (semester);
+  \draw[arrow] (r1) -- node[left, font=\tiny] {1:N} (semester);
+  
   \draw[arrow] (semester) -- (r2);
-  \draw[arrow] (r2) -- node[above, font=\tiny] {N:1} (subject);
+  \draw[arrow] (r2) -- node[left, font=\tiny] {N:1} (subject);
+  
   \draw[arrow] (performance) -- (r3);
   \draw[arrow] (r3) -- (subject);
-  \draw[arrow] (semester) -- node[right, font=\tiny] {1:N} (performance);
+  
+  \draw[arrow] (semester) -- node[above, font=\tiny] {1:N} (performance);
 \end{tikzpicture}
-\captionof{figure}{Entity-Relationship Diagram}
-\end{center}
+\caption{Entity-Relationship Diagram}
+\end{figure}
+
+The Entity-Relationship (ER) Diagram (Figure 4.7) models the core data structures and their associations within the database. A single Student entity has multiple Semester entities (1:N), and each Semester contains multiple SubjectPerformance records (1:N). Each SubjectPerformance record references a specific Subject. The physical layout separates overlapping attributes to distinctly list unique identifiers like the URN for students and subjectCode for subjects.
 
 \subsection{Database Schema Details}
 
@@ -608,7 +644,7 @@ graduationYear & Number & Expected graduation year ($>$ admissionYear)\\
 \hline
 semesters & Array & Array of Semester sub-documents\\
 \hline
-cgpa & Number & Auto-calculated after all semesters complete\\
+cgpa & Number & Auto-calculated \textbf{only after degree completion}\\
 \hline
 \end{longtable}
 
@@ -641,7 +677,8 @@ minTotalPassMarks & Number & $\leq$ maxTotalMarks\\
 
 \section{Component Diagram -- Frontend Architecture}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   comp/.style={rectangle, draw=primaryblue, fill=primaryblue!8, rounded corners=6pt, minimum width=3cm, minimum height=0.8cm, align=center, font=\scriptsize\bfseries},
   pkg/.style={rectangle, draw=bordercolor, dashed, rounded corners=8pt, inner sep=10pt, fill=cardbg!5},
@@ -662,25 +699,28 @@ minTotalPassMarks & Number & $\leq$ maxTotalMarks\\
   \node[comp, fill=accentcyan!10, draw=accentcyan] (gaccess) at (4, -0.8) {AccessDenied};
 
   % Shared
-  \node[comp, below=2.5cm of adminpkg, fill=successgreen!10, draw=successgreen] (sidebar) {Sidebar};
-  \node[comp, right=0.5cm of sidebar, fill=successgreen!10, draw=successgreen] (topbar) {Topbar};
+  \node[comp, below=2.5cm of adminpkg, fill=successgreen!10, draw=successgreen] (sidebar) {Sidebar (components/Sidebar.jsx)};
+  \node[comp, right=0.5cm of sidebar, fill=successgreen!10, draw=successgreen] (topbar) {Topbar (components/Topbar.jsx)};
   \node[comp, right=0.5cm of topbar, fill=successgreen!10, draw=successgreen] (input) {InputField};
   \node[comp, right=0.5cm of input, fill=successgreen!10, draw=successgreen] (loginform) {LoginForm};
 
   % Layout
-  \node[comp, below=3.5cm of adminpkg, fill=warningamber!10, draw=warningamber] (layout) {AdminLayout};
+  \node[comp, below=3.5cm of adminpkg, fill=warningamber!10, draw=warningamber] (layout) {AdminLayout (layouts/AdminLayout.jsx)};
   \node[comp, right=2cm of layout, fill=warningamber!10, draw=warningamber] (router) {App (Router)};
 
   \draw[arrow] (layout) -- (sidebar);
   \draw[arrow] (layout) -- (topbar);
   \draw[arrow] (router) -- (layout);
 \end{tikzpicture}
-\captionof{figure}{Frontend Component Architecture}
-\end{center}
+\caption{Frontend Component Architecture}
+\end{figure}
+
+The Frontend Component Architecture (Figure 4.8) showcases the modular design of the React application. It separates components into logically grouped packages: Admin Pages (e.g., Dashboard, Upload Data, Student List) and Guardian Pages (e.g., Guardian Dashboard, Access Denied). Shared UI components like the Sidebar, Topbar, and Input Fields are reused across different layouts. The root App Router strictly manages navigation dynamically routing users depending on their access role.
 
 \section{Deployment Diagram}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}[
   node3d/.style={rectangle, draw=primaryblue, fill=primaryblue!8, rounded corners=6pt, minimum width=3.5cm, minimum height=1.5cm, align=center, font=\small},
   arrow/.style={{Stealth[length=3mm]}-{Stealth[length=3mm]}, thick, draw=primaryblue!60}
@@ -694,8 +734,63 @@ minTotalPassMarks & Number & $\leq$ maxTotalMarks\\
   \draw[arrow] (vercel) -- node[above, font=\scriptsize] {TLS/SSL} (atlas);
   \draw[-{Stealth[length=3mm]}, thick, draw=accentcyan!60] (vercel) -- node[right, font=\scriptsize] {SMTP} (gmail);
 \end{tikzpicture}
-\captionof{figure}{Deployment Diagram}
-\end{center}
+\caption{Deployment Diagram}
+\end{figure}
+
+The Deployment Diagram (Figure 4.9) depicts the physical architecture and network interactions of the production system. Client browsers communicate securely via HTTPS with the Vercel Cloud, which hosts the React Single Page Application (SPA) and backend serverless API functions. In turn, the Vercel infrastructure connects to the MongoDB Atlas cluster over TLS/SSL for database operations and interacts with the Gmail SMTP server to handle outbound email delivery.
+
+\section{State Diagram}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  state/.style={circle, draw=primaryblue, fill=primaryblue!8, minimum size=2cm, align=center, font=\scriptsize\bfseries},
+  initial/.style={circle, fill=darkbg, minimum size=0.3cm},
+  final/.style={circle, draw=darkbg, fill=darkbg, minimum size=0.3cm, double, double distance=1.5pt},
+  arrow/.style={-{Stealth[length=3mm]}, thick, draw=primaryblue!60}
+]
+  \node[initial] (start) at (0, 0) {};
+  \node[state] (generated) at (3, 0) {Generated /\\Active};
+  \node[state] (expired) at (7, 2) {Expired};
+  \node[state] (revoked) at (7, -2) {Revoked};
+  \node[final] (end_exp) at (10, 2) {};
+  \node[final] (end_rev) at (10, -2) {};
+
+  \draw[arrow] (start) -- node[above, font=\tiny] {Create} (generated);
+  \draw[arrow] (generated) -- node[above, font=\tiny, sloped] {Time elapsed} (expired);
+  \draw[arrow] (generated) -- node[below, font=\tiny, sloped] {Admin action} (revoked);
+  \draw[arrow] (expired) -- (end_exp);
+  \draw[arrow] (revoked) -- (end_rev);
+\end{tikzpicture}
+\caption{State Machine Diagram -- Token Lifecycle}
+\end{figure}
+
+The State Diagram (Figure 4.10) illustrates the lifecycle and various states of an access token within the notification system. A token begins in the `Generated / Active' state immediately after dispatch. It transitions to an `Expired' state automatically after a predefined time limit, or to a `Revoked' state if an Admin manually invalidates it. Both Expired and Revoked act as terminal states where the token can no longer be used for Guardian authentication.
+
+\section{Communication Diagram}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  actor/.style={rectangle, draw=primaryblue, fill=primaryblue!8, rounded corners=6pt, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\scriptsize\bfseries},
+  arrow/.style={-{Stealth[length=2.5mm]}, draw=primaryblue!60}
+]
+  \node[actor] (admin) at (0, 0) {1: Admin};
+  \node[actor] (ui) at (4, 0) {2: Upload UI};
+  \node[actor] (backend) at (8, 0) {3: API Server};
+  \node[actor] (db) at (8, -3) {4: Database};
+
+  \draw[arrow] (admin) -- node[above, font=\tiny] {1.1 Select File} (ui);
+  \draw[arrow] (ui) -- node[above, font=\tiny] {1.2 Send CSV} (backend);
+  \draw[arrow] (backend) -- node[right, font=\tiny] {1.3 Insert Records} (db);
+  \draw[arrow] (db.west) -| node[above left, font=\tiny, near start] {1.4 Acknowledge} (backend.south west);
+  \draw[arrow] (backend.170) -- node[below, font=\tiny] {1.5 Success Res} (ui.10);
+  \draw[arrow] (ui.190) -- node[below, font=\tiny] {1.6 Display Status} (admin.350);
+\end{tikzpicture}
+\caption{Communication Diagram -- Bulk Data Upload}
+\end{figure}
+
+The Communication Diagram (Figure 4.11) models the dynamic behavior and message flows during the bulk data upload process. Unlike a Sequence Diagram, it emphasizes the structural relationships between objects. The interaction begins with the Admin selecting a file in the Upload UI (1.1). The UI then transmits the parsed CSV data to the API Server (1.2), which inserts the records into the Database (1.3). The sequence elegantly wraps up as acknowledgments flow back from the Database through the API Server to update the UI on the operation's success.
 
 %% ===========================
 %% CHAPTER 5: TESTING MODULE
@@ -716,7 +811,7 @@ The system is tested using a combination of manual functional testing, integrati
 
 \section{Test Cases}
 
-\begin{longtable}{|p{0.5cm}|p{3cm}|p{4.5cm}|p{2cm}|p{2cm}|}
+\begin{longtable}{|p{1.2cm}|p{4.5cm}|p{4.0cm}|p{2.5cm}|p{1.5cm}|}
 \hline
 \textbf{ID} & \textbf{Test Case} & \textbf{Steps} & \textbf{Expected} & \textbf{Result}\\
 \hline
@@ -760,7 +855,8 @@ TC15 & Email HTML Rendering & Receive notification email & Branded template with
 
 \section{Development Progress}
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \begin{tikzpicture}
 \begin{axis}[
   ybar,
@@ -784,8 +880,8 @@ TC15 & Email HTML Rendering & Receive notification email & Branded template with
 };
 \end{axis}
 \end{tikzpicture}
-\captionof{figure}{Module-wise Development Progress}
-\end{center}
+\caption{Module-wise Development Progress}
+\end{figure}
 
 \section{Key Metrics}
 
