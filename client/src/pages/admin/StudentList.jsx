@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   LayoutGrid,
@@ -6,22 +6,67 @@ import {
   Filter,
   AlertTriangle,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { students } from "../../data/students";
 
 const CARD =
-  "bg-[#13162b] border border-[#252840] rounded-2xl p-5 transition-all cursor-pointer hover:border-[#6366f1] hover:-translate-y-0.5";
+  "bg-[#13162b] border border-[#252840] rounded-2xl p-5 transition-all cursor-pointer hover:border-[#6366f1] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(99,102,241,0.12)]";
 
 const sgpaColor = (s) =>
   s >= 8 ? "#34d399" : s >= 7 ? "#818cf8" : s >= 6 ? "#fbbf24" : "#f87171";
-const attColor = (a) => (a >= 75 ? "#34d399" : a >= 60 ? "#fbbf24" : "#f87171");
+
+/* ─── Skeleton Card ───────────────────────────────────────────── */
+const SkeletonCard = () => (
+  <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-5 animate-pulse">
+    <div className="flex items-center gap-3 mb-4">
+      <div className="w-11 h-11 rounded-[11px] bg-[#252840]" />
+      <div className="flex-1">
+        <div className="h-4 w-28 bg-[#252840] rounded mb-2" />
+        <div className="h-3 w-20 bg-[#1e2132] rounded" />
+      </div>
+    </div>
+    <div className="flex gap-2 mb-4">
+      <div className="h-5 w-14 bg-[#252840] rounded-full" />
+      <div className="h-5 w-10 bg-[#1e2132] rounded" />
+    </div>
+    <div className="grid grid-cols-3 gap-2">
+      {[1, 2, 3].map((n) => (
+        <div key={n} className="h-12 bg-[#161925] rounded-lg" />
+      ))}
+    </div>
+  </div>
+);
 
 export default function StudentList() {
   const navigate = useNavigate();
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [search, setSearch] = useState("");
   const [course, setCourse] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
+
+  // ── Fetch students from API ──────────────────────────────────
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch("/api/students");
+        const json = await res.json();
+        if (!res.ok)
+          throw new Error(json.message || "Failed to fetch students");
+        setStudents(json.data || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStudents();
+  }, []);
 
   const courses = ["All", ...new Set(students.map((s) => s.course))];
 
@@ -40,35 +85,65 @@ export default function StudentList() {
   const avatarGrad = (s) =>
     `linear-gradient(135deg, hsl(${(s.urn * 47) % 360},60%,38%), hsl(${(s.urn * 47 + 40) % 360},65%,32%))`;
 
+  // ── Quick stat helpers ───────────────────────────────────────
+  const detainedCount = students.filter((s) =>
+    s.semesters.flatMap((x) => x.subjects).some((x) => x.status === "Detained"),
+  ).length;
+
+  const highSgpaCount = students.filter(
+    (s) => s.semesters.length && s.semesters[s.semesters.length - 1]?.sgpa >= 8,
+  ).length;
+
+  // ── Error State ──────────────────────────────────────────────
+  if (error) {
+    return (
+      <div className="fade-in flex flex-col items-center justify-center py-20">
+        <div className="w-16 h-16 rounded-2xl bg-[rgba(239,68,68,0.15)] flex items-center justify-center mb-4">
+          <AlertTriangle size={28} className="text-[#f87171]" />
+        </div>
+        <p className="text-[#f87171] text-lg font-bold mb-1">
+          Failed to load students
+        </p>
+        <p className="text-[#5c6385] text-sm mb-5">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-linear-to-br from-[#6366f1] to-[#4f46e5] cursor-pointer hover:-translate-y-px transition-all"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="fade-in">
       {/* Quick stats */}
       <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-4 mb-6">
         {[
-          { label: "Total Students", val: students.length, color: "#818cf8" },
+          {
+            label: "Total Students",
+            val: loading ? "—" : students.length,
+            color: "#818cf8",
+          },
           {
             label: "Detained",
-            val: students.filter((s) =>
-              s.semesters
-                .flatMap((x) => x.subjects)
-                .some((x) => x.status === "Detained"),
-            ).length,
+            val: loading ? "—" : detainedCount,
             color: "#f87171",
           },
           {
             label: "Avg SGPA ≥ 8",
-            val: students.filter(
-              (s) =>
-                s.semesters.length &&
-                s.semesters[s.semesters.length - 1]?.sgpa >= 8,
-            ).length,
+            val: loading ? "—" : highSgpaCount,
             color: "#34d399",
           },
           {
-            label: "Att < 75%",
-            val: students.filter((s) =>
-              s.semesters.some((x) => x.attendance && x.attendance < 75),
-            ).length,
+            label: "Semesters",
+            val: loading
+              ? "—"
+              : new Set(
+                  students.flatMap((s) =>
+                    s.semesters.map((x) => x.semesterNumber),
+                  ),
+                ).size,
             color: "#fbbf24",
           },
         ].map((c) => (
@@ -133,8 +208,17 @@ export default function StudentList() {
         </p>
       </div>
 
+      {/* Loading */}
+      {loading && (
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      )}
+
       {/* Grid view */}
-      {viewMode === "grid" && (
+      {!loading && viewMode === "grid" && (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-4">
           {filtered.map((student) => {
             const lastSem = student.semesters[student.semesters.length - 1];
@@ -193,11 +277,9 @@ export default function StudentList() {
                       color: lastSem ? sgpaColor(lastSem.sgpa) : "#5c6385",
                     },
                     {
-                      label: "Attend.",
-                      val: lastSem?.attendance ? `${lastSem.attendance}%` : "—",
-                      color: lastSem?.attendance
-                        ? attColor(lastSem.attendance)
-                        : "#5c6385",
+                      label: "CGPA",
+                      val: student.cgpa ?? "—",
+                      color: "#22d3ee",
                     },
                     {
                       label: "Sems",
@@ -232,7 +314,7 @@ export default function StudentList() {
       )}
 
       {/* List view */}
-      {viewMode === "list" && (
+      {!loading && viewMode === "list" && (
         <div className="bg-[#13162b] border border-[#252840] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table
@@ -247,7 +329,7 @@ export default function StudentList() {
                     "Course",
                     "Branch",
                     "SGPA",
-                    "Attendance",
+                    "CGPA",
                     "Sems",
                     "Status",
                   ].map((h) => (
@@ -305,15 +387,8 @@ export default function StudentList() {
                       >
                         {lastSem?.sgpa || "—"}
                       </td>
-                      <td
-                        className="px-4 py-3 font-bold text-[0.9rem]"
-                        style={{
-                          color: lastSem?.attendance
-                            ? attColor(lastSem.attendance)
-                            : "#5c6385",
-                        }}
-                      >
-                        {lastSem?.attendance ? `${lastSem.attendance}%` : "—"}
+                      <td className="px-4 py-3 font-bold text-[0.9rem] text-[#22d3ee]">
+                        {student.cgpa ?? "—"}
                       </td>
                       <td className="px-4 py-3 text-[#9ba2c0]">
                         {student.semesters.length}
@@ -335,6 +410,18 @@ export default function StudentList() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!loading && filtered.length === 0 && (
+        <div className="text-center py-16">
+          <div className="w-16 h-16 rounded-2xl bg-[rgba(99,102,241,0.1)] flex items-center justify-center mx-auto mb-4">
+            <Search size={28} className="text-[#5c6385]" />
+          </div>
+          <p className="text-[#5c6385] text-[0.9rem]">
+            No students found matching your filters.
+          </p>
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -7,10 +7,11 @@ import {
   AlertTriangle,
   CheckCircle,
   ChevronDown,
+  Eye,
   ChevronUp,
   BookOpen,
+  Loader2,
 } from "lucide-react";
-import { students } from "../../data/students";
 import {
   LineChart,
   Line,
@@ -44,21 +45,76 @@ const TT = ({ active, payload, label }) => {
   );
 };
 
+/* ─── Loading Skeleton ─────────────────────────────────────────── */
+const DetailSkeleton = () => (
+  <div className="fade-in animate-pulse">
+    <div className="h-8 w-36 bg-[#252840] rounded-lg mb-5" />
+    <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-6 mb-5">
+      <div className="flex gap-6 items-start">
+        <div className="w-16 h-16 rounded-[16px] bg-[#252840]" />
+        <div className="flex-1">
+          <div className="h-6 w-48 bg-[#252840] rounded mb-3" />
+          <div className="flex gap-2">
+            <div className="h-5 w-20 bg-[#1e2132] rounded" />
+            <div className="h-5 w-20 bg-[#1e2132] rounded" />
+            <div className="h-5 w-16 bg-[#1e2132] rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div className="grid grid-cols-5 gap-3 mb-5">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <div
+          key={n}
+          className="bg-[#161925] border border-[#252840] rounded-xl p-4 h-20"
+        />
+      ))}
+    </div>
+  </div>
+);
+
 export default function StudentDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const student = students.find((s) => s._id === id);
+  const [student, setStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [openSem, setOpenSem] = useState(null);
 
-  if (!student)
+  useEffect(() => {
+    const fetchStudent = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(`/api/students/${id}`);
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.message || "Student not found");
+        setStudent(json.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStudent();
+  }, [id]);
+
+  if (loading) return <DetailSkeleton />;
+
+  if (error || !student)
     return (
-      <div className="text-center py-16">
-        <p className="text-[#5c6385] text-lg mb-4">Student not found.</p>
+      <div className="fade-in text-center py-16">
+        <div className="w-16 h-16 rounded-2xl bg-[rgba(239,68,68,0.15)] flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle size={28} className="text-[#f87171]" />
+        </div>
+        <p className="text-[#f87171] text-lg font-bold mb-1">
+          {error || "Student not found"}
+        </p>
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-[#9ba2c0] text-sm bg-[#1e2132] border border-[#2e3354] hover:border-[#6366f1] transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-[#9ba2c0] text-sm bg-[#1e2132] border border-[#2e3354] hover:border-[#6366f1] transition-all cursor-pointer mt-4"
         >
-          Go Back
+          <ArrowLeft size={14} /> Go Back
         </button>
       </div>
     );
@@ -77,12 +133,6 @@ export default function StudentDetail() {
         student.semesters.length
       ).toFixed(2)
     : "—";
-  const attSems = student.semesters.filter((s) => s.attendance);
-  const avgAtt = attSems.length
-    ? (attSems.reduce((a, s) => a + s.attendance, 0) / attSems.length).toFixed(
-        1,
-      )
-    : null;
 
   return (
     <div className="fade-in">
@@ -134,17 +184,40 @@ export default function StudentDetail() {
                 {student.branch}
               </span>
             )}
-          </div>
-          <div className="flex flex-wrap gap-2 mt-2">
             <span className="inline-flex items-center px-[0.6rem] py-[0.2rem] bg-[#161925] border border-[#252840] rounded-md text-[0.72rem] text-[#9ba2c0]">
-              📧 {student.parentEmail}
-            </span>
-            <span className="inline-flex items-center px-[0.6rem] py-[0.2rem] bg-[#161925] border border-[#252840] rounded-md text-[0.72rem] text-[#9ba2c0]">
-              📱 {student.parentPhone}
+              🎓 {student.admissionYear} — {student.graduationYear}
             </span>
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={async () => {
+              try {
+                const res = await fetch("/api/tokens", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    studentIds: [student._id],
+                    sentVia: "Email",
+                    semester: student.semesters.length,
+                    expiry: "24 hours",
+                  }),
+                });
+                const json = await res.json();
+                if (res.ok && json.data?.[0]?.token) {
+                  window.open(
+                    `/guardian?token=${json.data[0].token}`,
+                    "_blank",
+                  );
+                }
+              } catch (err) {
+                console.error("Failed to generate preview token:", err);
+              }
+            }}
+            className="inline-flex items-center gap-2 px-4 py-[0.55rem] rounded-xl text-[#22d3ee] text-sm font-semibold bg-[rgba(6,182,212,0.1)] border border-[rgba(6,182,212,0.25)] hover:bg-[rgba(6,182,212,0.18)] hover:-translate-y-px transition-all cursor-pointer"
+          >
+            <Eye size={14} /> View as Guardian
+          </button>
           <button className="inline-flex items-center gap-2 px-4 py-[0.55rem] rounded-xl text-[#9ba2c0] text-sm bg-[#1e2132] border border-[#2e3354] hover:border-[#6366f1] hover:text-[#f0f1fa] transition-all cursor-pointer">
             <Download size={14} /> Download PDF
           </button>
@@ -163,11 +236,6 @@ export default function StudentDetail() {
             color: "#818cf8",
           },
           { label: "Avg SGPA", val: avgSGPA, color: "#22d3ee" },
-          {
-            label: "Avg Attendance",
-            val: avgAtt ? `${avgAtt}%` : "—",
-            color: avgAtt >= 75 ? "#34d399" : "#f87171",
-          },
           {
             label: "CGPA",
             val: student.cgpa ?? "In Progress",
@@ -267,7 +335,6 @@ export default function StudentDetail() {
                       </p>
                       <p className="text-[0.7rem] text-[#5c6385]">
                         {sem.subjects.length} subjects
-                        {sem.attendance ? ` · Att: ${sem.attendance}%` : ""}
                       </p>
                     </div>
                   </div>
@@ -316,58 +383,64 @@ export default function StudentDetail() {
                         </tr>
                       </thead>
                       <tbody>
-                        {sem.subjects.map((sub) => (
-                          <tr
-                            key={sub._id}
-                            className="border-b border-[#252840] hover:bg-[#1e2132] transition-colors"
-                          >
-                            <td className="px-3 py-3 text-[#f0f1fa] text-[0.82rem]">
-                              {sub.subjectTitle}
-                            </td>
-                            <td className="px-3 py-3 font-mono text-[#22d3ee] text-[0.78rem]">
-                              {sub.subjectCode}
-                            </td>
-                            <td className="px-3 py-3">
-                              <span
-                                className={`inline-flex px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold ${sub.type === "T" ? "bg-[rgba(6,182,212,0.15)] text-[#22d3ee] border border-[rgba(6,182,212,0.25)]" : "bg-[rgba(245,158,11,0.15)] text-[#fbbf24] border border-[rgba(245,158,11,0.25)]"}`}
-                              >
-                                {sub.type === "T" ? "Theory" : "Practical"}
-                              </span>
-                            </td>
-                            <td
-                              className="px-3 py-3 font-semibold text-[0.85rem]"
-                              style={{
-                                color: sub.internalDetained
-                                  ? "#f87171"
-                                  : "#9ba2c0",
-                              }}
+                        {sem.subjects.map((sub) => {
+                          // Subject is populated with subjectTitle, subjectCode, type
+                          const subjectData = sub.subject || {};
+                          return (
+                            <tr
+                              key={sub._id}
+                              className="border-b border-[#252840] hover:bg-[#1e2132] transition-colors"
                             >
-                              {sub.internalMarks}
-                              {sub.internalDetained ? " ⚠" : ""}
-                            </td>
-                            <td
-                              className="px-3 py-3 font-semibold text-[0.85rem]"
-                              style={{
-                                color: sub.externalDetained
-                                  ? "#f87171"
-                                  : "#9ba2c0",
-                              }}
-                            >
-                              {sub.externalMarks}
-                              {sub.externalDetained ? " ⚠" : ""}
-                            </td>
-                            <td className="px-3 py-3 font-bold text-[#f0f1fa]">
-                              {sub.totalMarks}
-                            </td>
-                            <td className="px-3 py-3">
-                              <span
-                                className={`inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold ${sub.status === "Pass" ? "bg-[rgba(16,185,129,0.15)] text-[#34d399] border border-[rgba(16,185,129,0.25)]" : "bg-[rgba(239,68,68,0.15)] text-[#f87171] border border-[rgba(239,68,68,0.25)]"}`}
+                              <td className="px-3 py-3 text-[#f0f1fa] text-[0.82rem]">
+                                {subjectData.subjectTitle || "—"}
+                              </td>
+                              <td className="px-3 py-3 font-mono text-[#22d3ee] text-[0.78rem]">
+                                {subjectData.subjectCode || "—"}
+                              </td>
+                              <td className="px-3 py-3">
+                                <span
+                                  className={`inline-flex px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold ${subjectData.type === "T" ? "bg-[rgba(6,182,212,0.15)] text-[#22d3ee] border border-[rgba(6,182,212,0.25)]" : "bg-[rgba(245,158,11,0.15)] text-[#fbbf24] border border-[rgba(245,158,11,0.25)]"}`}
+                                >
+                                  {subjectData.type === "T"
+                                    ? "Theory"
+                                    : "Practical"}
+                                </span>
+                              </td>
+                              <td
+                                className="px-3 py-3 font-semibold text-[0.85rem]"
+                                style={{
+                                  color: sub.internalDetained
+                                    ? "#f87171"
+                                    : "#9ba2c0",
+                                }}
                               >
-                                {sub.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
+                                {sub.internalMarks}
+                                {sub.internalDetained ? " ⚠" : ""}
+                              </td>
+                              <td
+                                className="px-3 py-3 font-semibold text-[0.85rem]"
+                                style={{
+                                  color: sub.externalDetained
+                                    ? "#f87171"
+                                    : "#9ba2c0",
+                                }}
+                              >
+                                {sub.externalMarks}
+                                {sub.externalDetained ? " ⚠" : ""}
+                              </td>
+                              <td className="px-3 py-3 font-bold text-[#f0f1fa]">
+                                {sub.totalMarks}
+                              </td>
+                              <td className="px-3 py-3">
+                                <span
+                                  className={`inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold ${sub.status === "Pass" ? "bg-[rgba(16,185,129,0.15)] text-[#34d399] border border-[rgba(16,185,129,0.25)]" : "bg-[rgba(239,68,68,0.15)] text-[#f87171] border border-[rgba(239,68,68,0.25)]"}`}
+                                >
+                                  {sub.status}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

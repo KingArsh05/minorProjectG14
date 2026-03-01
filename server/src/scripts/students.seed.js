@@ -7,7 +7,58 @@ import { Student } from "../models/students.model.js";
 import { Subject } from "../models/subjects.model.js";
 import { courseBranchMap } from "../utils/courseBranchMap.js";
 
-// ─── Realistic Indian Names ───────────────────────────────────────
+/*
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  Student Seed — GNDEC B.Tech CSE (2018 batch syllabus)         │
+  │  Prerequisite: Run subjects.seed.js FIRST so Subject IDs exist │
+  └─────────────────────────────────────────────────────────────────┘
+*/
+
+// ─── Subject codes grouped by semester (must match subjects.seed.js) ──
+const subjectCodesBySemester = {
+  3: [
+    "PCCS-301",
+    "PCCS-302",
+    "ESCS-101",
+    "BSCS-101",
+    "LPCCS-101",
+    "LPCCS-102",
+    "LESCS-101",
+    "PRCS-101",
+  ],
+  4: [
+    "PCCS-103",
+    "PCCS-104",
+    "PCCS-105",
+    "PCCS-106",
+    "PCCS-107",
+    "LPCCS-103",
+    "LPCCS-104",
+    "LPCCS-105",
+    "MCCS-101",
+  ],
+  5: [
+    "PCCS-108",
+    "PCCS-109",
+    "PCCS-110",
+    "PCCS-111",
+    "LPCCS-106",
+    "LPCCS-107",
+    "LPCCS-108",
+  ],
+  6: [
+    "PCCS-112",
+    "PCCS-113",
+    "PCCS-114",
+    "PCCS-115",
+    "LPCCS-109",
+    "LPCCS-110",
+    "PECS-126",
+    "LPECS-113",
+  ],
+};
+
+// ─── Realistic Indian Names ─────────────────────────────────────
 const firstNames = [
   "Aarav",
   "Vivaan",
@@ -108,359 +159,74 @@ const lastNames = [
   "Johal",
 ];
 
-// ─── Subject Data per Semester (B.Tech CSE) ───────────────────────
-const subjectsBySemester = {
-  1: [
-    {
-      subjectTitle: "Engineering Mathematics-I",
-      subjectCode: "BTAM101",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Engineering Physics",
-      subjectCode: "BTPH101",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Programming in C",
-      subjectCode: "BTCS101",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Communication Skills",
-      subjectCode: "BTHU101",
-      type: "T",
-      credits: 3,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "C Programming Lab",
-      subjectCode: "BTCS111",
-      type: "P",
-      credits: 2,
-      maxInternal: 30,
-      maxExternal: 20,
-      maxTotal: 50,
-      minInternal: 12,
-      minExternal: 8,
-      minTotal: 25,
-    },
-    {
-      subjectTitle: "Physics Lab",
-      subjectCode: "BTPH111",
-      type: "P",
-      credits: 1,
-      maxInternal: 30,
-      maxExternal: 20,
-      maxTotal: 50,
-      minInternal: 12,
-      minExternal: 8,
-      minTotal: 25,
-    },
-  ],
-  2: [
-    {
-      subjectTitle: "Engineering Mathematics-II",
-      subjectCode: "BTAM201",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Engineering Chemistry",
-      subjectCode: "BTCH201",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Data Structures",
-      subjectCode: "BTCS201",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Digital Electronics",
-      subjectCode: "BTEC201",
-      type: "T",
-      credits: 3,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Data Structures Lab",
-      subjectCode: "BTCS211",
-      type: "P",
-      credits: 2,
-      maxInternal: 30,
-      maxExternal: 20,
-      maxTotal: 50,
-      minInternal: 12,
-      minExternal: 8,
-      minTotal: 25,
-    },
-    {
-      subjectTitle: "Chemistry Lab",
-      subjectCode: "BTCH211",
-      type: "P",
-      credits: 1,
-      maxInternal: 30,
-      maxExternal: 20,
-      maxTotal: 50,
-      minInternal: 12,
-      minExternal: 8,
-      minTotal: 25,
-    },
-  ],
-  3: [
-    {
-      subjectTitle: "Discrete Mathematics",
-      subjectCode: "BTAM301",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Object Oriented Programming",
-      subjectCode: "BTCS301",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Computer Organization",
-      subjectCode: "BTCS302",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Database Management Systems",
-      subjectCode: "BTCS303",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "OOP Lab",
-      subjectCode: "BTCS311",
-      type: "P",
-      credits: 2,
-      maxInternal: 30,
-      maxExternal: 20,
-      maxTotal: 50,
-      minInternal: 12,
-      minExternal: 8,
-      minTotal: 25,
-    },
-    {
-      subjectTitle: "DBMS Lab",
-      subjectCode: "BTCS312",
-      type: "P",
-      credits: 2,
-      maxInternal: 30,
-      maxExternal: 20,
-      maxTotal: 50,
-      minInternal: 12,
-      minExternal: 8,
-      minTotal: 25,
-    },
-  ],
-  4: [
-    {
-      subjectTitle: "Operating Systems",
-      subjectCode: "BTCS401",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Design & Analysis of Algorithms",
-      subjectCode: "BTCS402",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Software Engineering",
-      subjectCode: "BTCS403",
-      type: "T",
-      credits: 3,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "Theory of Computation",
-      subjectCode: "BTCS404",
-      type: "T",
-      credits: 4,
-      maxInternal: 40,
-      maxExternal: 60,
-      maxTotal: 100,
-      minInternal: 16,
-      minExternal: 24,
-      minTotal: 40,
-    },
-    {
-      subjectTitle: "OS Lab",
-      subjectCode: "BTCS411",
-      type: "P",
-      credits: 2,
-      maxInternal: 30,
-      maxExternal: 20,
-      maxTotal: 50,
-      minInternal: 12,
-      minExternal: 8,
-      minTotal: 25,
-    },
-    {
-      subjectTitle: "Algorithms Lab",
-      subjectCode: "BTCS412",
-      type: "P",
-      credits: 2,
-      maxInternal: 30,
-      maxExternal: 20,
-      maxTotal: 50,
-      minInternal: 12,
-      minExternal: 8,
-      minTotal: 25,
-    },
-  ],
-};
-
-// ─── Helpers ──────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────
 const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const randomInt = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
-const randomFloat = (min, max) =>
-  +(Math.random() * (max - min) + min).toFixed(2);
-
 const generateFullName = () =>
   `${randomItem(firstNames)} ${randomItem(lastNames)}`;
 
 /**
  * Generate realistic marks for one subject.
- * ~15% chance of being detained in a theory subject.
+ * ~12% chance of detention in theory, ~5% in practical.
  */
-const generateSubjectPerformance = (subjectId, subjectMeta) => {
-  const isTheory = subjectMeta.type === "T";
-  const detained = isTheory && Math.random() < 0.15; // 15% detention rate
+const generateSubjectPerformance = (subjectDoc) => {
+  const isTheory = subjectDoc.type === "T";
+  const detentionChance = isTheory ? 0.12 : 0.05;
+  const detained = Math.random() < detentionChance;
 
   let internalMarks, externalMarks, internalDetained, externalDetained;
 
   if (detained) {
-    // Randomly detained in internal, external, or both
     const detainType = randomItem(["internal", "external", "both"]);
+
     if (detainType === "internal" || detainType === "both") {
-      internalMarks = randomInt(0, subjectMeta.minInternal - 1);
+      internalMarks = randomInt(0, subjectDoc.minInternalPassMarks - 1);
       internalDetained = true;
     } else {
       internalMarks = randomInt(
-        subjectMeta.minInternal,
-        subjectMeta.maxInternal,
+        subjectDoc.minInternalPassMarks,
+        subjectDoc.maxInternalMarks,
       );
       internalDetained = false;
     }
-    if (detainType === "external" || detainType === "both") {
-      externalMarks = randomInt(0, subjectMeta.minExternal - 1);
+
+    if (subjectDoc.maxExternalMarks === 0) {
+      // No external exam (e.g. PRCS-101, MCCS-101)
+      externalMarks = 0;
+      externalDetained = false;
+    } else if (detainType === "external" || detainType === "both") {
+      externalMarks = randomInt(0, subjectDoc.minExternalPassMarks - 1);
       externalDetained = true;
     } else {
       externalMarks = randomInt(
-        subjectMeta.minExternal,
-        subjectMeta.maxExternal,
+        subjectDoc.minExternalPassMarks,
+        subjectDoc.maxExternalMarks,
       );
       externalDetained = false;
     }
   } else {
-    // Passing student — generate marks above minimum
-    internalMarks = randomInt(subjectMeta.minInternal, subjectMeta.maxInternal);
-    externalMarks = randomInt(subjectMeta.minExternal, subjectMeta.maxExternal);
+    // Passing student
+    internalMarks = randomInt(
+      subjectDoc.minInternalPassMarks,
+      subjectDoc.maxInternalMarks,
+    );
     internalDetained = false;
-    externalDetained = false;
+
+    if (subjectDoc.maxExternalMarks === 0) {
+      externalMarks = 0;
+      externalDetained = false;
+    } else {
+      externalMarks = randomInt(
+        subjectDoc.minExternalPassMarks,
+        subjectDoc.maxExternalMarks,
+      );
+      externalDetained = false;
+    }
   }
 
   return {
-    subject: subjectId,
+    subject: subjectDoc._id,
     internalMarks,
     externalMarks,
     totalMarks: internalMarks + externalMarks,
@@ -471,16 +237,20 @@ const generateSubjectPerformance = (subjectId, subjectMeta) => {
 };
 
 /**
- * Calculate SGPA from subject performances using credit-weighted formula.
- * Grade points: 90+→10, 80+→9, 70+→8, 60+→7, 50+→6, 40+→5, below→0
+ * SGPA = Σ(gradePoint × credits) / Σ(credits)
+ * Grade: 90%→10, 80%→9, 70%→8, 60%→7, 50%→6, 40%→5, <40%→0
  */
-const calculateSGPA = (performances, subjectMetas) => {
+
+const calculateSGPA = (performances, subjectDocs) => {
   let totalCreditPoints = 0;
   let totalCredits = 0;
 
   performances.forEach((perf, i) => {
-    const meta = subjectMetas[i];
-    const percentage = (perf.totalMarks / meta.maxTotal) * 100;
+    const doc = subjectDocs[i];
+    if (doc.credits === 0) return; // skip audit courses like Environmental Sciences
+
+    const percentage =
+      doc.maxTotalMarks > 0 ? (perf.totalMarks / doc.maxTotalMarks) * 100 : 0;
     let gradePoint;
 
     if (perf.status === "Detained") gradePoint = 0;
@@ -491,116 +261,117 @@ const calculateSGPA = (performances, subjectMetas) => {
     else if (percentage >= 50) gradePoint = 6;
     else gradePoint = 5;
 
-    totalCreditPoints += gradePoint * meta.credits;
-    totalCredits += meta.credits;
+    totalCreditPoints += gradePoint * doc.credits;
+    totalCredits += doc.credits;
   });
 
   return totalCredits > 0 ? +(totalCreditPoints / totalCredits).toFixed(2) : 0;
 };
 
-// ─── Main Seed Function ──────────────────────────────────────────
+// ─── Main Seed ──────────────────────────────────────────────────
 const seed = async () => {
   try {
     await connectDB();
-    console.log("\n🌱 Starting seed...\n");
+    console.log("\n🌱 Starting Student Seed...\n");
 
-    // ── Step 1: Clear existing data ────────────────────────────
-    await Student.deleteMany({});
-    await Subject.deleteMany({});
-    console.log("🗑️  Cleared existing Students & Subjects");
+    // ── Step 1: Verify subjects exist ──────────────────────────
+    const subjectCount = await Subject.countDocuments();
+    if (subjectCount === 0) {
+      console.error("❌ No subjects found! Run subjects.seed.js first.");
+      return;
+    }
+    console.log(`📚 Found ${subjectCount} subjects in DB`);
 
-    // ── Step 2: Insert all subjects & collect IDs per semester ──
-    const subjectIdsBySemester = {};
+    // ── Step 2: Load subject docs by code per semester ─────────
+    const subjectDocsBySemester = {};
+    for (const [sem, codes] of Object.entries(subjectCodesBySemester)) {
+      const docs = await Subject.find({ subjectCode: { $in: codes } });
+      // Preserve ordering from our code list
+      subjectDocsBySemester[sem] = codes
+        .map((code) => docs.find((d) => d.subjectCode === code))
+        .filter(Boolean);
 
-    for (const [semNum, subjects] of Object.entries(subjectsBySemester)) {
-      const docs = await Subject.insertMany(
-        subjects.map((s) => ({
-          subjectTitle: s.subjectTitle,
-          subjectCode: s.subjectCode,
-          type: s.type,
-          credits: s.credits,
-          maxInternalMarks: s.maxInternal,
-          maxExternalMarks: s.maxExternal,
-          maxTotalMarks: s.maxTotal,
-          minInternalPassMarks: s.minInternal,
-          minExternalPassMarks: s.minExternal,
-          minTotalPassMarks: s.minTotal,
-        })),
-      );
-      subjectIdsBySemester[semNum] = docs.map((d) => d._id);
-      console.log(`📚 Semester ${semNum}: Inserted ${docs.length} subjects`);
+      if (subjectDocsBySemester[sem].length !== codes.length) {
+        const found = subjectDocsBySemester[sem].map((d) => d.subjectCode);
+        const missing = codes.filter((c) => !found.includes(c));
+        console.warn(`⚠️  Sem ${sem}: Missing subjects: ${missing.join(", ")}`);
+      }
     }
 
-    // ── Step 3: Generate students ──────────────────────────────
-    const STUDENT_COUNT = 60;
-    const students = [];
+    // ── Step 3: Clear existing students ───────────────────────
+    await Student.deleteMany({});
+    console.log("🗑️  Cleared existing students");
 
-    // Distribute across B.Tech branches (main focus)
+    // ── Step 4: Generate 60 B.Tech students ───────────────────
+    const STUDENT_COUNT = 60;
     const btechBranches = courseBranchMap["B.Tech"];
+    const semesters = Object.keys(subjectCodesBySemester).map(Number);
+
+    let inserted = 0;
 
     for (let i = 0; i < STUDENT_COUNT; i++) {
-      const course = "B.Tech";
       const branch = btechBranches[i % btechBranches.length];
-      const admissionYear = 2022;
-      const graduationYear = 2026;
+      // Each student has 1–4 semesters completed (sem 3 to sem 6)
+      const completedSemCount = randomInt(1, semesters.length);
 
-      // Each student has 1–4 semesters of data (simulating current progress)
-      const completedSemesters = randomInt(1, 4);
+      const studentSemesters = [];
+      for (let j = 0; j < completedSemCount; j++) {
+        const sem = semesters[j];
+        const semSubjectDocs = subjectDocsBySemester[sem];
 
-      const semesters = [];
-      for (let sem = 1; sem <= completedSemesters; sem++) {
-        const semSubjects = subjectsBySemester[sem];
-        const semSubjectIds = subjectIdsBySemester[sem];
-
-        const performances = semSubjects.map((meta, idx) =>
-          generateSubjectPerformance(semSubjectIds[idx], meta),
+        const performances = semSubjectDocs.map((doc) =>
+          generateSubjectPerformance(doc),
         );
+        const sgpa = calculateSGPA(performances, semSubjectDocs);
 
-        const sgpa = calculateSGPA(performances, semSubjects);
-
-        semesters.push({
+        studentSemesters.push({
           semesterNumber: sem,
           sgpa,
           subjects: performances,
         });
       }
 
-      const urn = 2200001 + i;
-      const crn = 2200101 + i;
+      const urn = 2203001 + i;
+      const crn = 2203101 + i;
 
-      students.push({
+      const student = new Student({
         fullName: generateFullName(),
         urn,
         crn,
-        course,
+        course: "B.Tech",
         branch,
-        admissionYear,
-        graduationYear,
-        semesters,
+        admissionYear: 2022,
+        graduationYear: 2026,
+        semesters: studentSemesters,
       });
-    }
 
-    // ── Step 4: Insert students using .save() for pre-save hooks ──
-    let inserted = 0;
-    for (const data of students) {
-      const student = new Student(data);
-      await student.save();
+      await student.save(); // triggers pre-save CGPA hook
       inserted++;
+
+      if (inserted % 15 === 0) {
+        console.log(`   ✏️  Created ${inserted}/${STUDENT_COUNT} students...`);
+      }
     }
 
     console.log(`\n✅ Inserted ${inserted} students successfully`);
 
-    // ── Summary ────────────────────────────────────────────────
-    const totalSubjects = await Subject.countDocuments();
-    const totalStudents = await Student.countDocuments();
+    // ── Summary ───────────────────────────────────────────────
+    const total = await Student.countDocuments();
     const detainedCount = await Student.countDocuments({
       "semesters.subjects.status": "Detained",
     });
+    const branchCounts = {};
+    for (const b of btechBranches) {
+      branchCounts[b] = await Student.countDocuments({ branch: b });
+    }
 
     console.log("\n📊 Seed Summary:");
-    console.log(`   Subjects  : ${totalSubjects}`);
-    console.log(`   Students  : ${totalStudents}`);
-    console.log(`   With Detentions : ${detainedCount}`);
+    console.log(`   Total students   : ${total}`);
+    console.log(`   With detentions  : ${detainedCount}`);
+    console.log("   Branch distribution:");
+    for (const [b, c] of Object.entries(branchCounts)) {
+      console.log(`     ${b}: ${c}`);
+    }
     console.log("");
   } catch (error) {
     console.error("❌ Seed failed:", error.message);

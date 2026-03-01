@@ -1,10 +1,13 @@
-import { Upload, CheckCircle, Database, Users, TrendingUp } from "lucide-react";
+import { useState, useEffect } from "react";
 import {
-  dashboardStats,
-  notificationActivity,
-  branchDistribution,
-  recentUploads,
-} from "../../data/stats";
+  Upload,
+  CheckCircle,
+  Database,
+  Users,
+  TrendingUp,
+  Loader2,
+} from "lucide-react";
+import { notificationActivity, recentUploads } from "../../data/stats";
 import {
   AreaChart,
   Area,
@@ -16,57 +19,6 @@ import {
   Bar,
   ResponsiveContainer,
 } from "recharts";
-
-const statCards = [
-  {
-    label: "Total Students",
-    value: dashboardStats.totalStudents,
-    sub: "Across all branches",
-    icon: Users,
-    iconBg: "from-[#6366f1] to-[#4f46e5]",
-    bl: "border-l-[3px] border-l-[#6366f1]",
-  },
-  {
-    label: "Notifications Sent",
-    value: dashboardStats.notificationsSent,
-    sub: "This semester",
-    icon: Upload,
-    iconBg: "from-[#06b6d4] to-[#0891b2]",
-    bl: "border-l-[3px] border-l-[#06b6d4]",
-  },
-  {
-    label: "Detained Students",
-    value: dashboardStats.detainedStudents,
-    sub: "Needs attention",
-    icon: TrendingUp,
-    iconBg: "from-[#ef4444] to-[#b91c1c]",
-    bl: "border-l-[3px] border-l-[#ef4444]",
-  },
-  {
-    label: "Active Tokens",
-    value: dashboardStats.activeTokens,
-    sub: "Valid & not expired",
-    icon: CheckCircle,
-    iconBg: "from-[#10b981] to-[#059669]",
-    bl: "border-l-[3px] border-l-[#10b981]",
-  },
-  {
-    label: "Courses Offered",
-    value: dashboardStats.coursesOffered,
-    sub: "B.Tech, MCA, MBA…",
-    icon: Database,
-    iconBg: "from-[#f59e0b] to-[#d97706]",
-    bl: "border-l-[3px] border-l-[#f59e0b]",
-  },
-  {
-    label: "Average CGPA",
-    value: dashboardStats.avgCGPA,
-    sub: "Institution-wide",
-    icon: TrendingUp,
-    iconBg: "from-[#8b5cf6] to-[#7c3aed]",
-    bl: "border-l-[3px] border-l-[#8b5cf6]",
-  },
-];
 
 const TT = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -83,6 +35,61 @@ const TT = ({ active, payload, label }) => {
 };
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/students/stats");
+        const json = await res.json();
+        if (res.ok) setStats(json.data);
+      } catch (err) {
+        console.error("Failed to load stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const statCards = [
+    {
+      label: "Total Students",
+      value: stats?.totalStudents ?? "—",
+      sub: "Across all branches",
+      icon: Users,
+      iconBg: "from-[#6366f1] to-[#4f46e5]",
+      bl: "border-l-[3px] border-l-[#6366f1]",
+    },
+    {
+      label: "Detained Students",
+      value: stats?.detainedStudents ?? "—",
+      sub: "Needs attention",
+      icon: TrendingUp,
+      iconBg: "from-[#ef4444] to-[#b91c1c]",
+      bl: "border-l-[3px] border-l-[#ef4444]",
+    },
+    {
+      label: "Courses Offered",
+      value: stats?.coursesOffered ?? "—",
+      sub: "B.Tech, MCA, MBA…",
+      icon: Database,
+      iconBg: "from-[#f59e0b] to-[#d97706]",
+      bl: "border-l-[3px] border-l-[#f59e0b]",
+    },
+    {
+      label: "Average CGPA",
+      value: stats?.avgCGPA ?? "—",
+      sub: "Institution-wide",
+      icon: TrendingUp,
+      iconBg: "from-[#8b5cf6] to-[#7c3aed]",
+      bl: "border-l-[3px] border-l-[#8b5cf6]",
+    },
+  ];
+
+  const branchDistribution = stats?.branchDistribution || [];
+
   return (
     <div className="fade-in">
       {/* ── Welcome Banner ─────────────────────────────────── */}
@@ -129,13 +136,13 @@ export default function AdminDashboard() {
             </h2>
             <p className="text-[#9ba2c0] text-[0.85rem]">
               <span className="text-[#34d399] font-semibold">
-                {dashboardStats.notificationsSent}
+                {stats?.totalStudents || 0}
               </span>{" "}
-              notifications dispatched today &nbsp;·&nbsp;
-              <span className="text-[#22d3ee] font-semibold">
-                {dashboardStats.activeTokens}
+              students enrolled &nbsp;·&nbsp;
+              <span className="text-[#f87171] font-semibold">
+                {stats?.detainedStudents || 0}
               </span>{" "}
-              active tokens
+              detained
             </p>
           </div>
           <div className="flex gap-3 relative">
@@ -149,8 +156,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ── Stat Cards (3×2 grid) ───────────────────────────── */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      {/* ── Stat Cards ───────────────────────────────── */}
+      <div className="grid grid-cols-4 gap-4 mb-8">
         {statCards.map((s) => (
           <div
             key={s.label}
@@ -165,7 +172,11 @@ export default function AdminDashboard() {
                   className="text-[2rem] font-extrabold text-[#f0f1fa] leading-none mb-1"
                   style={{ fontFamily: "Outfit, sans-serif" }}
                 >
-                  {s.value}
+                  {loading ? (
+                    <span className="inline-block w-12 h-8 bg-[#252840] rounded animate-pulse" />
+                  ) : (
+                    s.value
+                  )}
                 </p>
                 <p className="text-[0.72rem] text-[#5c6385]">{s.sub}</p>
               </div>
@@ -256,7 +267,7 @@ export default function AdminDashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Bar Chart */}
+        {/* Bar Chart — real branch data from API */}
         <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-6 hover:border-[#2e3354] transition-colors">
           <p className="text-[0.7rem] text-[#5c6385] font-semibold uppercase tracking-widest mb-1">
             Branch Distribution
@@ -267,48 +278,54 @@ export default function AdminDashboard() {
           >
             Students per Branch
           </h3>
-          <ResponsiveContainer width="100%" height={230}>
-            <BarChart
-              data={branchDistribution}
-              layout="vertical"
-              barSize={8}
-              margin={{ left: -8, right: 8 }}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="#1e2132"
-                horizontal={false}
-              />
-              <XAxis
-                type="number"
-                tick={{ fill: "#5c6385", fontSize: 10 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                type="category"
-                dataKey="branch"
-                width={36}
-                tick={{ fill: "#9ba2c0", fontSize: 11 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip content={<TT />} />
-              <Bar
-                dataKey="students"
-                name="Students"
-                fill="url(#barGrad)"
-                radius={[0, 4, 4, 0]}
+          {loading ? (
+            <div className="flex items-center justify-center h-[230px]">
+              <Loader2 size={24} className="animate-spin text-[#5c6385]" />
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={230}>
+              <BarChart
+                data={branchDistribution}
+                layout="vertical"
+                barSize={8}
+                margin={{ left: -8, right: 8 }}
               >
-                <defs>
-                  <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#6366f1" />
-                    <stop offset="100%" stopColor="#06b6d4" />
-                  </linearGradient>
-                </defs>
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#1e2132"
+                  horizontal={false}
+                />
+                <XAxis
+                  type="number"
+                  tick={{ fill: "#5c6385", fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="branch"
+                  width={36}
+                  tick={{ fill: "#9ba2c0", fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip content={<TT />} />
+                <Bar
+                  dataKey="students"
+                  name="Students"
+                  fill="url(#barGrad)"
+                  radius={[0, 4, 4, 0]}
+                >
+                  <defs>
+                    <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#6366f1" />
+                      <stop offset="100%" stopColor="#06b6d4" />
+                    </linearGradient>
+                  </defs>
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 

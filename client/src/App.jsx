@@ -33,7 +33,7 @@ export default function App() {
         </Route>
 
         {/* Guardian Portal */}
-        <Route path="/dashboard" element={<GuardianDashboard />} />
+        <Route path="/guardian" element={<GuardianDashboard />} />
         <Route path="/access-denied" element={<AccessDenied />} />
 
         {/* 404 */}
