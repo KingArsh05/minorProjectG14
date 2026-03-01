@@ -42,9 +42,9 @@
 
 \hypersetup{
   colorlinks=true,
-  linkcolor=primaryblue,
-  urlcolor=accentcyan,
-  citecolor=primaryblue,
+  linkcolor=black,
+  urlcolor=black,
+  citecolor=black,
 }
 
 % Header/Footer
@@ -192,6 +192,8 @@ Routing & React Router DOM & 7.13.1\\
 \hline
 Icons & Lucide React & 0.575.0\\
 \hline
+HTTP Client & Axios & 1.13.6\\
+\hline
 Backend Framework & Express.js & 5.2.1\\
 \hline
 Database & MongoDB Atlas & M0 Free Tier\\
@@ -212,9 +214,10 @@ OS & macOS / Windows & Development\\
 \hline
 \end{longtable}
 
+\clearpage
 \section{Hardware Requirements}
 
-\begin{longtable}{|p{5cm}|p{8cm}|}
+\begin{longtable}{|p{3cm}|p{9cm}|}
 \hline
 \textbf{Component} & \textbf{Minimum Specification}\\
 \hline
@@ -515,7 +518,7 @@ The Use Case Diagram (Figure 4.4) illustrates the primary interactions between t
 
   % Messages
   \draw[arrow] (0, -1) -- node[above, font=\tiny] {Select students} (3.5, -1);
-  \draw[arrow] (3.5, -2) -- node[above, font=\tiny] {POST /api/notify-guardian} (7, -2);
+  \draw[arrow] (3.5, -2) -- node[above, font=\tiny] {POST /api/v1/mailsender/send} (7, -2);
   \draw[arrow] (7, -3) -- node[above, font=\tiny] {sendMail()} (10.5, -3);
   \draw[darrow] (7, -4) -- node[above, font=\tiny] {200 OK} (10.5, -4);
   \draw[darrow] (3.5, -5) -- node[above, font=\tiny] {Success response} (7, -5);
@@ -620,7 +623,7 @@ The Entity-Relationship (ER) Diagram (Figure 4.7) models the core data structure
 \subsection{Database Schema Details}
 
 \textbf{Student Collection:}
-\begin{longtable}{|l|l|p{5.5cm}|}
+\begin{longtable}{|l|l|p{10cm}|}
 \hline
 \textbf{Field} & \textbf{Type} & \textbf{Description}\\
 \hline
@@ -640,12 +643,14 @@ graduationYear & Number & Expected graduation year ($>$ admissionYear)\\
 \hline
 semesters & Array & Array of Semester sub-documents\\
 \hline
+guardianEmail & String & Parent/Guardian email for notifications\\
+\hline
 cgpa & Number & Auto-calculated \textbf{only after degree completion}\\
 \hline
 \end{longtable}
 
 \textbf{Subject Collection:}
-\begin{longtable}{|l|l|p{5.5cm}|}
+\begin{longtable}{|l|l|p{8cm}|}
 \hline
 \textbf{Field} & \textbf{Type} & \textbf{Description}\\
 \hline
@@ -668,6 +673,25 @@ minInternalPassMarks & Number & Minimum to pass internally\\
 minExternalPassMarks & Number & Minimum to pass externally\\
 \hline
 minTotalPassMarks & Number & $\leq$ maxTotalMarks\\
+\hline
+\end{longtable}
+
+\textbf{Token Collection:}
+\begin{longtable}{|l|l|p{8cm}|}
+\hline
+\textbf{Field} & \textbf{Type} & \textbf{Description}\\
+\hline
+student & ObjectId & Reference to the Student document\\
+\hline
+token & String & Unique cryptographically secure token string\\
+\hline
+semester & Number & The academic semester for this report\\
+\hline
+sentVia & String & Delivery method (Email, SMS, Both)\\
+\hline
+expiresAt & Date & Timestamp after which the token is invalid\\
+\hline
+isRevoked & Boolean & Manual override to invalidate token access\\
 \hline
 \end{longtable}
 
@@ -768,20 +792,66 @@ The State Diagram (Figure 4.10) illustrates the lifecycle and various states of 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-  actor/.style={rectangle, draw=primaryblue, fill=primaryblue!8, rounded corners=6pt, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\scriptsize\bfseries},
-  arrow/.style={-{Stealth[length=2.5mm]}, draw=primaryblue!60}
+  actor/.style={
+    rectangle,
+    draw=primaryblue,
+    fill=primaryblue!8,
+    rounded corners=10pt,
+    minimum width=3.2cm,
+    minimum height=1cm,
+    align=center,
+    font=\small\bfseries,
+    inner sep=8pt
+  },
+  req/.style={
+    -{Stealth[length=3mm]},
+    thick,
+    draw=primaryblue!80
+  },
+  res/.style={
+    -{Stealth[length=3mm]},
+    thick,
+    dashed,
+    draw=primaryblue!60
+  }
 ]
-  \node[actor] (admin) at (0, 0) {1: Admin};
-  \node[actor] (ui) at (4, 0) {2: Upload UI};
-  \node[actor] (backend) at (8, 0) {3: API Server};
-  \node[actor] (db) at (8, -3) {4: Database};
 
-  \draw[arrow] (admin) -- node[above, font=\tiny] {1.1 Select File} (ui);
-  \draw[arrow] (ui.15) -- node[above, font=\tiny] {1.2 Send CSV} (backend.165);
-  \draw[arrow] (backend.270) -- node[right, font=\tiny] {1.3 Insert Records} (db.90);
-  \draw[arrow] (db.105) -| node[above left, font=\tiny] {1.4 Acknowledge} (backend.215);
-  \draw[arrow] (backend.195) -- node[below, font=\tiny] {1.5 Success Res} (ui.345);
-  \draw[arrow] (ui.190) -- node[below, font=\tiny] {1.6 Display Status} (admin.350);
+% Nodes (better horizontal spacing)
+\node[actor] (admin)   at (0,0)   {1: Admin};
+\node[actor] (ui)      at (6,0)   {2: Upload UI};
+\node[actor] (backend) at (12,0)  {3: API Server};
+\node[actor] (db)      at (12,-5) {4: Database};
+
+% Forward Flow
+\draw[req] (admin) -- 
+node[midway, above=10pt, font=\scriptsize] {1.1 Select File}
+(ui);
+
+\draw[req] (ui) -- 
+node[midway, above=10pt, font=\scriptsize] {1.2 Send CSV}
+(backend);
+
+\draw[req] (backend) -- 
+node[midway, right=14pt, font=\scriptsize, align=center] 
+{1.3 Insert\\Records}
+(db);
+
+% Response Flow (dashed for clarity)
+\draw[res] (db) -- 
+node[midway, left=14pt, font=\scriptsize] 
+{1.4 Acknowledge}
+(backend);
+
+\draw[res] (backend) -- 
+node[midway, below=10pt, font=\scriptsize] 
+{1.5 Success Response}
+(ui);
+
+\draw[res] (ui) -- 
+node[midway, below=10pt, font=\scriptsize] 
+{1.6 Display Status}
+(admin);
+
 \end{tikzpicture}
 \caption{Communication Diagram -- Bulk Data Upload}
 \end{figure}
@@ -811,7 +881,7 @@ The proposed testing strategy will cover:
 
 The following is a curated list of relevant test cases on which the system will be systematically tested during the verification phase.
 
-\begin{longtable}{|p{1.5cm}|p{4.5cm}|p{4.5cm}|p{3.5cm}|}
+\begin{longtable}{|p{1cm}|p{3cm}|p{5cm}|p{5cm}|}
 \hline
 \textbf{ID} & \textbf{Test Case} & \textbf{Steps} & \textbf{Expected Outcome}\\
 \hline
@@ -864,10 +934,11 @@ As of the midterm evaluation, the core foundational architecture of the Academic
 The following modules have been substantially developed and are currently undergoing internal testing:
 
 \begin{itemize}
-  \item \textbf{Authentication Module}: Admin login interface with basic route protection is functional.
-  \item \textbf{Database Schema}: Mongoose models for Students, Semesters, Subjects, and Performance records have been designed and deployed to MongoDB Atlas.
-  \item \textbf{Frontend Layouts}: The overarching React application architecture, including the Admin Dashboard wireframes and Guardian Portal layout structure, is integrated using Tailwind CSS.
-  \item \textbf{Data Ingestion Foundation}: The backend API to parse and handle form data is set up, though bulk CSV/Excel parsing logic is still being refined.
+  \item \textbf{Authentication Module}: Admin login interface with robust \textbf{Axios}-based session management and route protection is functional.
+  \item \textbf{Database Schema}: Mongoose models for Students, Semesters, Subjects, Performance, and \textbf{Secure Tokens} have been deployed to MongoDB Atlas.
+  \item \textbf{Frontend Layouts}: The overarching React application architecture is fully integrated using Tailwind CSS, featuring a responsive Sidebar with logout confirmation.
+  \item \textbf{Automated Email Notification Pipeline}: Integration with Gmail SMTP via Nodemailer for batch notification dispatch is operational.
+  \item \textbf{Secure Token Generation System}: Cryptographic token generation and lifecycle management (expiry/revocation) are fully implemented.
 \end{itemize}
 
 \section{Remaining Requirements for Finalization}
@@ -875,12 +946,10 @@ The following modules have been substantially developed and are currently underg
 To transition the project from its current midterm state to a fully finalized application, several critical features and integrations must be completed:
 
 \begin{enumerate}
-  \item \textbf{Robust Bulk Data Processing}: Finalizing the logic to accurately parse complex, multi-semester Excel/CSV sheets, map subject codes to student profiles, and calculate SGPA/CGPA dynamically without data loss.
-  \item \textbf{Automated Email Notification Pipeline}: Integrating Nodemailer with an SMTP service (such as Gmail or SendGrid) to dispatch batch emails securely to guardians without triggering spam filters.
-  \item \textbf{Secure Token Generation System}: Developing the cryptographic token generation algorithm to create unique, time-sensitive access links for guardians, ensuring that these tokens expire after a set duration and can be manually revoked by the admin.
-  \item \textbf{Data Visualization Integration}: Connecting backend student performance data to Recharts to dynamically render interactive line graphs representing SGPA trends on both the admin and guardian portals.
-  \item \textbf{Comprehensive Role-Based Access Control}: Enforcing strict server-side validation to ensure that guardians utilizing access links cannot manipulate URL parameters to view other students' sensitive academic data.
-  \item \textbf{Production Deployment}: Configuring deployment pipelines for hosting the frontend Single Page Application and the backend serverless functions on Vercel, encompassing environment variable management and CORS policy enforcement.
+  \item \textbf{Robust Bulk Data Processing Integration}: Finalising the UI-to-Backend mapping for all student fields (including guardian emails) across complex multi-semester datasets.
+  \item \textbf{Data Visualization Polishing}: Enhancing Recharts integration to provide even more granular academic insights on the Guardian Dashboard.
+  \item \textbf{Comprehensive Role-Based Access Control Audit}: Performing a final security audit on server-side validations to ensure absolute data isolation.
+  \item \textbf{Production Deployment}: Finalising Vercel production environment configurations and custom domain mapping.
 \end{enumerate}
 
 \section{Anticipated Ongoing Challenges}
@@ -904,24 +973,91 @@ During the subsequent development phases, We anticipate the following technical 
 
 \begin{enumerate}
   \item \textbf{Login Page} -- Dark-themed admin login with email/password fields, React Hook Form validation, gradient logo, and grid background.
+  
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{assets/pic1.png}
+  \caption{Login Page}
+  \end{figure}  
 
   \item \textbf{Admin Dashboard} -- Stat cards (Total Students, Notifications Sent, Detained, Active Tokens, Average CGPA), Area chart for notification activity, Bar chart for branch distribution, Recent uploads table.
 
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic2.png}
+  \caption{Admin Dashboard}
+  \end{figure} 
+
   \item \textbf{Upload Data} -- Course/branch/semester selection dropdowns, drag-and-drop CSV/Excel upload zone, parsed data preview table.
+
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic3.png}
+  \caption{Upload Data}
+  \end{figure} 
 
   \item \textbf{Student List} -- Searchable grid/list view with SGPA colour coding, branch filter, click-to-navigate to detail.
 
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic4.png}
+  \caption{Student List}
+  \end{figure} 
+
   \item \textbf{Student Detail} -- Student profile header, SGPA trend line chart, semester-wise collapsible tables showing internal/external marks and detention flags.
+
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic5.png}
+  \caption{Student Detail}
+  \end{figure} 
 
   \item \textbf{Send Notification} -- Multi-select student table, dispatch button with success/failure feedback.
 
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic6.png}
+  \caption{Send Notification}
+  \end{figure} 
+
   \item \textbf{Token Management} -- Token table with status badges (Active/Expired/Revoked), access method tags, revoke and copy-link actions.
+  
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic7.png}
+  \caption{Token Management}
+  \end{figure} 
 
   \item \textbf{Guardian Dashboard} -- Token-authenticated view with student summary, SGPA chart, semester breakdown tables, attendance ring, and download report button.
+  
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic8.png}
+  \caption{Guardian Dashboard}
+  \end{figure} 
+
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic9.png}
+  \caption{Guardian Dashboard}
+  \end{figure} 
 
   \item \textbf{Access Denied Page} -- Shown when token is invalid/expired/revoked.
+  
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/pic10.png}
+  \caption{Access Denied Page}
+  \end{figure} 
 
   \item \textbf{Email Template} -- Branded HTML email with ``View Report'' CTA button.
+  
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{assets/pic11.png}
+  \caption{Email Template}
+  \end{figure} 
+
 \end{enumerate}
 
 \textit{[Insert screenshots here]}
