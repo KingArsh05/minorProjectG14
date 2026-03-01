@@ -80,8 +80,6 @@ const subjectSchema = new mongoose.Schema(
   - minTotalPassMarks <= maxTotalMarks
 */
 
-import { ApiError } from "../utils/ApiError.js";
-
 subjectSchema.pre("validate", function (next) {
   if (this.maxTotalMarks < this.maxInternalMarks + this.maxExternalMarks) {
     return next(
