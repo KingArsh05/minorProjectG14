@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import {
   GraduationCap,
@@ -72,12 +73,12 @@ export default function GuardianDashboard() {
 
       try {
         setLoading(true);
-        const res = await fetch(
-          `/api/tokens/validate?token=${encodeURIComponent(token)}`,
+        const API_URL = import.meta.env.VITE_API_URL;
+        const { data } = await axios.get(
+          `${API_URL}/tokens/validate?token=${encodeURIComponent(token)}`,
         );
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.message || "Invalid token");
-        setStudent(json.data);
+        if (!data.success) throw new Error(data.message || "Invalid token");
+        setStudent(data.data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -172,7 +173,7 @@ export default function GuardianDashboard() {
             </div>
             <div>
               <h1 className="text-2xl font-black text-white font-['Outfit'] tracking-tight">
-                AcadAlert
+                ASTNS
               </h1>
               <p className="text-sm text-indigo-200/60 font-medium">
                 Official Academic Report Portal

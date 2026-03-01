@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Search,
   LayoutGrid,
@@ -47,6 +48,7 @@ export default function StudentList() {
   const [search, setSearch] = useState("");
   const [course, setCourse] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // ── Fetch students from API ──────────────────────────────────
   useEffect(() => {
@@ -54,11 +56,12 @@ export default function StudentList() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch("/api/students");
-        const json = await res.json();
-        if (!res.ok)
-          throw new Error(json.message || "Failed to fetch students");
-        setStudents(json.data || []);
+        const { data } = await axios.get(`${API_URL}/students`, {
+          withCredentials: true,
+        });
+        if (!data.success)
+          throw new Error(data.message || "Failed to fetch students");
+        setStudents(data.data || []);
       } catch (err) {
         setError(err.message);
       } finally {

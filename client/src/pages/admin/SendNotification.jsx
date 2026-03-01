@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Search,
   Send,
@@ -25,13 +26,15 @@ export default function SendNotification() {
   const [sent, setSent] = useState(false);
   const [createdTokens, setCreatedTokens] = useState([]);
   const [sendError, setSendError] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await fetch("/api/students");
-        const json = await res.json();
-        if (res.ok) setStudents(json.data || []);
+        const { data } = await axios.get(`${API_URL}/students`, {
+          withCredentials: true,
+        });
+        if (data.success) setStudents(data.data || []);
       } catch (err) {
         console.error("Failed to load students:", err);
       } finally {
@@ -61,19 +64,27 @@ export default function SendNotification() {
     setSending(true);
     setSendError(null);
     try {
-      const res = await fetch("/api/tokens", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          studentIds: selected,
-          sentVia: via,
+      const recipients = selected.map((id) => {
+        const student = students.find((s) => s._id === id);
+        return { studentId: id, email: student?.guardianEmail };
+      });
+
+      const { data } = await axios.post(
+        `${API_URL}/mailsender/send`,
+        {
+          recipients,
           semester,
           expiry,
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Failed to create tokens");
-      setCreatedTokens(json.data || []);
+        },
+        { withCredentials: true },
+      );
+      if (!data.success)
+        throw new Error(data.message || "Failed to send notifications");
+
+      // The new endpoint returns summary and details
+      setCreatedTokens(
+        data.data.details.filter((d) => d.status === "success") || [],
+      );
       setSent(true);
     } catch (err) {
       setSendError(err.message);
@@ -93,12 +104,13 @@ export default function SendNotification() {
             className="text-[1.5rem] font-extrabold text-[#f0f1fa] mb-2"
             style={{ fontFamily: "Outfit,sans-serif" }}
           >
-            Tokens Generated!
+            Notifications Dispatched!
           </h2>
           <p className="text-[#5c6385] text-[0.9rem]">
+            Successfully sent{" "}
             <strong className="text-[#818cf8]">{createdTokens.length}</strong>{" "}
-            unique guardian link{createdTokens.length > 1 ? "s" : ""} created
-            via <strong className="text-[#22d3ee]">{via}</strong>
+            secure link{createdTokens.length > 1 ? "s" : ""} to guardian email
+            {createdTokens.length > 1 ? "s" : ""}
           </p>
         </div>
         <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-4 mb-5">

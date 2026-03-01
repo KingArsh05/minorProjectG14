@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   KeyRound,
   Trash2,
@@ -61,13 +62,15 @@ export default function TokenManagement() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState("");
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchTokens = async () => {
       try {
-        const res = await fetch("/api/tokens");
-        const json = await res.json();
-        if (res.ok) setList(json.data || []);
+        const { data } = await axios.get(`${API_URL}/tokens`, {
+          withCredentials: true,
+        });
+        if (data.success) setList(data.data || []);
       } catch (err) {
         console.error("Failed to load tokens:", err);
       } finally {
@@ -89,8 +92,10 @@ export default function TokenManagement() {
 
   const revoke = async (id) => {
     try {
-      const res = await fetch(`/api/tokens/${id}/revoke`, { method: "PATCH" });
-      if (res.ok) {
+      const { data } = await axios.patch(`${API_URL}/tokens/${id}/revoke`, null, {
+        withCredentials: true,
+      });
+      if (data.success) {
         setList((p) =>
           p.map((t) => (t._id === id ? { ...t, status: "Expired" } : t)),
         );

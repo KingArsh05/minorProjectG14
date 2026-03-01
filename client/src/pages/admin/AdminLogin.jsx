@@ -40,10 +40,10 @@ export default function AdminLogin() {
             className="text-[2rem] font-extrabold gradient-text"
             style={{ fontFamily: "Outfit, sans-serif" }}
           >
-            AcadAlert
+            ASTNS
           </h1>
           <p className="text-[0.85rem] text-[#5c6385] mt-1">
-            Academic Status Notification System
+            Academic Status Transparency Notification System
           </p>
         </div>
 

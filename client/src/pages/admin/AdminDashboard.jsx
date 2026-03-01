@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Upload,
   CheckCircle,
@@ -37,13 +38,15 @@ const TT = ({ active, payload, label }) => {
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch("/api/students/stats");
-        const json = await res.json();
-        if (res.ok) setStats(json.data);
+        const { data } = await axios.get(`${API_URL}/students/stats`, {
+          withCredentials: true,
+        });
+        if (data.success) setStats(data.data);
       } catch (err) {
         console.error("Failed to load stats:", err);
       } finally {

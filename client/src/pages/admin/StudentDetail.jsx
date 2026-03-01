@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -80,16 +81,18 @@ export default function StudentDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openSem, setOpenSem] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchStudent = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`/api/students/${id}`);
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.message || "Student not found");
-        setStudent(json.data);
+        const { data } = await axios.get(`${API_URL}/students/${id}`, {
+          withCredentials: true,
+        });
+        if (!data.success) throw new Error(data.message || "Student not found");
+        setStudent(data.data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -133,6 +136,26 @@ export default function StudentDetail() {
         student.semesters.length
       ).toFixed(2)
     : "—";
+
+  const handleViewAsGuardian = async () => {
+    try {
+      const { data } = await axios.post(
+        `${API_URL}/tokens`,
+        {
+          studentIds: [student._id],
+          sentVia: "Email",
+          semester: student.semesters.length,
+          expiry: "24 hours",
+        },
+        { withCredentials: true },
+      );
+      if (data.success && data.data?.[0]?.token) {
+        window.open(`/guardian?token=${data.data[0].token}`, "_blank");
+      }
+    } catch (err) {
+      console.error("Failed to generate preview token:", err);
+    }
+  };
 
   return (
     <div className="fade-in">
@@ -191,35 +214,10 @@ export default function StudentDetail() {
         </div>
         <div className="flex gap-2 flex-wrap">
           <button
-            onClick={async () => {
-              try {
-                const res = await fetch("/api/tokens", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    studentIds: [student._id],
-                    sentVia: "Email",
-                    semester: student.semesters.length,
-                    expiry: "24 hours",
-                  }),
-                });
-                const json = await res.json();
-                if (res.ok && json.data?.[0]?.token) {
-                  window.open(
-                    `/guardian?token=${json.data[0].token}`,
-                    "_blank",
-                  );
-                }
-              } catch (err) {
-                console.error("Failed to generate preview token:", err);
-              }
-            }}
+            onClick={handleViewAsGuardian}
             className="inline-flex items-center gap-2 px-4 py-[0.55rem] rounded-xl text-[#22d3ee] text-sm font-semibold bg-[rgba(6,182,212,0.1)] border border-[rgba(6,182,212,0.25)] hover:bg-[rgba(6,182,212,0.18)] hover:-translate-y-px transition-all cursor-pointer"
           >
             <Eye size={14} /> View as Guardian
-          </button>
-          <button className="inline-flex items-center gap-2 px-4 py-[0.55rem] rounded-xl text-[#9ba2c0] text-sm bg-[#1e2132] border border-[#2e3354] hover:border-[#6366f1] hover:text-[#f0f1fa] transition-all cursor-pointer">
-            <Download size={14} /> Download PDF
           </button>
           <button className="inline-flex items-center gap-2 px-4 py-[0.55rem] rounded-xl text-white text-sm font-semibold bg-linear-to-br from-[#6366f1] to-[#4f46e5] shadow-[0_4px_14px_rgba(99,102,241,0.25)] hover:-translate-y-px transition-all cursor-pointer">
             <Send size={14} /> Send Link
