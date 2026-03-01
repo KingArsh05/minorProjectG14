@@ -32,13 +32,15 @@ import authRouter from "./routes/auth.route.js";
 import reportRouter from "./routes/report.route.js";
 import studentRouter from "./routes/student.route.js";
 import tokenRouter from "./routes/token.route.js";
+import mailSenderRouter from "./routes/mailSender.route.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import { checkAuth } from "./middlewares/auth.middleware.js";
 
 app.use("/api/v1/auth", authRouter);
-app.use("/api/students", checkAuth, studentRouter);
-app.use("/api", checkAuth, reportRouter);
-app.use("/api/tokens", checkAuth, tokenRouter);
+app.use("/api/v1/students", checkAuth, studentRouter);
+app.use("/api/v1/reports", checkAuth, reportRouter);
+app.use("/api/v1/tokens", checkAuth, tokenRouter);
+app.use("/api/v1/mailsender", checkAuth, mailSenderRouter);
 
 app.use(errorHandler);
 
