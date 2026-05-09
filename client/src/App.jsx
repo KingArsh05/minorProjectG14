@@ -11,6 +11,7 @@ import SendNotification from "./pages/admin/SendNotification";
 import TokenManagement from "./pages/admin/TokenManagement";
 import GuardianDashboard from "./pages/guardian/GuardianDashboard";
 import AccessDenied from "./pages/guardian/AccessDenied";
+import Home from "./LandngPage/Home";
 import "./index.css";
 
 function LoginGate() {
@@ -27,7 +28,7 @@ export default function App() {
       <AuthProvider>
         <Routes>
           {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Home />} />
 
           {/* Auth */}
           <Route path="/login" element={<LoginGate />} />
