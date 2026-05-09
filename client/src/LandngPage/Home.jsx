@@ -1,9 +1,11 @@
-import React from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import CTA from './components/CTA';
-import Footer from './components/Footer';
+import React from "react";
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import Features from "./components/Features";
+import CTA from "./components/CTA";
+import Footer from "./components/Footer";
+import Contact from "./components/Contact";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function Home() {
   return (
@@ -12,6 +14,7 @@ export default function Home() {
       <Hero />
       <Features />
       <CTA />
+      <Contact />
       <Footer />
     </div>
   );

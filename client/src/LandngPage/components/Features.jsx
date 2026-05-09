@@ -7,6 +7,7 @@ import {
   Users,
   Zap,
   ArrowUpRight,
+  Sparkles,
 } from "lucide-react";
 
 const FeatureCard = ({ icon, title, description, index }) => {
@@ -116,6 +117,7 @@ export default function Features() {
         {/* Heading */}
         <div className="text-center max-w-4xl mx-auto mb-24">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#6366f1]/20 bg-[#6366f1]/10 text-[#a5b4fc] text-sm font-medium mb-8 backdrop-blur-xl">
+            <Sparkles size={16} />
             Powerful Features
           </div>
 

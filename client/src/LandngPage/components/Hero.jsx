@@ -22,7 +22,7 @@ export default function Hero() {
       <div className="absolute top-[20%] left-[-10%] w-[400px] h-[400px] rounded-full bg-violet-500/10 blur-[120px]"></div>
 
       {/* Floating Elements */}
-      <div className="absolute left-[5%] top-[40%] hidden xl:flex items-center gap-3 px-4 py-3 rounded-2xl border border-[#2a2f4f] bg-[rgba(13,15,30,0.75)] backdrop-blur-xl shadow-[0_0_30px_rgba(0,0,0,0.45)] rotate-[-8deg] animate-[float_6s_ease-in-out_infinite]">
+      <div className="absolute left-[2%] top-[40%] hidden xl:flex items-center gap-3 px-4 py-3 rounded-2xl border border-[#2a2f4f] bg-[rgba(13,15,30,0.75)] backdrop-blur-xl shadow-[0_0_30px_rgba(0,0,0,0.45)] rotate-[-8deg] animate-[float_6s_ease-in-out_infinite]">
         <div className="w-10 h-10 rounded-xl bg-[#6366f1]/15 flex items-center justify-center">
           <BellRing size={18} className="text-[#818cf8]" />
         </div>
@@ -34,7 +34,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="absolute right-[5%] top-[45%] hidden xl:flex items-center gap-3 px-4 py-3 rounded-2xl border border-[#2a2f4f] bg-[rgba(13,15,30,0.75)] backdrop-blur-xl shadow-[0_0_30px_rgba(0,0,0,0.45)] animate-[float_7s_ease-in-out_infinite]">
+      <div className="absolute right-[1%] top-[45%] hidden xl:flex items-center gap-3 px-4 py-3 rounded-2xl border border-[#2a2f4f] bg-[rgba(13,15,30,0.75)] backdrop-blur-xl shadow-[0_0_30px_rgba(0,0,0,0.45)] animate-[float_7s_ease-in-out_infinite]">
         <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
           <BarChart3 size={18} className="text-cyan-400" />
         </div>

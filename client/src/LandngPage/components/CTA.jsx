@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 export default function CTA() {
   return (
-    <section className="relative py-36 overflow-hidden">
+    <section id="how-it-works" className="relative py-36 overflow-hidden">
       {/* Background */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#4f46e5]/10 blur-[140px] pointer-events-none"></div>
 
