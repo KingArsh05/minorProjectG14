@@ -49,13 +49,10 @@ export default function TokenManagement() {
 
   const getTokenStatus = (token) => {
     const expired = new Date(token.expiresAt) < new Date();
-
     if (expired) return "Expired";
-
     if (token.usedCount >= token.accessLimit) {
       return "Completed";
     }
-
     return "Active";
   };
 
@@ -80,11 +77,8 @@ export default function TokenManagement() {
 
   const stats = {
     total: tokens.length,
-
     active: tokens.filter((t) => getTokenStatus(t) === "Active").length,
-
     completed: tokens.filter((t) => getTokenStatus(t) === "Completed").length,
-
     expired: tokens.filter((t) => getTokenStatus(t) === "Expired").length,
   };
 
@@ -133,17 +127,14 @@ export default function TokenManagement() {
 
   const getRemainingTime = (date) => {
     const diff = new Date(date) - new Date();
-
     if (diff <= 0) return "Expired";
 
     const hours = Math.floor(diff / (1000 * 60 * 60));
-
     const days = Math.floor(hours / 24);
 
     if (days > 0) {
       return `${days} day${days > 1 ? "s" : ""} left`;
     }
-
     return `${hours} hour${hours > 1 ? "s" : ""} left`;
   };
 
@@ -176,67 +167,76 @@ export default function TokenManagement() {
 
   return (
     <div className="space-y-5 fade-in">
-      {/* Header */}
-
-      <div>
-        <h1 className="text-[1.8rem] font-bold text-white font-outfit">
-          Token Management
-        </h1>
-
-        <p className="text-[#68708f] text-[0.92rem] mt-1">
-          Monitor guardian access tokens and activity
-        </p>
-      </div>
-
       {/* Stats */}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {[
           {
             title: "Issued Tokens",
             value: stats.total,
             icon: KeyRound,
+            subtitle: "Total generated secure links",
           },
 
           {
             title: "Currently Active",
             value: stats.active,
             icon: ShieldCheck,
+            subtitle: "Accessible guardian sessions",
           },
 
           {
             title: "Access Completed",
             value: stats.completed,
             icon: Eye,
+            subtitle: "Usage limit reached",
           },
 
           {
             title: "Expired",
             value: stats.expired,
             icon: Clock3,
+            subtitle: "Automatically invalidated",
           },
         ].map((card) => (
           <div
             key={card.title}
-            className="rounded-[28px] border border-[#1d2335] bg-[#10131d] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.18)]"
+            className="group relative overflow-hidden rounded-3xl border border-[#1d2335] bg-[#10131d] px-4 py-3 transition-all duration-300 hover:border-[#2f3754]"
           >
-            <div className="flex items-start justify-between">
+            {/* Glow */}
+            <div className="absolute top-0 right-0 w-[140px] h-[140px] bg-[#6366f1]/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500" />
+
+            {/* Top Border */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#818cf8]/30 to-transparent" />
+
+            <div className="relative flex items-start justify-between max-h-20">
+              {/* Left */}
+
               <div>
-                <p className="text-sm block mb-2 text-[#5e6787] font-semibold">
+                <p className="text-xs text-[#68708f] font-semibold mb-2">
                   {card.title}
                 </p>
 
-                <h2 className="text-[2rem] font-bold text-white">
+                <h2 className="text-3xl leading-none font-bold text-white tracking-tight">
                   {loading ? (
-                    <div className="h-8 w-14 rounded-lg bg-[#1b2031] animate-pulse" />
+                    <div className="w-7 h-7 rounded-xl bg-[#1b2031] animate-pulse" />
                   ) : (
                     card.value
                   )}
                 </h2>
+
+                <p className="text-[#7d86a7] text-[12px] mt-2 leading-relaxed max-w-[180px]">
+                  {card.subtitle}
+                </p>
               </div>
 
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#2b3350] bg-[#1b2031]">
-                <card.icon size={20} className="text-[#818cf8]" />
+              {/* Right Icon */}
+
+              <div className="relative shrink-0">
+                {/* Icon Glow */}
+                <div className="absolute inset-0 rounded-2xl bg-[#6366f1]/10 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="relative flex md:h-[60px] md:w-[60px] xl:h-[72px] xl:w-[72px] items-center justify-center rounded-[24px] border border-[#2a3047] bg-[#181c2b] transition-all duration-300 group-hover:border-[#3b4261]">
+                  <card.icon size={28} className="text-[#818cf8]" />
+                </div>
               </div>
             </div>
           </div>
@@ -244,13 +244,12 @@ export default function TokenManagement() {
       </div>
 
       {/* Toolbar */}
-
-      <div className="rounded-[30px] border border-[#1d2335] bg-[#10131d] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.18)]">
-        <div className="flex flex-col xl:flex-row gap-4">
+      <div className="rounded-3xl border border-[#1d2335] bg-[#10131d] p-2 shadow-[0_4px_20px_rgba(0,0,0,0.18)]">
+        <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
 
           <div className="group flex-1 overflow-hidden rounded-2xl border border-[#1d2335] bg-[#141824] focus-within:border-[#6366f1] transition-all">
-            <div className="flex items-center gap-4 px-5 h-[56px]">
+            <div className="flex items-center gap-4 px-5 h-12">
               <Search size={19} className="text-[#68708f]" />
 
               <input
@@ -265,12 +264,12 @@ export default function TokenManagement() {
 
           {/* Filters */}
 
-          <div className="flex items-center gap-2 overflow-x-auto">
+          <div className="flex justify-center items-center gap-2 overflow-x-auto">
             {["All", "Active", "Completed", "Expired"].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`h-[56px] px-4 rounded-2xl border whitespace-nowrap transition-all text-[0.9rem] font-medium
+                className={`h-[5vh] sm:w-[4vw] md:w-[8vw] xl:w-[10vw] rounded-2xl border whitespace-nowrap transition-all sm:text-[10px] md:text-xs lg:text-sm font-medium
                   
                   ${
                     filter === f
@@ -289,11 +288,11 @@ export default function TokenManagement() {
       {/* Loading */}
 
       {loading ? (
-        <div className="flex items-center justify-center py-24">
+        <div className="flex items-center justify-center py-24 h-[40vh]">
           <Loader2 size={28} className="animate-spin text-[#6366f1]" />
         </div>
       ) : filteredTokens.length === 0 ? (
-        <div className="rounded-[32px] border border-[#1d2335] bg-[#10131d] p-14 text-center">
+        <div className="rounded-3xl h-[40vh] flex flex-col justify-center items-center border border-[#1d2335] bg-[#10131d] p-14 text-center">
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[28px] border border-[#1d2335] bg-[#141824]">
             <AlertTriangle size={32} className="text-[#68708f]" />
           </div>
@@ -307,7 +306,7 @@ export default function TokenManagement() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 h-[40vh] overflow-y-auto custom-scrollbar mb-2">
           {filteredTokens.map((token) => {
             const student = token.studentId || {};
 
@@ -337,7 +336,7 @@ export default function TokenManagement() {
                         </span>
 
                         <span className="rounded-full border border-[#23293f] bg-[#141824] px-3 py-1 text-[0.72rem] text-[#8b93b2]">
-                          {token.usedCount}/{token.accessLimit} Access
+                          {token.limitsLeft} Time(s) Access Left
                         </span>
                       </div>
                     </div>
@@ -449,10 +448,8 @@ export default function TokenManagement() {
           })}
         </div>
       )}
-
       {/* Footer */}
-
-      <div className="rounded-[28px] border border-[#1d2335] bg-[#10131d] p-5">
+      <div className="rounded-3xl border border-[#1d2335] bg-[#10131d] mt-4 p-4">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#23293f] bg-[#141824]">
             <ShieldCheck size={19} className="text-[#818cf8]" />
@@ -463,7 +460,7 @@ export default function TokenManagement() {
               Guardian Access Security
             </h3>
 
-            <p className="text-[0.88rem] leading-relaxed text-[#8b93b2]">
+            <p className="text-xs md:text-sm leading-relaxed text-[#8b93b2]">
               All guardian links use cryptographically secure tokens with
               configurable access limits and automatic expiry using MongoDB TTL
               indexes.

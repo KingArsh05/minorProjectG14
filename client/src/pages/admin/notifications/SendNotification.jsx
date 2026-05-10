@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import axios from "axios";
 
 import {
@@ -23,6 +23,8 @@ export default function SendNotification() {
   const [sent, setSent] = useState(false);
   const [createdTokens, setCreatedTokens] = useState([]);
   const [sendError, setSendError] = useState(null);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const timeoutRef = useRef(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -32,8 +34,6 @@ export default function SendNotification() {
         const { data: response } = await axios.get(`${API_URL}/students`, {
           withCredentials: true,
         });
-
-        console.log({ data: response.data });
 
         if (response.success) {
           setStudents(response.data || []);
@@ -48,12 +48,52 @@ export default function SendNotification() {
     fetchStudents();
   }, [API_URL]);
 
-  const filtered = students.filter((s) => {
-    const q = search.toLowerCase();
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setDebouncedQuery(search);
+    }, 300);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [search]);
 
-    return (
-      !q || s.fullName.toLowerCase().includes(q) || String(s.urn).includes(q)
-    );
+  const filteredStudents = useMemo(() => {
+    if (!debouncedQuery.trim()) return students;
+
+    return students
+      .map((student) => {
+        let score = 0;
+
+        if (!isNaN(debouncedQuery)) {
+          const q = debouncedQuery.trim();
+
+          if (student.urn?.toString() === q) score += 1000;
+          else if (student.urn?.toString().includes(q)) score += 50;
+
+          if (student.crn?.toString() === q) score += 100;
+          else if (student.crn?.toString().includes(q)) score += 50;
+        } else {
+          const q = debouncedQuery.toLowerCase();
+
+          if (student.fullName?.toLowerCase().startsWith(q)) {
+            score += 100;
+          } else if (student.fullName?.toLowerCase().includes(q)) {
+            score += 50;
+          }
+          if (student.guardianEmail?.toLowerCase().startsWith(q)) score += 80;
+          else if (student.guardianEmail?.toLowerCase().includes(q)) score += 40;
+        }
+
+        return { student, score };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(({ student }) => student);
   });
 
   const toggle = (id) =>
@@ -63,7 +103,7 @@ export default function SendNotification() {
 
   const toggleAll = () =>
     setSelected(
-      filtered.length === selected.length ? [] : filtered.map((s) => s._id),
+      filteredStudents.length === selected.length ? [] : filteredStudents.map((s) => s._id),
     );
 
   const handleSend = async () => {
@@ -111,20 +151,20 @@ export default function SendNotification() {
 
   if (sent) {
     return (
-      <div className="max-w-[700px] mx-auto mt-10 fade-in">
-        <div className="rounded-[36px] border border-[#252b42] bg-[#11131f] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden relative">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[260px] h-[140px] bg-emerald-500/10 blur-3xl pointer-events-none" />
+      <div className="max-w-[70vw] mx-auto mt-4 fade-in">
+        <div className="rounded-3xl border border-[#252b42] bg-[#11131f] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[260px] h-[40vh] bg-emerald-500/10 blur-3xl pointer-events-none" />
 
           <div className="relative text-center">
-            <div className="w-[88px] h-[88px] rounded-full border border-emerald-500/20 bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 shadow-[0_15px_40px_rgba(16,185,129,0.12)]">
-              <CheckCircle2 size={42} className="text-emerald-400" />
+            <div className="w-[70px] h-[70px] rounded-full border border-emerald-500/20 bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 shadow-[0_15px_40px_rgba(16,185,129,0.12)]">
+              <CheckCircle2 size={36} className="text-emerald-400" />
             </div>
 
-            <h2 className="text-[1.9rem] font-bold text-white font-outfit mb-3">
+            <h2 className="text-[24px] font-bold text-white font-outfit">
               Notifications Sent
             </h2>
 
-            <p className="text-[#8b93b2] text-[0.95rem] leading-relaxed max-w-[520px] mx-auto">
+            <p className="text-[#8b93b2] text-sm leading-relaxed w-full mx-auto">
               Successfully generated and delivered secure guardian access links
               for{" "}
               <span className="text-[#818cf8] font-semibold">
@@ -135,7 +175,7 @@ export default function SendNotification() {
             </p>
           </div>
 
-          <div className="mt-8 rounded-[28px] border border-[#252b42] bg-[#141826] p-5 max-h-[380px] overflow-y-auto">
+          <div className="mt-8 rounded-3xl border border-[#252b42] bg-[#141826] p-5 max-h-[380px] overflow-y-auto custom-scrollbar">
             <div className="flex flex-col gap-3">
               {createdTokens.map((t) => (
                 <div
@@ -192,15 +232,15 @@ export default function SendNotification() {
   }
 
   return (
-    <section className="w-full flex flex-col xl:flex-row gap-5">
+    <section className="w-full flex flex-col xl:flex-row gap-5 fade-in">
       {/* Right Panel */}
-      <div className="w-full xl:w-[70%]">
+      <div className="w-full xl:w-[70%] h-auto">
         {/* Search */}
-        <div className="relative overflow-hidden rounded-[34px] border border-[#252b42] bg-[#11131f] p-4 shadow-[0_15px_45px_rgba(0,0,0,0.32)] mb-5">
+        <div className="relative overflow-hidden rounded-3xl border border-[#252b42] bg-[#11131f] p-2 shadow-[0_15px_45px_rgba(0,0,0,0.32)] mb-5">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[260px] h-[140px] bg-[#6366f1]/10 blur-3xl pointer-events-none" />
 
-          <div className="relative flex flex-col lg:flex-row items-stretch lg:items-center gap-4">
-            <div className="group flex-1 h-[64px] rounded-[24px] border border-[#252b42] bg-[#141826] hover:border-[#353d60] focus-within:border-[#6366f1] transition-all overflow-hidden">
+          <div className="relative flex lg:flex-row items-center justify-center gap-4">
+            <div className="group flex-1 h-[64px] rounded-3xl border border-[#252b42] bg-[#141826] hover:border-[#353d60] focus-within:border-[#6366f1] transition-all overflow-hidden">
               <div className="flex items-center h-full px-6 gap-4">
                 <div className="text-[#697292] group-focus-within:text-[#818cf8] transition-all">
                   <Search size={22} strokeWidth={2} />
@@ -211,19 +251,20 @@ export default function SendNotification() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search student by name, URN, branch..."
-                  className="w-full bg-transparent outline-none border-none text-white placeholder:text-[#697292] text-[1rem]"
+                  className="w-full bg-transparent outline-none border-none text-white placeholder:text-[#697292] text-base"
                 />
               </div>
             </div>
 
             <button
               onClick={toggleAll}
-              className="h-14 w-36 px-6 rounded-[22px] border border-[#2c3350] bg-[#1a1e2d] hover:bg-[#202538] text-[#d6dcf7] font-medium transition-all whitespace-nowrap text-center"
+              className="text-xs md:text-sm h-15 sm:w-24 md:w-36 px-2 sm:px-0 md:px-4 rounded-3xl border border-[#2c3350] bg-[#1a1e2d] hover:bg-[#202538] text-[#d6dcf7] font-medium transition-all whitespace-nowrap text-center"
             >
               {`${loading || selected.length < students.length ? "Select All" : "Deselect All"}`}
             </button>
-            <div className="h-14 w-36 px-6 rounded-[22px] border border-cyan-500/20 bg-cyan-500/10 flex items-center justify-center shadow-[0_8px_25px_rgba(34,211,238,0.08)] whitespace-nowrap text-center">
-              <span className="text-cyan-400 font-semibold text-[0.95rem]">
+
+            <div className="h-15 sm:w-24 md:w-36 px-2 sm:px-0 md:px-4 rounded-3xl border border-cyan-500/20 bg-cyan-500/10 flex items-center justify-center shadow-[0_8px_25px_rgba(34,211,238,0.08)] whitespace-nowrap text-center">
+              <span className="text-cyan-400 font-semibold text-xs md:text-sm">
                 {selected.length} selected
               </span>
             </div>
@@ -232,7 +273,7 @@ export default function SendNotification() {
 
         {/* Error */}
         {sendError && (
-          <div className="mb-5 rounded-[24px] border border-red-500/20 bg-red-500/10 px-5 py-4 flex items-center gap-3 shadow-[0_10px_30px_rgba(239,68,68,0.08)]">
+          <div className="mb-5 rounded-3xl border border-red-500/20 bg-red-500/10 px-5 py-4 flex items-center gap-3 shadow-[0_10px_30px_rgba(239,68,68,0.08)]">
             <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
               <AlertTriangle size={18} className="text-red-400" />
             </div>
@@ -249,9 +290,8 @@ export default function SendNotification() {
           </div>
         )}
 
-        {/* Loading */}
         {loading ? (
-          <div className="rounded-[34px] border border-[#252b42] bg-[#11131f] h-[500px] flex flex-col items-center justify-center shadow-[0_15px_45px_rgba(0,0,0,0.28)]">
+          <div className="rounded-3xl border border-[#252b42] bg-[#11131f] h-[62vh] flex flex-col items-center justify-center shadow-[0_15px_45px_rgba(0,0,0,0.28)]">
             <div className="relative mb-6">
               <div className="absolute inset-0 rounded-full bg-[#6366f1]/20 blur-2xl" />
 
@@ -269,40 +309,43 @@ export default function SendNotification() {
             </p>
           </div>
         ) : (
-          <div className="rounded-[34px] border border-[#252b42] bg-[#11131f] p-5 shadow-[0_15px_45px_rgba(0,0,0,0.28)]">
-            <div className="flex items-center justify-between mb-5 px-1">
+          <div className="rounded-3xl border border-[#252b42] bg-[#11131f] p-5 shadow-[0_15px_45px_rgba(0,0,0,0.28)] flex flex-col h-[62vh]">
+            <div className="flex items-center justify-between mb-5 px-1 shrink-0">
               <div>
-                <h2 className="text-[1.2rem] font-bold text-white font-outfit">
+                <h2 className="text-lg font-bold text-white font-outfit">
                   Student Directory
                 </h2>
 
-                <p className="text-[#697292] text-[0.8rem] mt-1">
+                <p className="text-[#697292] text-xs mt-1">
                   Select students to generate secure guardian access links
                 </p>
               </div>
 
-              <div className="h-[42px] px-4 rounded-2xl border border-[#252b42] bg-[#171b2a] flex items-center justify-center">
+              <div className="h-[40px] px-4 rounded-2xl border border-[#252b42] bg-[#171b2a] flex items-center justify-center">
                 <span className="text-[#8b93b2] text-[0.82rem] font-medium">
-                  {filtered.length} students
+                  {filteredStudents.length} students
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              {filtered.map((student) => {
+            <div className="flex flex-col gap-3 flex-1 h-0 overflow-y-auto custom-scrollbar pr-2">
+              {filteredStudents.map((student) => {
                 const isSel = selected.includes(student._id);
 
-                // const lastSem = student.semesters[student.semesters.length - 1];
-                const avgSgpa = (
-                  student.semesters.reduce((acc, sem) => acc + sem.sgpa, 0) /
-                  student.semesters.length
-                ).toFixed(2);
+                const avgSgpa = student.semesters?.length
+                  ? (
+                      student.semesters.reduce(
+                        (acc, sem) => acc + (sem.sgpa || 0),
+                        0,
+                      ) / student.semesters.length
+                    ).toFixed(2)
+                  : null;
 
                 return (
                   <div
                     key={student._id}
                     onClick={() => toggle(student._id)}
-                    className={`group relative overflow-hidden rounded-[28px] border p-4 cursor-pointer transition-all duration-300 ${
+                    className={`group relative rounded-[28px] border p-4 cursor-pointer transition-all duration-300 ${
                       isSel
                         ? "border-[#6366f1] bg-[#161c30] shadow-[0_12px_35px_rgba(99,102,241,0.12)]"
                         : "border-[#252b42] bg-[#141826] hover:border-[#313957] hover:bg-[#171b2a]"
@@ -326,7 +369,7 @@ export default function SendNotification() {
                       </div>
 
                       <div className="w-[52px] h-[52px] rounded-2xl border border-[#2a314d] bg-[#1a2033] flex items-center justify-center text-white text-[1rem] font-bold shrink-0 shadow-inner">
-                        {student.fullName[0]}
+                        {student.fullName?.[0] || "?"}
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -386,8 +429,8 @@ export default function SendNotification() {
                 );
               })}
 
-              {filtered.length === 0 && (
-                <div className="h-[360px] flex flex-col items-center justify-center text-center">
+              {filteredStudents.length === 0 && (
+                <div className="h-full flex flex-col items-center justify-center text-center">
                   <div className="w-[82px] h-[82px] rounded-[28px] border border-[#252b42] bg-[#171b2a] flex items-center justify-center mb-5">
                     <SearchX size={34} className="text-[#697292]" />
                   </div>
@@ -408,7 +451,7 @@ export default function SendNotification() {
 
       {/* Left Panel */}
       <div className="w-full xl:w-[30%]">
-        <div className="rounded-[32px] border border-[#20253b] bg-[#11131f] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.28)]">
+        <div className="rounded-3xl border border-[#20253b] bg-[#11131f] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.28)]">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-11 h-11 rounded-2xl bg-[#181c2c] border border-[#2b3350] flex items-center justify-center">
               <Mail size={18} className="text-[#818cf8]" />
@@ -463,13 +506,11 @@ export default function SendNotification() {
                 onChange={(e) => setAccessLimit(e.target.value)}
                 className="w-full h-[58px] rounded-2xl border border-[#232844] bg-[#161925] px-5 text-[0.95rem] text-white outline-none focus:border-[#6366f1] transition-all appearance-none cursor-pointer"
               >
-                {[
-                  "1-time access",
-                  "2-time access",
-                  "3-time access",
-                ].map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
+                {["1-time access", "2-time access", "3-time access"].map(
+                  (o) => (
+                    <option key={o}>{o}</option>
+                  ),
+                )}
               </select>
             </div>
           </div>
@@ -494,7 +535,7 @@ export default function SendNotification() {
           </button>
         </div>
 
-        <div className="rounded-[30px] border border-[#20253b] bg-[#11131f] mt-5 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.22)]">
+        <div className="rounded-3xl border border-[#20253b] bg-[#11131f] mt-5 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.22)]">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-[#181c2c] border border-[#2b3350] flex items-center justify-center">
               <BellRing size={16} className="text-[#22d3ee]" />

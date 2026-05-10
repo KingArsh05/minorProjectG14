@@ -35,7 +35,7 @@ export const validateToken = asyncHandler(async (req, res) => {
 
   const found = await Token.findOne({ token })
     .populate({
-      path: "student",
+      path: "studentId",
       populate: {
         path: "semesters.subjects.subject",
         select: "subjectTitle subjectCode type credits",
@@ -47,15 +47,19 @@ export const validateToken = asyncHandler(async (req, res) => {
   if (found.status === "Expired")
     throw new ApiError(410, "This token has expired");
 
-  // Mark as used if first time
-  if (found.status === "Active") {
-    await Token.findByIdAndUpdate(found._id, {
-      status: "Used",
-      usedAt: new Date(),
-    });
+  if (found.limitsLeft <= 0) {
+    // Already hit limit
+    throw new ApiError(410, "This token access limit has been reached");
   }
 
-  res.status(200).json(new ApiResponse(found.student, "Token validated"));
+  // Decrement limitsLeft
+  await Token.findByIdAndUpdate(found._id, {
+    status: "Used",
+    usedAt: new Date(),
+    $inc: { limitsLeft: -1 }
+  });
+
+  res.status(200).json(new ApiResponse(found.studentId, "Token validated"));
 });
 
 // ─── DELETE /api/tokens/delete/:id  — Delete a token ────────────

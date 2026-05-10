@@ -158,12 +158,6 @@ const studentSchema = new mongoose.Schema(
     },
 
     semesters: [semesterSchema],
-    guardianEmail: {
-      type: String,
-      required: [true, "Guardian email is required"],
-      lowercase: true,
-      trim: true,
-    },
     cgpa: {
       type: Number,
       default: null, // 🔥 will not be calculated until the student degree is completed

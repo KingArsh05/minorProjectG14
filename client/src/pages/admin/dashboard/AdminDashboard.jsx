@@ -1,7 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Upload, Database, Users, TrendingUp, Loader2 } from "lucide-react";
+
+import {
+  Upload,
+  Database,
+  Users,
+  TrendingUp,
+  Loader2,
+  BellRing,
+} from "lucide-react";
+
 import { notificationActivity, recentUploads } from "../../../data/stats";
+
 import {
   AreaChart,
   Area,
@@ -16,11 +26,13 @@ import {
 
 const TT = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
+
   return (
-    <div className="bg-[#1e2132] border border-[#2e3354] rounded-lg px-3 py-2 text-xs shadow-lg">
-      <p className="text-[#5c6385] mb-1 font-medium">{label}</p>
+    <div className="rounded-2xl border border-[#23293f] bg-[#141824] px-4 py-3 shadow-2xl">
+      <p className="text-[#68708f] text-[0.72rem] mb-2 font-medium">{label}</p>
+
       {payload.map((p, i) => (
-        <p key={i} style={{ color: p.color }} className="font-bold">
+        <p key={i} className="text-[0.82rem] font-semibold text-white">
           {p.name}: {p.value}
         </p>
       ))}
@@ -30,7 +42,9 @@ const TT = ({ active, payload, label }) => {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
+
   const [loading, setLoading] = useState(true);
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -39,13 +53,17 @@ export default function AdminDashboard() {
         const { data } = await axios.get(`${API_URL}/students/stats`, {
           withCredentials: true,
         });
-        if (data.success) setStats(data.data);
+
+        if (data.success) {
+          setStats(data.data);
+        }
       } catch (err) {
         console.error("Failed to load stats:", err);
       } finally {
         setLoading(false);
       }
     };
+
     fetchStats();
   }, [API_URL]);
 
@@ -55,294 +73,285 @@ export default function AdminDashboard() {
       value: stats?.totalStudents ?? "—",
       sub: "Across all branches",
       icon: Users,
-      iconBg: "from-[#6366f1] to-[#4f46e5]",
-      bl: "border-l-[3px] border-l-[#6366f1]",
     },
+
     {
       label: "Detained Students",
       value: stats?.detainedStudents ?? "—",
       sub: "Needs attention",
       icon: TrendingUp,
-      iconBg: "from-[#ef4444] to-[#b91c1c]",
-      bl: "border-l-[3px] border-l-[#ef4444]",
     },
+
     {
       label: "Courses Offered",
       value: stats?.coursesOffered ?? "—",
-      sub: "B.Tech, MCA, MBA…",
+      sub: "Institution-wide",
       icon: Database,
-      iconBg: "from-[#f59e0b] to-[#d97706]",
-      bl: "border-l-[3px] border-l-[#f59e0b]",
     },
+
     {
       label: "Average CGPA",
       value: stats?.avgCGPA ?? "—",
-      sub: "Institution-wide",
+      sub: "Overall academic score",
       icon: TrendingUp,
-      iconBg: "from-[#8b5cf6] to-[#7c3aed]",
-      bl: "border-l-[3px] border-l-[#8b5cf6]",
     },
   ];
 
   const branchDistribution = stats?.branchDistribution || [];
 
   return (
-    <div className="fade-in">
-      {/* ── Welcome Banner ─────────────────────────────────── */}
-      <div
-        className="relative rounded-2xl overflow-hidden mb-8 p-7 border border-[rgba(99,102,241,0.3)]"
-        style={{
-          background:
-            "linear-gradient(135deg, #1a1040 0%, #0f1f3d 50%, #091820 100%)",
-        }}
-      >
-        {/* Dot grid overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, #818cf8 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-          }}
-        />
-        {/* Glow blobs */}
-        <div
-          className="absolute -top-10 -left-10 w-48 h-48 rounded-full blur-[60px] opacity-30"
-          style={{
-            background: "radial-gradient(circle, #6366f1, transparent)",
-          }}
-        />
-        <div
-          className="absolute -bottom-10 right-10 w-48 h-48 rounded-full blur-[60px] opacity-20"
-          style={{
-            background: "radial-gradient(circle, #06b6d4, transparent)",
-          }}
-        />
+    <div className="space-y-6 fade-in">
+      {/* Hero */}
 
-        <div className="relative flex flex-wrap items-center justify-between gap-5">
+      <div className="relative overflow-hidden rounded-3xl border border-[#1d2335] bg-[#10131d] p-8">
+        {/* Soft Glow */}
+
+        <div className="absolute top-0 right-0 h-[240px] w-[240px] bg-[#6366f1]/5 blur-3xl pointer-events-none" />
+
+        <div className="absolute bottom-0 left-0 h-[220px] w-[220px] bg-[#6366f1]/5 blur-3xl pointer-events-none" />
+
+        <div className="relative flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
           <div>
-            <p className="text-[#818cf8] text-sm font-semibold mb-1">
-              Welcome back 👋
-            </p>
-            <h2
-              className="text-[1.7rem] font-extrabold text-white mb-1"
-              style={{ fontFamily: "Outfit, sans-serif" }}
-            >
-              Academic Summary — Spring 2025
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#23293f] bg-[#141824] px-4 py-2 text-[0.78rem] text-[#9ba2c0] mb-5">
+              <div className="h-2 w-2 rounded-full bg-[#4ade80]" />
+              Live Institution Overview
+            </div>
+
+            <h2 className="text-[2.2rem] leading-tight font-bold text-white max-w-[680px]">
+              Academic Overview
             </h2>
-            <p className="text-[#9ba2c0] text-[0.85rem]">
-              <span className="text-[#34d399] font-semibold">
-                {stats?.totalStudents || 0}
-              </span>{" "}
-              students enrolled &nbsp;·&nbsp;
-              <span className="text-[#f87171] font-semibold">
-                {stats?.detainedStudents || 0}
-              </span>{" "}
-              detained
+
+            <p className="mt-4 text-[#8b93b2] max-w-[620px] leading-relaxed">
+              Monitor student records, guardian notifications, departmental
+              performance, and real-time academic analytics from a unified
+              dashboard.
             </p>
+
+            <div className="flex flex-wrap gap-6 mt-6">
+              <div>
+                <p className="text-[1.6rem] font-bold text-white">
+                  {stats?.totalStudents || 0}
+                </p>
+
+                <p className="text-[#68708f] text-[0.82rem]">Total Students</p>
+              </div>
+
+              <div>
+                <p className="text-[1.6rem] font-bold text-white">
+                  {stats?.detainedStudents || 0}
+                </p>
+
+                <p className="text-[#68708f] text-[0.82rem]">
+                  Detained Students
+                </p>
+              </div>
+
+              <div>
+                <p className="text-[1.6rem] font-bold text-white">
+                  {stats?.avgCGPA || "—"}
+                </p>
+
+                <p className="text-[#68708f] text-[0.82rem]">Average CGPA</p>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-3 relative">
-            <button className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-[#9ba2c0] text-sm font-medium border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] hover:text-white transition-all cursor-pointer">
+
+          {/* Actions */}
+
+          <div className="flex items-center gap-3">
+            <button className="h-[52px] px-5 rounded-2xl border border-[#23293f] bg-[#181c2b] text-[#9ba2c0] hover:border-[#6366f1] hover:text-white transition-all">
               View Reports
             </button>
-            <button className="inline-flex items-center gap-2 px-5 py-[0.6rem] rounded-xl text-white text-sm font-semibold bg-linear-to-br from-[#6366f1] to-[#4f46e5] shadow-[0_4px_20px_rgba(99,102,241,0.4)] hover:-translate-y-px transition-all cursor-pointer">
-              <Upload size={14} /> Notify Parents
+
+            <button className="inline-flex items-center gap-2 h-[52px] px-5 rounded-2xl bg-[#6366f1] hover:bg-[#5855eb] text-white font-medium transition-all shadow-[0_10px_30px_rgba(99,102,241,0.18)]">
+              <BellRing size={16} />
+              Notify Parents
             </button>
           </div>
         </div>
       </div>
 
-      {/* ── Stat Cards ───────────────────────────────── */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      {/* Stats */}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {statCards.map((s) => (
           <div
             key={s.label}
-            className={`bg-[#13162b] border border-[#252840] rounded-2xl p-5 ${s.bl} transition-all hover:border-[#2e3354] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]`}
+            className="group relative overflow-hidden rounded-[30px] border border-[#1d2335] bg-[#10131d] p-5 transition-all cursor-pointer hover:border-[#2d3550] hover:shadow-[0_12px_35px_rgba(99,102,241,0.06)]"
           >
-            <div className="flex items-start justify-between">
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#818cf8]/30 to-transparent" />
+
+            <div className="relative flex items-start justify-between max-h-20">
               <div>
-                <p className="text-[0.7rem] text-[#5c6385] font-semibold uppercase tracking-widest mb-2">
+                <p className="text-xs uppercase tracking-wider text-[#68708f] font-semibold mb-2">
                   {s.label}
                 </p>
-                <p
-                  className="text-[2rem] font-extrabold text-[#f0f1fa] leading-none mb-1"
-                  style={{ fontFamily: "Outfit, sans-serif" }}
-                >
+
+                <h2 className="text-3xl leading-none font-bold text-white tracking-tight">
                   {loading ? (
-                    <span className="inline-block w-12 h-8 bg-[#252840] rounded animate-pulse" />
+                    <div className="w-7 h-7 rounded-xl bg-[#1b2031] animate-pulse" />
                   ) : (
                     s.value
                   )}
-                </p>
-                <p className="text-[0.72rem] text-[#5c6385]">{s.sub}</p>
+                </h2>
+
+                <p className="text-[#68708f] text-xs mt-3 truncate">{s.sub}</p>
               </div>
-              <div
-                className={`w-11 h-11 rounded-xl bg-linear-to-br ${s.iconBg} flex items-center justify-center shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.3)]`}
-              >
-                <s.icon size={20} className="text-white" />
+
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 rounded-2xl bg-[#6366f1]/10 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="relative flex md:h-[60px] md:w-[60px] xl:h-[72px] xl:w-[72px] items-center justify-center rounded-[24px] border border-[#2a3047] bg-[#181c2b] transition-all duration-300 group-hover:border-[#3b4261]">
+                  <s.icon size={28} className="text-[#818cf8]" />
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* ── Charts Row ──────────────────────────────────────── */}
-      <div className="grid grid-cols-[1fr_320px] gap-5 mb-8">
-        {/* Area Chart */}
-        <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-6 hover:border-[#2e3354] transition-colors">
-          <div className="flex items-center justify-between mb-5">
+      {/* Charts */}
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-5">
+        {/* Area */}
+
+        <div className="rounded-3xl border border-[#1d2335] bg-[#10131d] p-6">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[0.7rem] text-[#5c6385] font-semibold uppercase tracking-widest mb-1">
+              <p className="text-[0.72rem] uppercase tracking-[0.18em] text-[#68708f] font-semibold mb-2">
                 Notification Activity
               </p>
-              <h3
-                className="text-[1.05rem] font-bold text-[#f0f1fa]"
-                style={{ fontFamily: "Outfit, sans-serif" }}
-              >
+
+              <h3 className="text-[1.1rem] font-semibold text-white">
                 Monthly Overview
               </h3>
             </div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.7rem] font-semibold bg-[rgba(16,185,129,0.12)] text-[#34d399] border border-[rgba(16,185,129,0.25)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#34d399] animate-pulse" />{" "}
-              LIVE
-            </span>
+
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#1f3a2f] bg-[#15222c] px-3 py-1 text-[0.72rem] font-medium text-[#4ade80]">
+              <div className="h-2 w-2 rounded-full bg-[#4ade80]" />
+              Live
+            </div>
           </div>
-          <ResponsiveContainer width="100%" height={230}>
-            <AreaChart
-              data={notificationActivity}
-              margin={{ top: 4, right: 4, left: -16, bottom: 0 }}
-            >
+
+          <ResponsiveContainer width="100%" height={280}>
+            <AreaChart data={notificationActivity}>
               <defs>
-                <linearGradient id="gSent" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="gOpened" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                <linearGradient id="mainChart" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
+
+                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="#1e2132"
-                vertical={false}
-              />
+
+              <CartesianGrid stroke="#1d2335" vertical={false} />
+
               <XAxis
                 dataKey="month"
-                tick={{ fill: "#5c6385", fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
+                tick={{
+                  fill: "#68708f",
+                  fontSize: 11,
+                }}
               />
+
               <YAxis
-                tick={{ fill: "#5c6385", fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
+                tick={{
+                  fill: "#68708f",
+                  fontSize: 11,
+                }}
               />
+
               <Tooltip content={<TT />} />
+
               <Area
                 type="monotone"
                 dataKey="sent"
-                name="Sent"
-                stroke="#6366f1"
-                fill="url(#gSent)"
+                stroke="#818cf8"
+                fill="url(#mainChart)"
                 strokeWidth={2.5}
                 dot={false}
-                activeDot={{ r: 5, strokeWidth: 0 }}
-              />
-              <Area
-                type="monotone"
-                dataKey="opened"
-                name="Opened"
-                stroke="#06b6d4"
-                fill="url(#gOpened)"
-                strokeWidth={2.5}
-                dot={false}
-                activeDot={{ r: 5, strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Bar Chart — real branch data from API */}
-        <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-6 hover:border-[#2e3354] transition-colors">
-          <p className="text-[0.7rem] text-[#5c6385] font-semibold uppercase tracking-widest mb-1">
+        {/* Branch Distribution */}
+
+        <div className="rounded-3xl border border-[#1d2335] bg-[#10131d] p-6">
+          <p className="text-[0.72rem] uppercase tracking-[0.18em] text-[#68708f] font-semibold mb-2">
             Branch Distribution
           </p>
-          <h3
-            className="text-[1.05rem] font-bold text-[#f0f1fa] mb-5"
-            style={{ fontFamily: "Outfit, sans-serif" }}
-          >
+
+          <h3 className="text-[1.1rem] font-semibold text-white mb-6">
             Students per Branch
           </h3>
+
           {loading ? (
-            <div className="flex items-center justify-center h-[230px]">
-              <Loader2 size={24} className="animate-spin text-[#5c6385]" />
+            <div className="flex items-center justify-center h-[280px]">
+              <Loader2 size={24} className="animate-spin text-[#6366f1]" />
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={230}>
+            <ResponsiveContainer width="100%" height={280}>
               <BarChart
                 data={branchDistribution}
                 layout="vertical"
-                barSize={8}
-                margin={{ left: -8, right: 8 }}
+                barSize={10}
               >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#1e2132"
-                  horizontal={false}
-                />
+                <CartesianGrid stroke="#1d2335" horizontal={false} />
+
                 <XAxis
                   type="number"
-                  tick={{ fill: "#5c6385", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
+                  tick={{
+                    fill: "#68708f",
+                    fontSize: 10,
+                  }}
                 />
+
                 <YAxis
                   type="category"
                   dataKey="branch"
-                  width={36}
-                  tick={{ fill: "#9ba2c0", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
+                  tick={{
+                    fill: "#9ba2c0",
+                    fontSize: 11,
+                  }}
                 />
+
                 <Tooltip content={<TT />} />
-                <Bar
-                  dataKey="students"
-                  name="Students"
-                  fill="url(#barGrad)"
-                  radius={[0, 4, 4, 0]}
-                >
-                  <defs>
-                    <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#6366f1" />
-                      <stop offset="100%" stopColor="#06b6d4" />
-                    </linearGradient>
-                  </defs>
-                </Bar>
+
+                <Bar dataKey="students" fill="#818cf8" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
         </div>
       </div>
 
-      {/* ── Recent Uploads Table ─────────────────────────────── */}
-      <div className="bg-[#13162b] border border-[#252840] rounded-2xl overflow-hidden hover:border-[#2e3354] transition-colors">
-        <div className="px-6 py-4 border-b border-[#252840] flex items-center justify-between">
-          <h3
-            className="text-[0.95rem] font-bold text-[#f0f1fa]"
-            style={{ fontFamily: "Outfit, sans-serif" }}
-          >
-            Recent Uploads
-          </h3>
-          <span className="text-[0.72rem] text-[#5c6385]">Last 5 imports</span>
+      {/* Uploads */}
+
+      <div className="overflow-hidden rounded-3xl border border-[#1d2335] bg-[#10131d]">
+        <div className="flex items-center justify-between border-b border-[#1d2335] px-6 py-5">
+          <div>
+            <h3 className="text-[1rem] font-semibold text-white">
+              Recent Uploads
+            </h3>
+
+            <p className="text-[#68708f] text-[0.82rem] mt-1">
+              Latest imported academic records
+            </p>
+          </div>
+
+          <span className="text-[#68708f] text-[0.78rem]">Last 5 uploads</span>
         </div>
+
         <div className="overflow-x-auto">
-          <table
-            className="w-full"
-            style={{ borderCollapse: "separate", borderSpacing: 0 }}
-          >
+          <table className="w-full">
             <thead>
-              <tr>
+              <tr className="border-b border-[#1d2335]">
                 {[
                   "File",
                   "Course",
@@ -354,42 +363,50 @@ export default function AdminDashboard() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="bg-[#161925] text-[#5c6385] text-[0.7rem] font-semibold tracking-widest uppercase px-5 py-3 text-left border-b border-[#252840] whitespace-nowrap"
+                    className="px-6 py-4 text-left text-[0.72rem] uppercase tracking-[0.16em] text-[#68708f] font-semibold whitespace-nowrap"
                   >
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
+
             <tbody>
               {recentUploads.map((u, i) => (
                 <tr
                   key={i}
-                  className="border-b border-[#252840] last:border-b-0 hover:bg-[#1e2132] transition-colors"
+                  className="border-b border-[#1d2335] last:border-none hover:bg-[#141824] transition-all"
                 >
-                  <td className="px-5 py-3 font-mono text-[#818cf8] text-[0.78rem]">
+                  <td className="px-6 py-4 font-mono text-[#c7d0f5] text-[0.82rem] whitespace-nowrap">
                     {u.fileName}
                   </td>
-                  <td className="px-5 py-3">
-                    <span className="inline-flex px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold bg-[rgba(99,102,241,0.15)] text-[#818cf8] border border-[rgba(99,102,241,0.25)]">
+
+                  <td className="px-6 py-4">
+                    <span className="inline-flex rounded-full border border-[#23293f] bg-[#141824] px-3 py-1 text-[0.72rem] text-[#9ba2c0]">
                       {u.course}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-[0.82rem] text-[#9ba2c0]">
+
+                  <td className="px-6 py-4 text-[#9ba2c0] text-[0.84rem] whitespace-nowrap">
                     {u.branch}
                   </td>
-                  <td className="px-5 py-3 text-[0.82rem] text-[#9ba2c0]">
+
+                  <td className="px-6 py-4 text-[#9ba2c0] text-[0.84rem]">
                     Sem {u.semester}
                   </td>
-                  <td className="px-5 py-3 font-bold text-[#22d3ee] text-[0.9rem]">
+
+                  <td className="px-6 py-4 font-semibold text-white">
                     {u.records}
                   </td>
-                  <td className="px-5 py-3 text-[0.78rem] text-[#5c6385] whitespace-nowrap">
+
+                  <td className="px-6 py-4 text-[#68708f] text-[0.82rem] whitespace-nowrap">
                     {u.uploadedAt}
                   </td>
-                  <td className="px-5 py-3">
-                    <span className="inline-flex items-center gap-1 px-[0.65rem] py-[0.2rem] rounded-full text-[0.7rem] font-semibold bg-[rgba(16,185,129,0.15)] text-[#34d399] border border-[rgba(16,185,129,0.25)]">
-                      ✓ Success
+
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[#1f3a2f] bg-[#15222c] px-3 py-1 text-[0.72rem] font-medium text-[#4ade80]">
+                      <div className="h-2 w-2 rounded-full bg-[#4ade80]" />
+                      Success
                     </span>
                   </td>
                 </tr>

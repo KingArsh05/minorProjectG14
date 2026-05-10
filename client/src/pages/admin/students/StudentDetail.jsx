@@ -19,13 +19,10 @@ import { useParams, useNavigate } from "react-router-dom";
 
 export default function StudentDetail() {
   const { id } = useParams();
-
   const navigate = useNavigate();
 
   const [student, setStudent] = useState(null);
-
   const [loading, setLoading] = useState(true);
-
   const [openSem, setOpenSem] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
@@ -48,11 +45,11 @@ export default function StudentDetail() {
     };
 
     fetchStudent();
-  }, [id]);
+  }, [API_URL, id]);
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 fade-in">
+      <div className="flex flex-col items-center justify-center py-32 min-h-[60vh] fade-in">
         <div className="relative mb-6">
           <div className="absolute inset-0 rounded-full bg-[#6366f1]/10 blur-2xl" />
 
@@ -128,7 +125,7 @@ export default function StudentDetail() {
 
       {/* Header Card */}
 
-      <div className="relative overflow-hidden rounded-[34px] border border-[#1d2335] bg-[#10131d] p-7 shadow-[0_15px_45px_rgba(0,0,0,0.32)]">
+      <div className="relative overflow-hidden rounded-3xl border border-[#1d2335] bg-[#10131d] p-7 shadow-[0_15px_45px_rgba(0,0,0,0.32)]">
         <div className="absolute top-0 right-0 w-[300px] h-[200px] bg-[#6366f1]/5 blur-3xl pointer-events-none" />
 
         <div className="relative flex flex-col lg:flex-row gap-6 lg:items-center lg:justify-between">
@@ -224,20 +221,25 @@ export default function StudentDetail() {
         ].map((item) => (
           <div
             key={item.label}
-            className="rounded-[28px] border border-[#1d2335] bg-[#10131d] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.18)]"
+            className="group relative overflow-hidden rounded-[30px] border border-[#1d2335] bg-[#10131d] p-5 transition-all cursor-pointer hover:border-[#2d3550] hover:shadow-[0_12px_35px_rgba(99,102,241,0.06)]"
           >
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#818cf8]/30 to-transparent" />
+
             <div className="flex items-start justify-between mb-3">
-              <p className="text-[#5e6787] text-[0.72rem] uppercase tracking-[0.14em] font-semibold">
+              <p className="text-xs uppercase tracking-wider text-[#68708f] font-semibold">
                 {item.label}
               </p>
 
-              <div className="w-9 h-9 rounded-xl border border-[#2a3047] bg-[#1a1f33] flex items-center justify-center">
-                <item.icon size={15} style={{ color: item.color }} />
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 rounded-xl bg-[#6366f1]/10 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="relative flex w-10 h-10 items-center justify-center rounded-[14px] border border-[#2a3047] bg-[#181c2b] transition-all duration-300 group-hover:border-[#3b4261]">
+                  <item.icon size={16} style={{ color: item.color }} />
+                </div>
               </div>
             </div>
 
             <p
-              className="text-[1.6rem] font-bold font-outfit"
+              className="text-[1.8rem] leading-none font-bold font-outfit"
               style={{ color: item.color }}
             >
               {item.value}
@@ -263,7 +265,7 @@ export default function StudentDetail() {
             return (
               <div
                 key={sem._id}
-                className={`rounded-[28px] border bg-[#10131d] overflow-hidden transition-all ${
+                className={`rounded-3xl border bg-[#10131d] overflow-hidden transition-all ${
                   open
                     ? "border-[#6366f1]/30 shadow-[0_12px_35px_rgba(99,102,241,0.08)]"
                     : "border-[#1d2335] hover:border-[#2d3550]"
@@ -428,7 +430,7 @@ export default function StudentDetail() {
           })}
 
           {(!student.semesters || student.semesters.length === 0) && (
-            <div className="rounded-[28px] border border-[#1d2335] bg-[#10131d] p-10 text-center">
+            <div className="rounded-3xl border border-[#1d2335] bg-[#10131d] p-10 text-center">
               <div className="w-[72px] h-[72px] rounded-[24px] border border-[#1f2638] bg-[#161b29] flex items-center justify-center mx-auto mb-5">
                 <GraduationCap size={30} className="text-[#697292]" />
               </div>
