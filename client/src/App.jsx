@@ -3,16 +3,16 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./context/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import UploadData from "./pages/admin/UploadData";
-import StudentList from "./pages/admin/StudentList";
-import StudentDetail from "./pages/admin/StudentDetail";
-import SendNotification from "./pages/admin/SendNotification";
-import TokenManagement from "./pages/admin/TokenManagement";
+import StudentDetail from "./pages/admin/students/StudentDetail";
+import SendNotification from "./pages/admin/notifications/SendNotification";
+import TokenManagement from "./pages/admin/tokenManagement/TokenManagement";
 import GuardianDashboard from "./pages/guardian/GuardianDashboard";
 import AccessDenied from "./pages/guardian/AccessDenied";
 import Home from "./LandngPage/Home";
 import "./index.css";
+import StudentList from "./pages/admin/students/StudentList";
 
 function LoginGate() {
   const { isAuthenticated, authChecked } = useAuth();

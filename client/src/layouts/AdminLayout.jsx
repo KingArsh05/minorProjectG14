@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { Outlet, useLocation } from "react-router-dom";
@@ -26,6 +27,7 @@ const pageMeta = {
 };
 
 export default function AdminLayout() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
   const meta = Object.entries(pageMeta).find(([path]) =>
     location.pathname.startsWith(path),
@@ -34,10 +36,10 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
-      <Topbar title={title} subtitle={subtitle} />
-      <main className="flex-1 ml-[260px] pt-[68px] min-h-screen bg-[#0a0b14]">
-        <div className="p-8 max-w-[1400px]">
+      <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+      <Topbar title={title} subtitle={subtitle} collapsed={sidebarCollapsed} />
+      <main className={`flex-1 pt-[68px] min-h-screen bg-[#0a0b14] transition-all duration-300 ${sidebarCollapsed ? 'ml-[84px]' : 'ml-[270px]'}`}>
+        <div className="p-8 w-full">
           <Outlet />
         </div>
       </main>

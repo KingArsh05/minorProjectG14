@@ -5,7 +5,6 @@ import Features from "./components/Features";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
 import Contact from "./components/Contact";
-import ScrollToTop from "./components/ScrollToTop";
 
 export default function Home() {
   return (

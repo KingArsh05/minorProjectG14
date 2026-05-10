@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Upload,
-  CheckCircle,
-  Database,
-  Users,
-  TrendingUp,
-  Loader2,
-} from "lucide-react";
-import { notificationActivity, recentUploads } from "../../data/stats";
+import { Upload, Database, Users, TrendingUp, Loader2 } from "lucide-react";
+import { notificationActivity, recentUploads } from "../../../data/stats";
 import {
   AreaChart,
   Area,
@@ -54,7 +47,7 @@ export default function AdminDashboard() {
       }
     };
     fetchStats();
-  }, []);
+  }, [API_URL]);
 
   const statCards = [
     {

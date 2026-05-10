@@ -18,8 +18,8 @@ export default function LoginForm() {
     clearErrors,
   } = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "arshabs@gmail.com",
+      password: "abn@123RockArsh",
     },
   });
 

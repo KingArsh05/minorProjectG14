@@ -7,11 +7,11 @@ const notes = [
   { msg: "3 tokens expired – action needed", time: "3 hrs ago" },
 ];
 
-export default function Topbar({ title, subtitle }) {
+export default function Topbar({ title, subtitle, collapsed }) {
   const [showNotif, setShowNotif] = useState(false);
 
   return (
-    <header className="fixed top-0 right-0 left-[260px] h-[68px] bg-[rgba(17,19,31,0.95)] backdrop-blur-md border-b border-[#252840] z-90 flex items-center justify-between px-8">
+    <header className={`fixed top-0 right-0 h-[68px] bg-[rgba(17,19,31,0.95)] backdrop-blur-md border-b border-[#252840] z-90 flex items-center justify-between px-8 transition-all duration-300 ${collapsed ? 'left-[84px]' : 'left-[270px]'}`}>
       {/* Left */}
       <div>
         <h1
