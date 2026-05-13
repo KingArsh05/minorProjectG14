@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import crypto from "crypto";
+import { generateSecureToken } from "./token.controller.js";
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
@@ -30,11 +31,21 @@ export const sendMailToStudents = asyncHandler(async (req, res) => {
   const studentIds = recipients.map((r) => r.studentId);
   const students = await Student.find({
     _id: { $in: studentIds },
-  });
+  })
+    .select("fullName guardianEmail course branch urn")
+    .lean();
 
   if (!students || students.length === 0) {
     throw new ApiError(404, "No students found for given data!");
   }
+
+  console.log(students)
+  const tokenMap = {}
+  students.forEach((student)=>{
+    tokenMap[student._id] = generateSecureToken()
+  })
+  console.log(tokenMap)
+  return
 
   const recipientMap = {};
   recipients.forEach((r) => {

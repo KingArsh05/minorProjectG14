@@ -14,7 +14,7 @@ const tokenSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    enum: ["Active", "Access Completed", "Expired"],
+    enum: ["Active", "Expired"],
     default: "Active",
   },
   limitsLeft: {
@@ -24,14 +24,22 @@ const tokenSchema = new mongoose.Schema({
   expiresAt: {
     type: Date,
     required: true,
-    index: {
-      expires: 0,
-    },
+    index: { expires: "0" },
   },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
+
+tokenSchema.pre("save", async function (next) {
+  if (!this.isModified("token")) return next();
+  this.token = await bcrypt.hash(this.token, 12);
+  next();
+});
+
+tokenSchema.methods.compareToken = async function (userToken) {
+  return await bcrypt.compare(userToken, this.token);
+};
 
 export const Token = mongoose.model("Token", tokenSchema);

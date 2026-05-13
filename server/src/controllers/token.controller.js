@@ -3,6 +3,7 @@ import { Student } from "../models/students.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
+import crypto from "crypto"
 
 const EXPIRY_MAP = {
   "24 hours": 24,
@@ -10,6 +11,28 @@ const EXPIRY_MAP = {
   "72 hours": 72,
   "7 days": 168,
 };
+
+const ACCESS_LIMIT_MAP = {
+  "1-time access": 1,
+  "2-time access": 2,
+  "3-time access": 3,
+};
+
+
+export function generateSecureToken() {
+
+  const TOKEN_SECRET = process.env.TOKEN_SECRET;
+
+  const rawToken = crypto.randomBytes(32).toString("base64url");
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(TOKEN_SECRET)
+    .update(rawToken)
+    .update(TOKEN_SECRET)
+    .digest("base64url");
+
+  return hashedToken;
+}
 
 // ─── GET /api/tokens  — List all tokens ─────────────────────────
 export const getAllTokens = asyncHandler(async (req, res) => {
@@ -20,7 +43,6 @@ export const getAllTokens = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(tokens, "Tokens fetched"));
 });
-
 
 // ─── GET /api/tokens/validate?token=xxx  — Guardian access ──────
 export const validateToken = asyncHandler(async (req, res) => {
@@ -56,7 +78,7 @@ export const validateToken = asyncHandler(async (req, res) => {
   await Token.findByIdAndUpdate(found._id, {
     status: "Used",
     usedAt: new Date(),
-    $inc: { limitsLeft: -1 }
+    $inc: { limitsLeft: -1 },
   });
 
   res.status(200).json(new ApiResponse(found.studentId, "Token validated"));
