@@ -50,7 +50,7 @@ export default function TokenManagement() {
   const getTokenStatus = (token) => {
     const expired = new Date(token.expiresAt) < new Date();
     if (expired) return "Expired";
-    if (token.usedCount >= token.accessLimit) {
+    if (token.limitsLeft <= 0) {
       return "Completed";
     }
     return "Active";

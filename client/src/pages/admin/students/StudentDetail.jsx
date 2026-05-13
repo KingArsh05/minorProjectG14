@@ -111,6 +111,22 @@ export default function StudentDetail() {
     ?.flatMap((s) => s.subjects || [])
     .filter((s) => s.status === "Detained").length;
 
+  const handleViewAsGuardian = async () => {
+    try {
+      const { data } = await axios.post(
+        `${API_URL}/tokens/preview`,
+        { studentId: student._id },
+        { withCredentials: true }
+      );
+      if (data.success) {
+        window.open(`/guardian?token=${data.data.token}`, "_blank");
+      }
+    } catch (err) {
+      console.error("Failed to generate preview token", err);
+      alert("Failed to open guardian preview");
+    }
+  };
+
   return (
     <div className="space-y-5 fade-in">
       {/* Back */}
@@ -173,7 +189,7 @@ export default function StudentDetail() {
             </div>
           </div>
 
-          <button className="inline-flex items-center justify-center gap-2 h-[50px] px-6 rounded-2xl border border-[#22d3ee]/20 bg-[#22d3ee]/10 text-[#22d3ee] font-medium hover:bg-[#22d3ee]/15 transition-all shadow-[0_8px_25px_rgba(34,211,238,0.08)]">
+          <button onClick={handleViewAsGuardian} className="inline-flex items-center justify-center gap-2 h-[50px] px-6 rounded-2xl border border-[#22d3ee]/20 bg-[#22d3ee]/10 text-[#22d3ee] font-medium hover:bg-[#22d3ee]/15 transition-all shadow-[0_8px_25px_rgba(34,211,238,0.08)]">
             <Eye size={16} />
             View as Guardian
           </button>

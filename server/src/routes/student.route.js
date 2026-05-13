@@ -10,8 +10,8 @@ import {
 const router = express.Router();
 
 router.get("/", getAllStudents);
-router.get("/:id", getStudentById);
 router.get("/stats", getDashboardStats);
+router.get("/:id", getStudentById);
 router.post("/upload", upload.single("file"), uploadStudents);
 // Stats route MUST come before /:id to avoid "stats" being treated as an id
 

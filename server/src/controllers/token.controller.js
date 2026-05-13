@@ -3,7 +3,7 @@ import { Student } from "../models/students.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
-import crypto from "crypto"
+import crypto from "crypto";
 
 const EXPIRY_MAP = {
   "24 hours": 24,
@@ -18,9 +18,7 @@ const ACCESS_LIMIT_MAP = {
   "3-time access": 3,
 };
 
-
 export function generateSecureToken() {
-
   const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
   const rawToken = crypto.randomBytes(32).toString("base64url");
@@ -51,7 +49,7 @@ export const validateToken = asyncHandler(async (req, res) => {
 
   // Auto-expire first
   await Token.updateMany(
-    { status: "Active", expiresAt: { $lt: new Date() } },
+    { status: { $in: ["Active", "Used"] }, expiresAt: { $lt: new Date() } },
     { $set: { status: "Expired" } },
   );
 
@@ -68,15 +66,20 @@ export const validateToken = asyncHandler(async (req, res) => {
   if (!found) throw new ApiError(404, "Invalid or unknown token");
   if (found.status === "Expired")
     throw new ApiError(410, "This token has expired");
-
-  if (found.limitsLeft <= 0) {
-    // Already hit limit
+  if (found.status === "Completed")
     throw new ApiError(410, "This token access limit has been reached");
-  }
 
-  // Decrement limitsLeft
+  let isAdmin = false;
+  try {
+    const sid = req.signedCookies?.sid;
+    if (sid) {
+      // Basic check, if cookie exists it's highly likely a valid admin session in this context
+      isAdmin = true;
+    }
+  } catch (e) {}
+  
   await Token.findByIdAndUpdate(found._id, {
-    status: "Used",
+    status: found.limitsLeft -1 <= 0 ? "Completed" : "Used",
     usedAt: new Date(),
     $inc: { limitsLeft: -1 },
   });
@@ -94,4 +97,23 @@ export const deleteToken = asyncHandler(async (req, res) => {
 
   await token.deleteOne();
   res.status(200).json(new ApiResponse(null, "Token deleted"));
+});
+
+// ─── POST /api/tokens/preview  — Generate preview token for admin ────────────
+export const generatePreviewToken = asyncHandler(async (req, res) => {
+  const { studentId } = req.body;
+  if (!studentId) throw new ApiError(400, "Student ID is required");
+
+  const hashedToken = generateSecureToken();
+
+  await Token.create({
+    studentId,
+    token: hashedToken,
+    limitsLeft: 3,
+    expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+  });
+
+  res
+    .status(200)
+    .json(new ApiResponse({ token: hashedToken }, "Preview token generated"));
 });

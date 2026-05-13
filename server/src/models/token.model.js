@@ -14,7 +14,7 @@ const tokenSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    enum: ["Active", "Expired"],
+    enum: ["Active", "Expired", "Completed", "Used"],
     default: "Active",
   },
   limitsLeft: {
@@ -24,7 +24,9 @@ const tokenSchema = new mongoose.Schema({
   expiresAt: {
     type: Date,
     required: true,
-    index: { expires: "0" },
+  },
+  usedAt: {
+    type: Date,
   },
   createdAt: {
     type: Date,
@@ -32,14 +34,6 @@ const tokenSchema = new mongoose.Schema({
   },
 });
 
-tokenSchema.pre("save", async function (next) {
-  if (!this.isModified("token")) return next();
-  this.token = await bcrypt.hash(this.token, 12);
-  next();
-});
-
-tokenSchema.methods.compareToken = async function (userToken) {
-  return await bcrypt.compare(userToken, this.token);
-};
+// Removed bcrypt hashing since token is already hashed securely via sha256 before saving, and validated via direct findOne.
 
 export const Token = mongoose.model("Token", tokenSchema);

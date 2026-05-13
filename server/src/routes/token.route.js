@@ -4,7 +4,8 @@ import {
   // revokeToken,
   validateToken,
   getAllTokens,
-  deleteToken
+  deleteToken,
+  generatePreviewToken
 } from "../controllers/token.controller.js";
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.get("/validate", validateToken); // GET /api/tokens/validate?token=xxx
 // router.patch("/:id/revoke", revokeToken); // PATCH /api/tokens/:id/revoke
 router.get("/", getAllTokens); // GET /api/tokens
 router.delete("/delete/:id", deleteToken);
+router.post("/preview", generatePreviewToken);
 
 export default router;

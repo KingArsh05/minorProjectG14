@@ -101,10 +101,25 @@ export default function SendNotification() {
       p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
     );
 
-  const toggleAll = () =>
-    setSelected(
-      filteredStudents.length === selected.length ? [] : filteredStudents.map((s) => s._id),
-    );
+  const allFilteredSelected =
+    filteredStudents.length > 0 &&
+    filteredStudents.every((s) => selected.includes(s._id));
+
+  const toggleAll = () => {
+    if (allFilteredSelected) {
+      setSelected((prev) =>
+        prev.filter((id) => !filteredStudents.find((s) => s._id === id))
+      );
+    } else {
+      setSelected((prev) => {
+        const newSelected = new Set([
+          ...prev,
+          ...filteredStudents.map((s) => s._id),
+        ]);
+        return Array.from(newSelected);
+      });
+    }
+  };
 
   const handleSend = async () => {
     setSending(true);
@@ -260,7 +275,7 @@ export default function SendNotification() {
               onClick={toggleAll}
               className="text-xs md:text-sm h-15 sm:w-24 md:w-36 px-2 sm:px-0 md:px-4 rounded-3xl border border-[#2c3350] bg-[#1a1e2d] hover:bg-[#202538] text-[#d6dcf7] font-medium transition-all whitespace-nowrap text-center"
             >
-              {`${loading || selected.length < students.length ? "Select All" : "Deselect All"}`}
+              {loading ? "Select All" : allFilteredSelected ? "Deselect All" : "Select All"}
             </button>
 
             <div className="h-15 sm:w-24 md:w-36 px-2 sm:px-0 md:px-4 rounded-3xl border border-cyan-500/20 bg-cyan-500/10 flex items-center justify-center shadow-[0_8px_25px_rgba(34,211,238,0.08)] whitespace-nowrap text-center">

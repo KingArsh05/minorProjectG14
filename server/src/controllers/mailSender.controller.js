@@ -4,10 +4,7 @@ import { mailSender } from "../utils/mailSender.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import crypto from "crypto";
 import { generateSecureToken } from "./token.controller.js";
-
-const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 const EXPIRY_MAP = {
   "24 hours": 24,
@@ -39,25 +36,15 @@ export const sendMailToStudents = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No students found for given data!");
   }
 
-  console.log(students)
-  const tokenMap = {}
-  students.forEach((student)=>{
-    tokenMap[student._id] = generateSecureToken()
-  })
-  console.log(tokenMap)
-  return
-
   const recipientMap = {};
   recipients.forEach((r) => {
     recipientMap[r.studentId] = r.email;
   });
 
   const hours = EXPIRY_MAP[expiry] || 24;
-  const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
-
+  const limitCount = ACCESS_LIMIT_MAP[accessLimit] || 1;
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 
-  // Parallel processing with Promise.allSettled for robustness
   const emailPromises = students.map(async (student) => {
     try {
       const email = recipientMap[student._id] || student.guardianEmail;
@@ -71,26 +58,21 @@ export const sendMailToStudents = asyncHandler(async (req, res) => {
         };
       }
 
-      // 1. Create Token
-      const rawToken = crypto.randomBytes(32).toString("hex");
-      const hashedToken = crypto
-        .createHash("sha256")
-        .update(TOKEN_SECRET)
-        .update(rawToken)
-        .update(TOKEN_SECRET)
-        .digest("base64url");
+      // 1. Generate token using shared utility (reads TOKEN_SECRET lazily)
+      const hashedToken = generateSecureToken();
 
+      // 2. Store in DB with correct expiry and access limit
       await Token.create({
         studentId: student._id,
         token: hashedToken,
-        limitsLeft: ACCESS_LIMIT_MAP[accessLimit],
-        expiresAt: Date.now() + EXPIRY_MAP[expiry] * 60 * 60 * 1000,
+        limitsLeft: limitCount,
+        expiresAt: new Date(Date.now() + hours * 60 * 60 * 1000),
       });
 
-      // 2. Construct URL
+      // 3. Construct URL
       const dynamicUrl = `${frontendUrl}/guardian?token=${hashedToken}`;
 
-      // 3. Send Mail
+      // 4. Send Mail
       const sent = await mailSender(email, student.fullName, dynamicUrl);
 
       if (sent) {

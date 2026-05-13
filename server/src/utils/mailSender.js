@@ -1,37 +1,43 @@
 import nodemailer from "nodemailer";
 
-// ✅ Create transporter ONCE (important for performance & stability)
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // Gmail SSL
-  pool: true,
-  maxConnections: 5,
-  maxMessages: 100,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Gmail App Password
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+let transporter = null;
 
-// ✅ Verify transporter at startup
-transporter.verify((err) => {
-  if (err) {
-    console.error("❌ Email Server Error:", err.message);
-  } else {
-    console.log("✅ Email Server Ready");
+const getTransporter = () => {
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true, // Gmail SSL
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS, // Gmail App Password
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+    });
+
+    transporter.verify((err) => {
+      if (err) {
+        console.error("❌ Email Server Error:", err.message);
+      } else {
+        console.log("✅ Email Server Ready");
+      }
+    });
   }
-});
+  return transporter;
+};
 
 export const mailSender = async (guardianEmail, studentName, dynamicUrl) => {
   try {
-    const info = await transporter.sendMail({
+    const mailTransporter = getTransporter();
+    const info = await mailTransporter.sendMail({
       from: `"University Admin" <${process.env.EMAIL_USER}>`,
       to: guardianEmail,
       subject: `Academic Update for ${studentName}`,

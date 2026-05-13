@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -60,8 +60,12 @@ export default function GuardianDashboard() {
   const [error, setError] = useState(null);
   const [openSem, setOpenSem] = useState(null);
   const [defaultSemSet, setDefaultSemSet] = useState(false);
+  const hasValidated = useRef(false);
 
   useEffect(() => {
+    if (hasValidated.current) return;
+    hasValidated.current = true;
+
     const validate = async () => {
       if (!token) {
         setError(
@@ -80,7 +84,8 @@ export default function GuardianDashboard() {
         if (!data.success) throw new Error(data.message || "Invalid token");
         setStudent(data.data);
       } catch (err) {
-        setError(err.message);
+        const msg = err.response?.data?.message || err.message;
+        setError(msg);
       } finally {
         setLoading(false);
       }
@@ -111,29 +116,41 @@ export default function GuardianDashboard() {
     );
   }
 
-  if (error || !student)
+  if (error || !student) {
+    const isExpired = error?.toLowerCase().includes("expired");
+    const isLimitReached = error?.toLowerCase().includes("access limit");
+
+    let title = "Invalid Access Link";
+    let description = error || "This academic report link is invalid. Please contact the administration for a new access token.";
+
+    if (isExpired) {
+      title = "Link Expired";
+      description = "This access link has expired. Please contact the administration for a new link.";
+    } else if (isLimitReached) {
+      title = "Access Limit Reached";
+      description = "You have used all available views for this link. Please contact the administration if you need further access.";
+    }
+
     return (
       <div className="min-h-screen bg-[#0a0b14] flex items-center justify-center p-6 font-['Inter']">
         <div className="text-center bg-[#13162b] p-10 rounded-3xl border border-[#252840] max-w-md w-full shadow-2xl">
           <div className="w-20 h-20 rounded-full bg-rose-500/10 border-2 border-rose-500/50 flex items-center justify-center mx-auto mb-6">
-            {error?.includes("expired") ? (
+            {isExpired || isLimitReached ? (
               <ShieldAlert size={36} className="text-rose-500" />
             ) : (
               <AlertTriangle size={36} className="text-rose-500" />
             )}
           </div>
           <h1 className="text-2xl font-black text-white mb-3 font-['Outfit'] tracking-tight">
-            {error?.includes("expired")
-              ? "Link Expired"
-              : "Invalid Access Link"}
+            {title}
           </h1>
           <p className="text-[#9ba2c0] text-sm leading-relaxed">
-            {error ||
-              "This academic report link is invalid. Please contact the administration for a new access token."}
+            {description}
           </p>
         </div>
       </div>
     );
+  }
 
   const avatarGrad = `linear-gradient(135deg, hsl(${(student.urn * 47) % 360}, 70%, 45%), hsl(${(student.urn * 47 + 40) % 360}, 75%, 35%))`;
   const chartData = student.semesters.map((s) => ({

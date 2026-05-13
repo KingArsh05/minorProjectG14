@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 import {
   Upload,
   Database,
@@ -42,7 +42,7 @@ const TT = ({ active, payload, label }) => {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   const API_URL = import.meta.env.VITE_API_URL;
@@ -159,11 +159,7 @@ export default function AdminDashboard() {
           {/* Actions */}
 
           <div className="flex items-center gap-3">
-            <button className="h-[52px] px-5 rounded-2xl border border-[#23293f] bg-[#181c2b] text-[#9ba2c0] hover:border-[#6366f1] hover:text-white transition-all">
-              View Reports
-            </button>
-
-            <button className="inline-flex items-center gap-2 h-[52px] px-5 rounded-2xl bg-[#6366f1] hover:bg-[#5855eb] text-white font-medium transition-all shadow-[0_10px_30px_rgba(99,102,241,0.18)]">
+            <button onClick={()=>navigate("/admin/notifications")} className="inline-flex items-center gap-2 h-[52px] px-5 rounded-2xl bg-[#6366f1] hover:bg-[#5855eb] text-white font-medium transition-all shadow-[0_10px_30px_rgba(99,102,241,0.18)]">
               <BellRing size={16} />
               Notify Parents
             </button>

@@ -112,19 +112,6 @@ export default function Navbar() {
 
           {/* Right Buttons */}
           <div className="flex items-center gap-4">
-
-            <Link
-              to="/guardian"
-              className="group px-5 py-2.5 rounded-xl border border-[#2d3252] bg-[rgba(255,255,255,0.03)] hover:bg-[rgba(255,255,255,0.05)] hover:border-[#6366f1]/40 text-white text-sm font-semibold transition-all duration-300 flex items-center gap-2"
-            >
-              <ShieldCheck
-                size={16}
-                className="text-[#818cf8]"
-              />
-
-              Guardian Portal
-            </Link>
-
             <Link
               to="/login"
               className="group px-5 py-2.5 rounded-xl bg-[#6366f1] hover:bg-[#5855eb] text-white text-sm font-semibold shadow-[0_0_25px_rgba(99,102,241,0.45)] hover:shadow-[0_0_40px_rgba(99,102,241,0.65)] transition-all duration-300 hover:scale-105 flex items-center gap-2"
