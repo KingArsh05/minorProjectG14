@@ -38,37 +38,54 @@ sections.append(r"""\documentclass[12pt,a4paper]{report}
 # --- TITLE PAGE ---
 sections.append(r"""
 \begin{titlepage}
+\begin{spacing}{1.0}
 \centering
 \thispagestyle{empty}
-{\fontsize{24pt}{28pt}\selectfont\bfseries Academic Status Transparency\\Notification System\par}
-\vspace{0.5cm}
-{\fontsize{14pt}{18pt}\selectfont\bfseries MINOR PROJECT REPORT\par}
-\vspace{0.8cm}
-{\fontsize{12pt}{14pt}\selectfont SUBMITTED IN PARTIAL FULFILMENT OF THE REQUIREMENTS FOR THE AWARD OF THE DEGREE OF\par}
-\vspace{0.5cm}
-{\fontsize{14pt}{18pt}\selectfont\textbf{BACHELOR OF TECHNOLOGY}\\Computer Science and Engineering\par}
-\vspace{1.2cm}
-\includegraphics[width=0.32\textwidth]{assets/image.png}\par
-\vspace{1cm}
-{\fontsize{13pt}{16pt}\selectfont
-\begin{minipage}[t]{0.60\textwidth}
-\raggedright
-\textbf{Submitted By:}\\
-ARSHDEEP ANAND \hspace{0.1cm}(2302481)\\
-NISHTHA JAIN \hspace{0.1cm}(2302627)\\
-BALKRISHAN SINGH \hspace{0.1cm}(2302492)\\
-\end{minipage}%
+\vspace*{0.5cm}
+
+{\fontsize{24pt}{28pt}\selectfont\bfseries Academic Status Transparency\\[0.15cm]Notification System}\\[0.6cm]
+
+{\fontsize{14pt}{18pt}\selectfont\bfseries MINOR PROJECT REPORT}\\[0.6cm]
+
+{\fontsize{12pt}{14pt}\selectfont SUBMITTED IN PARTIAL FULFILMENT OF THE REQUIREMENTS FOR THE AWARD OF THE DEGREE OF}\\[0.5cm]
+
+{\fontsize{14pt}{18pt}\selectfont\textbf{BACHELOR OF TECHNOLOGY}\\[0.2cm]Computer Science and Engineering}\\[0.6cm]
+
+\includegraphics[width=0.25\textwidth]{assets/image.png}\\[0.6cm]
+
+SUBMITTED BY\\[0.4cm]
+
+\begin{center}
+\begin{minipage}[t]{0.3\textwidth}
+\centering
+{\fontsize{13}{15}\selectfont ARSHDEEP ANAND}\\[0.1cm]
+{\fontsize{11}{13}\selectfont URN: 2302481}\\[0.1cm]
+{\fontsize{11}{13}\selectfont CRN: 2315025}
+\end{minipage}
 \hfill
-\begin{minipage}[t]{0.35\textwidth}
-\textbf{Submitted To:}\\
-Dr. Kapil Sharma\\
-Assistant Professor\\
-Dept. of CSE
-\end{minipage}}
-\vspace{1.2cm}
-{\fontsize{14pt}{18pt}\selectfont\bfseries DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING\\GURU NANAK DEV ENGINEERING COLLEGE\\LUDHIANA -- 141006\par}
-\vspace{0.3cm}
-{\fontsize{12pt}{14pt}\selectfont MAY, 2026\par}
+\begin{minipage}[t]{0.3\textwidth}
+\centering
+{\fontsize{13}{15}\selectfont NISHTHA JAIN}\\[0.1cm]
+{\fontsize{11}{13}\selectfont URN: 2302627}\\[0.1cm]
+{\fontsize{11}{13}\selectfont CRN: 2315172}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\textwidth}
+\centering
+{\fontsize{13}{15}\selectfont BALKRISHAN SINGH}\\[0.1cm]
+{\fontsize{11}{13}\selectfont URN: 2302492}\\[0.1cm]
+{\fontsize{11}{13}\selectfont CRN: 2315036}
+\end{minipage}\\[0.6cm]
+
+{\fontsize{14}{16}\selectfont UNDER THE GUIDANCE OF}\\[0.15cm]
+{\fontsize{14}{16}\selectfont Dr. Kapil Sharma}
+\end{center}
+
+\vfill
+{\fontsize{14pt}{18pt}\selectfont\bfseries DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING\\[0.2cm]GURU NANAK DEV ENGINEERING COLLEGE\\[0.2cm]LUDHIANA -- 141006}\\[0.3cm]
+{\fontsize{12pt}{14pt}\selectfont MAY, 2026}
+
+\end{spacing}
 \end{titlepage}
 """)
 
