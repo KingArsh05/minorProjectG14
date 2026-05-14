@@ -10,7 +10,7 @@ import SendNotification from "./pages/admin/notifications/SendNotification";
 import TokenManagement from "./pages/admin/tokenManagement/TokenManagement";
 import GuardianDashboard from "./pages/guardian/GuardianDashboard";
 import AccessDenied from "./pages/guardian/AccessDenied";
-import StudentList from "./pages/admin/Students/StudentList";
+import StudentList from "./pages/admin/students/StudentList";
 import Home from "./LandngPage/Home";
 import "./index.css";
 
