@@ -99,13 +99,6 @@ export default function Hero() {
               className="group-hover:translate-x-1 transition-transform"
             />
           </Link>
-
-          <Link
-            to="/guardian"
-            className="px-9 py-4 rounded-2xl border border-[#2d3252] bg-[rgba(255,255,255,0.03)] hover:bg-[rgba(255,255,255,0.05)] hover:border-[#6366f1]/40 text-white font-semibold backdrop-blur-xl transition-all duration-300"
-          >
-            Guardian Portal
-          </Link>
         </div>
 
         {/* Dashboard Preview */}
