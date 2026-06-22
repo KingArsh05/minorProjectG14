@@ -20,7 +20,8 @@
     "react-router-dom": "^7.15.0",
     "react-toastify": "^11.1.0",
     "recharts": "^3.7.0",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

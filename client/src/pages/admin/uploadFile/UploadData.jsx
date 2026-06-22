@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import * as XLSX from "xlsx";
 import {
   Upload,
   CheckCircle,
@@ -76,58 +77,147 @@ export default function UploadData() {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const handleFile = (f) => {
-    if (f) {
-      setFile(f);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target.result;
+  const handleFile = async (f) => {
+    if (!f) return;
+
+    setFile(f);
+    const ext = f.name.split(".").pop().toLowerCase();
+
+    try {
+      let headers = [];
+      let parsed = [];
+
+      if (ext === "csv") {
+        // Parse CSV
+        const text = await f.text();
         const lines = text.split("\n").filter((l) => l.trim() !== "");
+
         if (lines.length > 1) {
-          const headers = lines[0].split(",").map((h) => h.trim());
-          const parsed = lines.slice(1).map((line) => {
+          headers = lines[0].split(",").map((h) => h.trim());
+          parsed = lines.slice(1).map((line) => {
             const values = line.split(",").map((v) => v.trim());
             const obj = {};
             headers.forEach((h, i) => {
-              obj[h] = values[i];
+              obj[h] = values[i] ?? "";
             });
             return obj;
           });
-          setPreviewHeaders(headers);
-          setPreviewData(parsed);
         }
-      };
-      reader.readAsText(f);
+      } else if (ext === "xlsx" || ext === "xls") {
+        // Parse Excel
+        const data = await f.arrayBuffer();
+        const workbook = XLSX.read(data, { type: "array" });
+
+        // Read first sheet
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
+          header: 1, // Returns array of arrays
+          defval: "", // Default value for empty cells
+          blankrows: false, // Skip empty rows
+        });
+
+        if (jsonData.length > 1) {
+          headers = jsonData[0].map((h) => String(h).trim());
+          parsed = jsonData.slice(1).map((row) => {
+            const obj = {};
+            headers.forEach((h, i) => {
+              obj[h] = row[i] ?? "";
+            });
+            return obj;
+          });
+        }
+      }
+
+      setPreviewHeaders(headers);
+      setPreviewData(parsed);
       setStep(2);
+    } catch (err) {
+      console.error("File parse error:", err);
+      setErrorMsg("Failed to parse file. Please check the format.");
     }
   };
+
   const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
     handleFile(e.dataTransfer.files[0]);
   };
+
   const handleProcess = async () => {
+    if (!file || !course || !branch || !semester || !batch) return;
+
+    const academic_details = {
+      course,
+      branch,
+      semester,
+      batch,
+    };
     setUploading(true);
     setErrorMsg("");
+
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("course", course);
-      formData.append("branch", branch);
-      formData.append("semester", semester);
-      formData.append("batch", batch);
+      const normalizedUserObject = previewData.map((u) => {
+        const subjects = [];
+
+        for (let i = 1; i <= 6; i++) {
+          const internalMarks = Number(u[`sub${i}_int`]);
+          const externalMarks = Number(u[`sub${i}_ext`]);
+
+          const internalDetained = u[`sub${i}_intDet`] === "true";
+          const externalDetained = u[`sub${i}_extDet`] === "true";
+
+          subjects.push({
+            subject: u[`sub${i}_code`],
+            internalMarks,
+            externalMarks,
+            totalMarks: internalMarks + externalMarks,
+            internalDetained,
+            externalDetained,
+            status:
+              internalDetained || externalDetained
+                ? "Detained"
+                : internalMarks + externalMarks >= 40
+                  ? "Pass"
+                  : "Fail",
+          });
+        }
+
+        return {
+          fullName: u.fullName,
+          guardianEmail: u.guardianEmail,
+          urn: Number(u.urn),
+          crn: Number(u.crn),
+
+          course: academic_details.course,
+          branch: academic_details.branch,
+
+          admissionYear: Number(academic_details.batch.split("-")[0]),
+          graduationYear: Number(academic_details.batch.split("-")[1]),
+
+          semesters: [
+            {
+              semesterNumber: Number(academic_details.semester),
+              sgpa: Number(u.sgpa),
+              subjects,
+            },
+          ],
+        };
+      });
+
+      console.log({ normalizedUserObject });
 
       const { data } = await axios.post(
         `${API_URL}/students/upload`,
-        formData,
+        normalizedUserObject,
         {
           withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
         },
       );
 
+
+
       if (data.success) {
-        setProcessedRecords(data.data.processedRecords);
+        setProcessedRecords(data.data.upsertedCount);
         setStep(3);
       }
     } catch (err) {
@@ -137,13 +227,13 @@ export default function UploadData() {
       setUploading(false);
     }
   };
+
   const branches = courseBranchMap[course] || [];
 
   if (step === 3) {
     return (
       <div className="w-full mx-auto mt-4 fade-in">
         <div className="rounded-3xl h-[72vh] flex flex-col justify-center items-center border border-[#252b42] bg-[#11131f] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden relative">
-
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[260px] h-[40vh] bg-[#10b981]/10 blur-3xl pointer-events-none" />
 
           <div className="relative text-center">
@@ -168,8 +258,8 @@ export default function UploadData() {
           <div className="mt-8 grid grid-cols-3 gap-4">
             {[
               { l: "Records Processed", v: processedRecords },
-              { l: "Course Selected", v: course || "B.Tech" },
-              { l: "Semester Selected", v: semester || "4" },
+              { l: "Course Selected", v: course },
+              { l: "Semester Selected", v: semester },
             ].map((s) => (
               <div
                 key={s.l}
@@ -540,10 +630,7 @@ export default function UploadData() {
               </thead>
               <tbody className="divide-y divide-[#252b42]">
                 {previewData.map((r, i) => (
-                  <tr
-                    key={i}
-                    className="hover:bg-[#1a1e30] transition-colors"
-                  >
+                  <tr key={i} className="hover:bg-[#1a1e30] transition-colors">
                     {previewHeaders.map((h, idx) => (
                       <td
                         key={idx}
