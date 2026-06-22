@@ -16,9 +16,10 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   // Unknown errors fallback
-  return res.status(500).json({
+  const statusCode = err.statusCode || err.status || 500;
+  return res.status(statusCode).json({
     success: false,
-    statusCode: 500,
+    statusCode,
     message: err.message || "Internal Server Error",
     errors: [],
     data: null,

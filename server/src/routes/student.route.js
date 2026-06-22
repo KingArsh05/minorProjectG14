@@ -4,7 +4,7 @@ import {
   getAllStudents,
   getStudentById,
   getDashboardStats,
-  uploadStudents,
+  uploadStudentsData,
 } from "../controllers/student.controller.js";
 
 const router = express.Router();
@@ -12,7 +12,7 @@ const router = express.Router();
 router.get("/", getAllStudents);
 router.get("/stats", getDashboardStats);
 router.get("/:id", getStudentById);
-router.post("/upload", upload.single("file"), uploadStudents);
+router.post("/upload", uploadStudentsData);
 // Stats route MUST come before /:id to avoid "stats" being treated as an id
 
 export default router;
