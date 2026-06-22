@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://astns-fa.vercel.app/api/$1"
+      "destination": "https://astns-ba.vercel.app/api/$1"
     },
     {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
-}
+} 
