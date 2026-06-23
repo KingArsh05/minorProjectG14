@@ -113,7 +113,7 @@ export const mailSender = async (guardianEmail, studentName, dynamicUrl, expiry,
                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                           <tr>
                             <td align="center" style="padding: 8px 0 32px;">
-                              <a href="${dynamicUrl}" target="_blank" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); text-transform: uppercase; letter-spacing: 0.02em;">
+                              <a href="${dynamicUrl}" target="_blank" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); text-transform: uppercase; letter-spacing: 0.02em;">
                                 View Academic Report
                               </a>
                             </td>
