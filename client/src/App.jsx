@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./context/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
-import AdminLogin from "./pages/admin/AdminLogin";
+import LoginForm from "./components/LoginPage/LoginForm";
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import UploadData from "./pages/admin/uploadFile/UploadData";
 import StudentDetail from "./pages/admin/students/StudentDetail";
@@ -19,14 +20,15 @@ function LoginGate() {
   if (authChecked && isAuthenticated) {
     return <Navigate to="/admin/dashboard" replace />;
   }
-  return <AdminLogin />;
+  return <LoginForm />;
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
           {/* Default redirect */}
           <Route path="/" element={<Home />} />
 
@@ -57,8 +59,9 @@ export default function App() {
 
           {/* 404 */}
           <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }

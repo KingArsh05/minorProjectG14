@@ -1,54 +1,109 @@
 import { ShieldX } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function AccessDenied() {
+  const { darkMode } = useTheme();
+
   return (
     <div
-      className="min-h-screen bg-[#0a0b14] flex items-center justify-center p-6"
+      className={`min-h-screen flex items-center justify-center p-6 ${
+        darkMode
+          ? "bg-[#06070d] text-white"
+          : "bg-gradient-to-br from-indigo-50 via-slate-50 to-cyan-50 text-slate-800"
+      }`}
       style={{
-        backgroundImage:
-          "radial-gradient(ellipse at 50% 40%, rgba(239,68,68,0.08) 0%, transparent 60%)",
+        backgroundImage: darkMode
+          ? "radial-gradient(ellipse at 50% 40%, rgba(239,68,68,0.06) 0%, transparent 65%)"
+          : "radial-gradient(ellipse at 50% 40%, rgba(239,68,68,0.03) 0%, transparent 65%)",
       }}
     >
-      <div className="text-center max-w-[420px]">
-        <div className="w-[90px] h-[90px] rounded-full bg-[rgba(239,68,68,0.1)] border-2 border-[#ef4444] flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(239,68,68,0.15)]">
-          <ShieldX size={40} color="#ef4444" />
+      <div className="text-center max-w-[420px] w-full">
+        {/* Shield Icon Container */}
+        <div
+          className={`w-[84px] h-[84px] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg ${
+            darkMode
+              ? "bg-[#ef4444]/10 border border-[#ef4444]/30 shadow-red-950/20"
+              : "bg-red-50 border border-red-200 shadow-red-100/50"
+          }`}
+        >
+          <ShieldX size={36} className="text-[#ef4444]" />
         </div>
+
+        {/* Title */}
         <h1
-          className="text-[2rem] font-extrabold text-[#f0f1fa] mb-3"
-          style={{ fontFamily: "Outfit, sans-serif" }}
+          className={`text-[1.8rem] font-extrabold mb-3 font-outfit tracking-tight ${
+            darkMode ? "text-white" : "text-slate-800"
+          }`}
         >
           Access Denied
         </h1>
-        <p className="text-[0.9rem] text-[#9ba2c0] leading-relaxed mb-2">
+
+        {/* Core Descriptions */}
+        <p
+          className={`text-sm leading-relaxed mb-2 ${
+            darkMode ? "text-[#9ba2c0]" : "text-slate-600"
+          }`}
+        >
           The link you used is either{" "}
-          <strong className="text-[#f87171]">invalid</strong>,{" "}
-          <strong className="text-[#fbbf24]">expired</strong>, or has already
+          <strong className="text-[#ef4444] font-semibold">invalid</strong>,{" "}
+          <strong className="text-[#fbbf24] font-semibold">expired</strong>, or has already
           been accessed.
         </p>
-        <p className="text-[0.82rem] text-[#5c6385] leading-relaxed mb-8">
-          For a new access link, please contact the institution admin. Links are
-          valid for 24 hours from the time of dispatch.
+
+        <p
+          className={`text-[0.82rem] leading-relaxed mb-6 ${
+            darkMode ? "text-[#5c6385]" : "text-slate-400"
+          }`}
+        >
+          For security, links automatically expire after a set time limit or single access. Please contact the institution administrator to obtain a new token.
         </p>
 
-        <div className="bg-[#13162b] border border-[#252840] rounded-2xl p-5 mb-5 text-left">
-          <p className="text-[0.75rem] font-semibold text-[#5c6385] mb-3 uppercase tracking-widest">
+        {/* Reasons Card */}
+        <div
+          className={`border rounded-2xl p-5 mb-6 text-left ${
+            darkMode
+              ? "bg-[#111322]/80 border-white/5 shadow-inner"
+              : "bg-white border-slate-200 shadow-sm"
+          }`}
+        >
+          <p
+            className={`text-[0.68rem] font-bold mb-3 uppercase tracking-[0.16em] ${
+              darkMode ? "text-[#5c6385]" : "text-slate-400"
+            }`}
+          >
             Possible Reasons
           </p>
-          {[
-            "Link has expired (valid for 24 hrs only)",
-            "Link was already accessed once",
-            "Link was manually revoked by admin",
-            "Token is malformed or tampered",
-          ].map((r, i) => (
-            <div key={i} className="flex gap-2 mb-2 items-start">
-              <span className="text-[#ef4444] text-[0.8rem] mt-px">✕</span>
-              <p className="text-[0.8rem] text-[#9ba2c0]">{r}</p>
-            </div>
-          ))}
+
+          <div className="space-y-2.5">
+            {[
+              "Cryptographic link has expired",
+              "Link has already been accessed once",
+              "Session was manually terminated by administrator",
+              "Secure access token has been modified or tampered",
+            ].map((r, i) => (
+              <div key={i} className="flex gap-2.5 items-start">
+                <span className="text-[#ef4444] text-[0.8rem] leading-none select-none mt-0.5">
+                  ✕
+                </span>
+                <p
+                  className={`text-[0.8rem] font-semibold ${
+                    darkMode ? "text-[#9ba2c0]" : "text-slate-600"
+                  }`}
+                >
+                  {r}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <p className="text-[0.72rem] text-[#5c6385]">
-          🔒 Academic Status Transparency Notification System — Group 14
+        {/* Footer info */}
+        <p
+          className={`text-[0.68rem] font-medium tracking-wide ${
+            darkMode ? "text-[#5c6385]" : "text-slate-400"
+          }`}
+        >
+          🔒 Academic Status Transparency Notification System — ASTNS
         </p>
       </div>
     </div>
