@@ -308,44 +308,112 @@ export default function GuardianDashboard() {
 
     return (
       <div
-        className={`min-h-screen flex items-center justify-center p-6 font-['Inter'] ${
-          darkMode ? "bg-[#06070d]" : "bg-gradient-to-br from-indigo-50 via-slate-50 to-cyan-50"
+        className={`min-h-screen flex items-center justify-center p-6 font-['Inter'] relative overflow-hidden transition-colors duration-500 ${
+          darkMode ? "bg-[#06070d]" : "bg-gradient-to-br from-indigo-50/70 via-slate-50 to-cyan-50/70"
         }`}
       >
+        {/* Dynamic Keyframes */}
+        <style>{`
+          @keyframes pulse-glow-1 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.12; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.18; }
+          }
+          @keyframes pulse-glow-2 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.08; }
+            50% { transform: translate(-50%, -50%) scale(1.0); opacity: 0.14; }
+          }
+          @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+          }
+        `}</style>
+
+        {/* Background Ambient Glows */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div
+            className={`absolute top-1/4 left-1/3 w-96 h-96 rounded-full blur-[140px] ${
+              darkMode ? "bg-indigo-500" : "bg-indigo-400"
+            }`}
+            style={{
+              animation: "pulse-glow-1 8s ease-in-out infinite",
+              transformOrigin: "center",
+            }}
+          />
+          <div
+            className={`absolute bottom-1/4 right-1/3 w-[450px] h-[450px] rounded-full blur-[160px] ${
+              darkMode ? "bg-cyan-500" : "bg-cyan-400"
+            }`}
+            style={{
+              animation: "pulse-glow-2 10s ease-in-out infinite",
+              transformOrigin: "center",
+            }}
+          />
+        </div>
+
+        {/* Glassmorphic Alert Card */}
         <div
-          className={`text-center p-10 rounded-[32px] border max-w-md w-full shadow-2xl ${
+          className={`relative max-w-sm w-full mx-4 rounded-[32px] border p-8 text-center shadow-2xl backdrop-blur-xl transition-all duration-300 overflow-hidden ${
             darkMode
-              ? "bg-[#13162b] border-[#252840] text-white shadow-black/80"
-              : "bg-white border-slate-200 text-slate-800 shadow-slate-200/40"
+              ? "bg-[#111322]/80 border-white/10 shadow-black/60"
+              : "bg-white/85 border-slate-200/80 shadow-indigo-100/50"
           }`}
         >
-          <div
-            className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 ${
-              darkMode
-                ? "bg-rose-500/10 border-rose-500/40 text-rose-500"
-                : "bg-rose-50 border-rose-200 text-rose-600"
-            }`}
-          >
-            {isExpired || isLimitReached ? (
-              <ShieldAlert size={36} />
-            ) : (
-              <AlertTriangle size={36} />
-            )}
+          {/* Concentric Scanner-Like Rings */}
+          <div className="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+            {/* Outer Ring */}
+            <div
+              className={`absolute inset-0 rounded-full border-[3px] ${
+                darkMode ? "border-rose-500/20" : "border-rose-500/10"
+              }`}
+            />
+
+            {/* Middle Ring */}
+            <div
+              className={`absolute inset-2.5 rounded-full border-2 ${
+                darkMode ? "border-rose-500/30" : "border-rose-500/15"
+              }`}
+            />
+
+            {/* Inner Ring */}
+            <div
+              className={`absolute inset-5 rounded-full flex items-center justify-center shadow-inner bg-rose-500/10 border ${
+                darkMode
+                  ? "border-rose-500/30 text-rose-400"
+                  : "border-rose-200 text-rose-600"
+              }`}
+              style={{ animation: "breathe 2s ease-in-out infinite" }}
+            >
+              {isExpired || isLimitReached ? (
+                <ShieldAlert className="w-7 h-7" />
+              ) : (
+                <AlertTriangle className="w-7 h-7" />
+              )}
+            </div>
           </div>
-          <h1
-            className={`text-2xl font-black mb-3 font-outfit tracking-tight ${
-              darkMode ? "text-white" : "text-slate-800"
-            }`}
-          >
-            {title}
-          </h1>
-          <p
-            className={`text-sm leading-relaxed ${
-              darkMode ? "text-[#9ba2c0]" : "text-slate-500 font-medium"
-            }`}
-          >
-            {description}
-          </p>
+
+          {/* Alert Typography */}
+          <div className="relative z-10 space-y-2.5">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest font-outfit uppercase border bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+              Security Gateway
+            </div>
+            
+            <h3
+              className={`text-base font-extrabold font-outfit tracking-wide ${
+                darkMode ? "text-white" : "text-slate-800"
+              }`}
+            >
+              {title}
+            </h3>
+            
+            <p
+              className={`text-xs leading-relaxed max-w-[280px] mx-auto ${
+                darkMode ? "text-[#9ba2c0]" : "text-slate-500 font-medium"
+              }`}
+            >
+              {description}
+            </p>
+          </div>
         </div>
       </div>
     );
