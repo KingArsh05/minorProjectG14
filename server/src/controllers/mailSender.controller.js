@@ -73,7 +73,7 @@ export const sendMailToStudents = asyncHandler(async (req, res) => {
       const dynamicUrl = `${frontendUrl}/guardian?token=${hashedToken}`;
 
       // 4. Send Mail
-      const sent = await mailSender(email, student.fullName, dynamicUrl);
+      const sent = await mailSender(email, student.fullName, dynamicUrl, expiry, accessLimit);
 
       if (sent) {
         return {
