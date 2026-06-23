@@ -41,12 +41,12 @@ export const mailSender = async (guardianEmail, studentName, dynamicUrl, expiry,
     const info = await mailTransporter.sendMail({
       from: `"University Admin" <${process.env.EMAIL_USER}>`,
       to: guardianEmail,
-      subject: `Academic Update for ${studentName}`,
-      text: `Dear Guardian,\n\nAn official academic update and semester report has been published for ${studentName}.\n${
+      subject: `Official Semester Progress Report: ${studentName} - ASTNS Portal`,
+      text: `Dear Guardian,\n\nAn official semester report has been published for ${studentName}.\n${
         hasConstraints
-          ? `\nAccess Constraints & Rules:\n- Time Expiry: ${expiry}\n- View Limits: ${accessLimit}\n`
+          ? `\nPortal Access Guidelines:\n- Validity Window: ${expiry}\n- View Limit: ${accessLimit}\n`
           : ""
-      }\nView it here: ${dynamicUrl}\n\nThis is an automated transmission from the institution. Once the limit is reached or time expires, the link will automatically deactivate.`,
+      }\nAccess the dashboard here: ${dynamicUrl}\n\nTo maintain student record privacy, access will close once the view limit is reached or the time expires. For assistance, contact the student affairs office.`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -86,10 +86,10 @@ export const mailSender = async (guardianEmail, studentName, dynamicUrl, expiry,
                             ? `
                         <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 16px; padding: 20px; margin-bottom: 32px; text-align: left;">
                           <div style="margin-bottom: 8px; font-size: 14px; font-weight: 800; color: #0369a1; text-transform: uppercase; letter-spacing: 0.05em;">
-                            🔒 Link Constraints & Rules
+                            📋 Portal Access Guidelines
                           </div>
                           <p style="margin: 0; color: #0284c7; font-size: 13.5px; line-height: 1.5; font-weight: 500;">
-                            For student privacy and security, this portal link has been configured with strict constraints:
+                            To ensure student privacy, this official report link has been configured with the following access details:
                           </p>
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 12px;">
                             <tr>
@@ -102,7 +102,7 @@ export const mailSender = async (guardianEmail, studentName, dynamicUrl, expiry,
                             </tr>
                           </table>
                           <p style="margin: 8px 0 0 0; font-size: 11px; color: #0284c7; line-height: 1.4; font-weight: 500; font-style: italic;">
-                            * Once the access limit is reached or the time expires, this link will automatically deactivate.
+                            * Access will close once the view limit is reached or the time window expires.
                           </p>
                         </div>
                             `
@@ -114,7 +114,7 @@ export const mailSender = async (guardianEmail, studentName, dynamicUrl, expiry,
                           <tr>
                             <td align="center" style="padding: 8px 0 32px;">
                               <a href="${dynamicUrl}" target="_blank" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); text-transform: uppercase; letter-spacing: 0.02em;">
-                                View Academic Report
+                                Access Student Dashboard
                               </a>
                             </td>
                           </tr>
@@ -123,7 +123,7 @@ export const mailSender = async (guardianEmail, studentName, dynamicUrl, expiry,
                         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 24px;" />
                         
                         <p style="margin: 0; color: #9ca3af; font-size: 12px; line-height: 1.6; text-align: center; font-weight: 500;">
-                          This is an automated security transmission from the institution. If you have any inquiries or did not expect this message, please reach out to the campus administration directly.
+                          This is an automated administrative notification from the institution. For questions or assistance, please contact the student affairs office directly.
                         </p>
                       </td>
                     </tr>
@@ -132,7 +132,7 @@ export const mailSender = async (guardianEmail, studentName, dynamicUrl, expiry,
                     <tr>
                       <td style="background-color: #f9fafb; padding: 20px 36px; text-align: center; border-top: 1px solid #f3f4f6;">
                         <p style="margin: 0; color: #9ca3af; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
-                          ASTNS • Secure Portal Notification
+                          ASTNS • Official Portal Notification
                         </p>
                       </td>
                     </tr>
