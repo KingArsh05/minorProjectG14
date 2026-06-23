@@ -39,7 +39,7 @@ export const mailSender = async (guardianEmail, studentName, dynamicUrl, expiry,
     const hasConstraints = !!(expiry || accessLimit);
     const mailTransporter = getTransporter();
     const info = await mailTransporter.sendMail({
-      from: `"University Admin" <${process.env.EMAIL_USER}>`,
+      from: `"GNDEC Admin (ASTNS)" <${process.env.EMAIL_USER}>`,
       to: guardianEmail,
       subject: `Official Semester Progress Report: ${studentName} - ASTNS Portal`,
       text: `Dear Guardian,\n\nAn official semester report has been published for ${studentName}.\n${
