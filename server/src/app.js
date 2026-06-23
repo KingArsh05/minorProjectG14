@@ -39,7 +39,7 @@ import { checkAuth } from "./middlewares/auth.middleware.js";
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/students", checkAuth, studentRouter);
 app.use("/api/v1/reports", checkAuth, reportRouter);
-app.use("/api/v1/tokens", checkAuth, tokenRouter);
+app.use("/api/v1/tokens", tokenRouter);
 app.use("/api/v1/mailsender", checkAuth, mailSenderRouter);
 
 app.use(errorHandler);

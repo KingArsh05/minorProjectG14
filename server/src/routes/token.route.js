@@ -1,20 +1,17 @@
 import express from "express";
 import {
-  // createTokens,
-  // revokeToken,
   validateToken,
   getAllTokens,
   deleteToken,
   generatePreviewToken
 } from "../controllers/token.controller.js";
+import { checkAuth } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/validate", validateToken); // GET /api/tokens/validate?token=xxx
-// router.post("/", createTokens); // POST /api/tokens
-// router.patch("/:id/revoke", revokeToken); // PATCH /api/tokens/:id/revoke
-router.get("/", getAllTokens); // GET /api/tokens
-router.delete("/delete/:id", deleteToken);
-router.post("/preview", generatePreviewToken);
+router.get("/validate", validateToken); // GET /api/tokens/validate?token=xxx (Public)
+router.get("/", checkAuth, getAllTokens); // GET /api/tokens (Admin only)
+router.delete("/delete/:id", checkAuth, deleteToken); // Admin only
+router.post("/preview", checkAuth, generatePreviewToken); // Admin only
 
 export default router;
